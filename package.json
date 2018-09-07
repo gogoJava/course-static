@@ -1,6 +1,7 @@
 {
   "name": "course-static",
   "version": "0.1.0",
+  "author": "XinGui <ascarecrow@126.com>",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
