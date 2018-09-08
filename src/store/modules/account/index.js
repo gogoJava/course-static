@@ -1,7 +1,7 @@
 // apis
 import * as accountApi from '../../../apis/testApi'
 // utils
-import request from '../../../common/request'
+import request from '../../../common/request/index'
 import persistedState from '../../../common/persistedState'
 import md5 from 'md5'
 

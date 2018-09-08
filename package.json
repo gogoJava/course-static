@@ -5,10 +5,14 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
+    "inspect": "vue-cli-service inspect",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "axios": "^0.18.0",
+    "md5": "^2.2.1",
+    "sha1": "^1.1.1",
     "vue": "^2.5.17",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"
