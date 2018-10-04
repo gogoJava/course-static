@@ -1,9 +1,25 @@
 <template>
-  <div id="app">
-    <router-view/>
+  <div class="home-view">
+    <!--<my-menu></my-menu>-->
+    <router-view></router-view>
   </div>
 </template>
+<script>
+  import './styles/iconfont/iconfont.css'
+  // components
+  // import MyMenu from './views/components/menu/MyMenu.vue'
+  export default {
+    name: 'app',
+   components: {
+     // MyMenu
+   },
+  }
+</script>
 <style lang="stylus">
+  html, body {
+    height 100%;
+    margin: 0;
+  }
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -24,4 +40,7 @@
     }
   }
 }
+  .home-view {
+    height 100%;
+  }
 </style>

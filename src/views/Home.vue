@@ -1,33 +1,21 @@
 <template>
-  <div class="home">
-    <h1>这是松松专属网站！</h1>
-    <img class="log_icon" :src="logUrl" />
-    <h1><span class="about" @click="$router.push('/about')">About</span></h1>
+  <div class="home-view">
+    <my-menu></my-menu>
+    <!--<router-view></router-view>-->
   </div>
 </template>
-
 <script>
-export default {
-  name: "home",
-  components: {},
-  data() {
-    return {
-      logUrl: require('./img/log.png')
-    }
+  // components
+  import MyMenu from '../views/components/menu/MyMenu.vue'
+  export default {
+    name: 'home',
+   components: {
+     MyMenu
+   },
   }
-};
 </script>
-<style lang="postcss" scoped>
-  .home {
-    padding-top: 45px;
+<style lang="stylus">
+  .home-view {
+    height 100%;
   }
-  .log_icon {
-    width: 120px;
-    height: 120px;
-  }
-  .about {
-      padding-top: 30px;
-      cursor: pointer;
-      color: #42b983;
-    }
 </style>
