@@ -4,12 +4,12 @@
       <div style="float: right">
         <el-button type="primary" size="small" @click="dialogFormVisible = true">新建学员</el-button>
       </div>
-      <el-table :data="tableData" style="width: 100%">
-        <el-table-column prop="date" label="日期" width="180">
+      <el-table :data="tableData.list" v-loading="tableData.loading" style="width: 100%">
+        <el-table-column prop="date" label="学号" width="180">
         </el-table-column>
         <el-table-column prop="name" label="姓名" width="180">
         </el-table-column>
-        <el-table-column prop="address" label="地址">
+        <el-table-column prop="address" label="所在班级">
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
@@ -18,7 +18,7 @@
         </el-table-column>
       </el-table>
       <my-pagination
-              :total="4"
+              :total="tableData.total"
               :currentPage.sync="searchForm.page"
               :page-size.sync="searchForm.pageSize"
               @current-change="onCurrentPageChange">
@@ -27,6 +27,21 @@
     <el-dialog title="新建学员" :visible.sync="dialogFormVisible">
       <el-form :model="studentInfo" label-width="80px">
         <el-form-item label="用户名：">
+          <el-input v-model="studentInfo.name"></el-input>
+        </el-form-item>
+        <el-form-item label="密码：">
+          <el-input v-model="studentInfo.name"></el-input>
+        </el-form-item>
+        <el-form-item label="确认密码：">
+          <el-input v-model="studentInfo.name"></el-input>
+        </el-form-item>
+        <el-form-item label="教师姓名：">
+          <el-input v-model="studentInfo.name"></el-input>
+        </el-form-item>
+        <el-form-item label="联系电话：">
+          <el-input v-model="studentInfo.name"></el-input>
+        </el-form-item>
+        <el-form-item label="验证码：">
           <el-input v-model="studentInfo.name"></el-input>
         </el-form-item>
       </el-form>
@@ -40,6 +55,8 @@
 <script>
   // components
   import MyPagination from '../../../components/pagination/MyPagination.vue'
+  // API
+  import * as userApi from '../../../apis/userApi'
   export default {
     title: '学员管理',
     name: 'student-list-page',
@@ -48,26 +65,13 @@
     },
     data() {
       return ({
-        tableData: [{
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1517 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1519 弄'
-        }, {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1516 弄'
-        }],
+        tableData: {
+          loading: true,
+          list: [],
+          total: 0
+        },
         searchForm: {
-          keyword: '',
-          page: 1,
+          pageNum: 1,
           pageSize: 10,
         },
         dialogFormVisible: false,
@@ -78,9 +82,24 @@
     },
     methods: {
       onCurrentPageChange(page) {
-        console.log(page)
+        this.searchForm.pageNum = page
+        this.queryUserList()
+      },
+      async queryUserList() {
+        this.tableData.loading = true
+        const {total, list} = await userApi.getUserList({
+          ...this.searchForm,
+          type: 1, // 用户类型:1学生2教师
+        }).catch(e => e)
+
+        this.tableData.total = total || 0
+        this.tableData.list = list || []
+        this.tableData.loading = false
       },
     },
+    mounted() {
+      this.queryUserList()
+    }
   }
 </script>
 <style></style>

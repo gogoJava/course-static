@@ -17,7 +17,7 @@ const routes = [
     path: '/home',
     component: () => import('../views/Home.vue'),
     children: [
-      {path:'',redirect: ''},
+      {path:'',redirect: 'class/list'},
       //  班级信息
       {path: 'class/list', meta: {title: '班级管理'}, component: () => import('../views/class/list/view.vue')},
       {path: 'class/create', meta: {title: '创建班级'}, component: () => import('../views/class/info/create.vue')},

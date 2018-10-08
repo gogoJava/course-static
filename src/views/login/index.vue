@@ -45,7 +45,10 @@
 // import LangSelect from '@/components/LangSelect'
 import IconFont from '../../components/icon-font/IconFont'
 // api
-import * as accountApi from '../../apis/accountApi'
+// import * as accountApi from '../../apis/accountApi'
+// store
+import {mapActions} from 'vuex'
+import * as $accountStore from '../../store/modules/account/types'
 
 export default {
   name: 'Login',
@@ -95,6 +98,9 @@ export default {
     // window.removeEventListener('hashchange', this.afterQRScan)
   },
   methods: {
+    ...mapActions($accountStore.namespace, {
+      login: $accountStore.actions.login,
+    }),
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
@@ -103,14 +109,15 @@ export default {
       }
     },
     async handleLogin() {
-      // this.loading = true
+      this.loading = true
       const params = {
         userName: this.loginForm.username,
         password: this.loginForm.password
       }
-      const res = await accountApi.login(params).catch(e => e)
-      console.log('res', res)
-      // setTimeout(() => this.$router.push({ path: this.redirect || '/home' }), 1000)
+      const {code, msg} = await this.login(params).catch(e => e)
+      this.loading = false
+      if (code !== '200') return this.$message('登录失败，' + msg)
+      this.$router.push({ path: this.redirect || '/home'})
     },
   }
 }

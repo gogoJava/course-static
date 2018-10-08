@@ -93,10 +93,10 @@
           <div>
             <!--<span class="log-out" @click="logout">退出登录</span>-->
             <el-dropdown trigger="click" class="log-out">
-              <span>管理员</span>
+              <span>{{currentUser ? currentUser.username : '用户名'}}</span>
               <i class="el-icon-caret-bottom"></i>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item @click.native="logout">退出登录</el-dropdown-item>
+                <el-dropdown-item @click.native="logoutOnClick">退出登录</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </div>
@@ -111,24 +111,37 @@
 
 <script>
   import IconFont from '../../../components/icon-font/IconFont'
+  // store
+  import {mapGetters,mapActions} from 'vuex'
+  import * as $account from '../../../store/modules/account/types'
+  // import * as accountApi from '../../../apis/accountApi'
   export default {
     name: 'my-menu',
     components: {
       IconFont
     },
     computed: {
+      ...mapGetters($account.namespace, {
+        currentUser: $account.getters.currentUser
+      }),
       defaultActive() {
         return this.$route.path
       }
     },
     methods: {
-      logout() {
+      ...mapActions($account.namespace, {
+        logout: $account.actions.logout,
+      }),
+      logoutOnClick() {
         this.$confirm('是否退出登录?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
-        }).then(() => {
-          this.$router.push('/login')
+        }).then(async () => {
+          const {code} = await this.logout().catch(e => e)
+          if (code === '200') {
+            this.$router.push('/login')
+          }
         }).catch(() => {})
       }
     }

@@ -1,14 +1,18 @@
 import request from '../common/request'
-
+import qs from 'qs'
 /**
  * 登录
  */
-export const login = (params) => request.post('/pass/toLogin', {params})
+export const login = (params) => request.post('/pass/toLogin', qs.stringify(params))
 
 /**
  * 登出
  */
-export const logout = (data) => request.get('/account/logout', data)
+export const logout = () => request.get('/pass/logout', {
+  headers: {
+    'Content-Type': 'application/json;'
+  },
+})
 
 /**
  * 获取当前账号用户信息
