@@ -45,28 +45,6 @@
           <el-input v-model="form.name" style="width: 140px"></el-input>
           <span> /节</span>
         </el-form-item>
-        <el-form-item label="教师工资">
-          <el-radio-group v-model="form.resource">
-            <el-radio label="人头"></el-radio>
-            <el-radio label="分成"></el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="">
-          <el-row>
-            <el-col :span="6">半小时</el-col>
-            <el-col :span="6">超出（人）</el-col>
-            <el-col :span="6">提成（元）</el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="6"><el-input style="width: 80%"></el-input></el-col>
-            <el-col :span="6"><el-input style="width: 80%"></el-input></el-col>
-            <el-col :span="6"><el-input style="width: 80%"></el-input></el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item label="出勤课时费">
-          <el-input v-model="form.name" style="width: 140px"></el-input>
-          <span> %</span>
-        </el-form-item>
         <el-form-item>
           <el-button @click="$router.back()">取消</el-button>
           <el-button type="primary" @click="onSubmit">立即创建</el-button>

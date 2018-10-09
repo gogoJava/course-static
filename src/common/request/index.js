@@ -12,7 +12,7 @@ const defaultConfig = {
   baseURL: envs.apiUrl,
   headers: {
     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-    'Cookie': 'JSESSIONID=2CE301936F13639D574B632E661B4B93'
+    // 'Cookie': 'JSESSIONID=2CE301936F13639D574B632E661B4B93'
   },
   paramsSerializer: function (params) {
     return qs.stringify(params, {arrayFormat: 'repeat'})
@@ -24,7 +24,7 @@ const defaultConfig = {
 }
 
 export const createInstance = (config) => {
-  document.cookie = 'JSESSIONID=' + '2CE301936F13639D574B632E661B4B93'
+  // document.cookie = 'JSESSIONID=' + '2CE301936F13639D574B632E661B4B93'
   config = merge({}, defaultConfig, config)
   const instance = axios.create(config)
 
@@ -58,7 +58,6 @@ export const createInstance = (config) => {
 
 // response
   instance.interceptors.response.use((response) => {
-    console.log('response', response)
     const {config: {responseMapKeys}} = response
     let {data} = response
 
@@ -72,7 +71,6 @@ export const createInstance = (config) => {
 
     return data
   }, (error) => {
-    console.log('error1', error)
     const {config: {errorCodeField, errorMsgField}} = error
     if (error[errorCodeField] !== undefined) {
       return Promise.reject(error)

@@ -49,6 +49,26 @@
         <el-form-item label="验证码：">
           <el-input v-model="studentInfo.verification"></el-input>
         </el-form-item>
+        <el-form-item label="教师工资">
+          <el-radio-group v-model="studentInfo.teacherChargeType">
+            <el-radio label="1">人头</el-radio>
+            <el-radio label="2">分成</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="">
+          <el-row>
+            <el-col :span="6">半小时</el-col>
+            <el-col v-if="studentInfo.teacherChargeType === '1'" :span="6">超出（人）</el-col>
+            <el-col :span="6">提成（元）</el-col>
+            <el-col v-if="studentInfo.teacherChargeType === '2'" :span="6">出勤课时费</el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="6"><el-input v-model="studentInfo.averageHour" style="width: 80%"></el-input></el-col>
+            <el-col v-if="studentInfo.teacherChargeType === '1'" :span="6"><el-input v-model="studentInfo.exceedNum" style="width: 80%"></el-input></el-col>
+            <el-col :span="6"><el-input v-model="studentInfo.averageHourCost" style="width: 80%"></el-input></el-col>
+            <el-col v-if="studentInfo.teacherChargeType === '2'" :span="6"><el-input v-model="studentInfo.percentage" style="width: 80%"></el-input><span> %</span></el-col>
+          </el-row>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="getVerificationCode">获取验证码</el-button>
@@ -92,6 +112,10 @@
           verification: '', // 验证码
           age: 18,
           cardNum: null, // 身份证号码
+          teacherChargeType: '1', // 教师收费类型:1按时(按课时出席人数)2按提成(分成)
+          averageHour: null, // 按【averageHour】小时收费
+          averageHourCost: null, // 按【averageHour】小时收费【averageHourCost】
+          percentage: null, //
         }
       })
     },
@@ -121,8 +145,8 @@
         let loadingInstance = Loading.service()
         const {code, msg, data} = await userApi.addUser(this.studentInfo).catch(e=>e)
         console.log('data', data)
-        if (code !== '200') return this.$message(msg)
         loadingInstance.close()
+        if (code !== '200') return this.$message(msg)
         this.dialogFormVisible = false
       }
     },

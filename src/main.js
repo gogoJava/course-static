@@ -22,18 +22,12 @@ request.interceptors.response.use((response) => {
   // Do something with response data
   return response
 }, (error) => {
-  console.log('error2', error)
   if (error.code === '100') { // 登录信息已过期
-    // alert('登录信息已过期，请重新登录')
-    // window.location.href = `/login?redirect=${window.encodeURIComponent(window.location.pathname)}`
+    alert('登录信息已过期，请重新登录')
+    window.location.href = `/login?redirect=${window.encodeURIComponent(window.location.pathname)}`
   }
   return Promise.reject(error)
 })
-// import axios from 'axios'
-//
-// axios.defaults.withCredentials=true // 让ajax携带cookie
-//
-// Vue.prototype.$axios = axios
 
 import Element from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
