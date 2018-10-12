@@ -7,7 +7,7 @@ const hostnameConfigMap = {
    */
   'localhost': {
     online: false,
-    apiUrl: '//47.75.101.54:8089/',
+    apiUrl: '//14.21.34.82:8088/',
   },
 
 }
@@ -17,4 +17,3 @@ if (process.env.CLIENT_ENV === true) {
 } else {
   module.exports = hostnameConfigMap['localhost']
 }
-

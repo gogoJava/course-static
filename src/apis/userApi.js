@@ -16,3 +16,7 @@ export const getCode = (params) => request.post('/api/user/sendCode', qs.stringi
  */
 export const addUser = (params) => request.post('/api/user/add', qs.stringify(params))
 
+/**
+ * 修改用户信息
+ */
+export const updateUser = (params) => request.post('/api/user/update', qs.stringify(params))

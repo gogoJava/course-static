@@ -1,4 +1,6 @@
-import config from './config'
-import defaultConfig from './defaultConfig'
+import merge from 'lodash/merge'
 
-export default Object.assign({}, defaultConfig, config)
+const config = require('./config')
+const defaultConfig = require('./defaultConfig')
+
+export default merge({}, defaultConfig, config)
