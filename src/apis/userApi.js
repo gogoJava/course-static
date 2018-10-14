@@ -20,3 +20,13 @@ export const addUser = (params) => request.post('/api/user/add', qs.stringify(pa
  * 修改用户信息
  */
 export const updateUser = (params) => request.post('/api/user/update', qs.stringify(params))
+
+/**
+ * 删除用户信息
+ */
+export const deleteUser = (params) => request.post('/api/user/delete', qs.stringify(params))
+
+/**
+ * 新建管理员
+ */
+export const addAdmin = (params) => request.post('/api/user/addManager', qs.stringify(params))

@@ -44,12 +44,12 @@ module.exports = {
   // devServer:{type:Object} 3个属性host,port,https
   // 它支持webPack-dev-server的所有选项
 
-  // devServer: {
-  //   port: 8080, // 端口号
-  //   host: 'localhost',
-  //   https: false, // https:{type:Boolean}
-  //   open: true, //配置自动启动浏览器
-  //   // proxy: 'http://localhost:4000' // 配置跨域处理,只有一个代理
+  devServer: {
+    port: 8088, // 端口号
+    host: 'localhost',
+    https: false, // https:{type:Boolean}
+    open: true, //配置自动启动浏览器
+    // proxy: 'http://localhost:4000' // 配置跨域处理,只有一个代理
   //   proxy: {
   //     '/api': {
   //       target: 'http://47.75.101.54:8089',
@@ -57,5 +57,5 @@ module.exports = {
   //       changeOrigin: true
   //     },
   //   },  // 配置多个代理
-  // }
+  }
 }

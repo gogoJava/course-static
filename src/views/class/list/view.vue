@@ -19,7 +19,7 @@
       </el-table>
       <my-pagination
               :total="tableData.total"
-              :currentPage.sync="searchForm.page"
+              :currentPage.sync="searchForm.pageNum"
               :page-size.sync="searchForm.pageSize"
               @current-change="onCurrentPageChange">
       </my-pagination>
@@ -58,11 +58,8 @@
       async queryClassList() {
         this.tableData.loading = true
         // const params = {...this.searchForm}
-        const {total, list} = await classApi.getClassList({
-          pageNum: 1,
-          pageSize: 10
-        }).catch(e => e)
-
+        const {data} = await classApi.getClassList(this.searchForm).catch(e => e)
+        const {total, list} = data
         this.tableData.total = total || 0
         this.tableData.list = list || []
         this.tableData.loading = false

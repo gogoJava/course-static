@@ -8,6 +8,9 @@ Vue.config.productionTip = false;
 import config from './config'
 // request
 import request from './common/request'
+// moment
+import moment from 'moment'
+Vue.prototype.$moment = moment
 
 request.defaults.baseURL = config.apiUrl
 router.beforeEach((to, from, next) => {
