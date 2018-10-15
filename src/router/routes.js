@@ -18,10 +18,10 @@ const routes = [
     component: () => import('../views/Home.vue'),
     children: [
       {path:'',redirect: 'class/list'},
-      //  班级信息
-      {path: 'class/list', meta: {title: '班级管理'}, component: () => import('../views/class/list/view.vue')},
-      {path: 'class/create', meta: {title: '创建班级'}, component: () => import('../views/class/info/create.vue')},
-      {path: 'class/edit', meta: {title: '修改课程'}, component: () => import('../views/class/info/edit.vue')},
+      //  课程信息
+      {path: 'class/list', meta: {title: '课程管理'}, component: () => import('../views/class/list/view.vue')},
+      {path: 'class/create', meta: {title: '创建课程'}, component: () => import('../views/class/info/create.vue')},
+      {path: 'class/edit/:id', meta: {title: '修改课程'}, component: () => import('../views/class/info/edit.vue')},
       {path: 'class/attendance', meta: {title: '出勤签到'}, component: () => import('../views/class/attendance/view.vue')},
       {path: 'class/release', meta: {title: '发布课程'}, component: () => import('../views/class/release/view.vue')},
       // 学生管理

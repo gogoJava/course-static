@@ -7,15 +7,21 @@
       <el-table :data="tableData.list" v-loading="tableData.loading" style="width: 100%">
         <el-table-column type="selection" width="55">
         </el-table-column>
-        <el-table-column prop="date" label="ID" width="180">
+        <el-table-column prop="orderNo" label="订单号" width="180">
         </el-table-column>
         <el-table-column prop="name" label="学生姓名" width="180">
         </el-table-column>
-        <el-table-column prop="address" label="已支付课程">
+        <el-table-column prop="courseName" label="已支付课程">
         </el-table-column>
-        <el-table-column prop="address" label="时间">
+        <el-table-column prop="updateTime" label="时间">
+          <template slot-scope="scope">
+            <span>{{$moment(scope.row.updateTime).format('YYYY-MM-DD HH:mm')}}</span>
+          </template>
         </el-table-column>
-        <el-table-column prop="address" label="金额">
+        <el-table-column prop="courseCost" label="金额">
+          <template slot-scope="scope">
+            <span>¥ {{scope.row.courseCost}}</span>
+          </template>
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
@@ -64,11 +70,11 @@
       },
       async queryCourseOrderList() {
         this.tableData.loading = true
-        const {total, list} = await courseApi.getCourseOrderList({
+        const {data} = await courseApi.getCourseOrderList({
           ...this.searchForm,
           orderStatus: 3, //
         }).catch(e => e)
-
+        const {total, list} = data
         this.tableData.total = total || 0
         this.tableData.list = list || []
         this.tableData.loading = false

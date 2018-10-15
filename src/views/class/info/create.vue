@@ -2,18 +2,19 @@
   <div class="class-create-page">
     <el-card>
       <div slot="header" class="clearfix">
-        <span>新建班级</span>
+        <span>新建课程</span>
       </div>
       <el-form ref="form" :model="courseInfo" label-width="120px">
-        <el-form-item label="班级名称">
+        <el-form-item label="课程名称">
           <el-col :span="12">
             <el-input v-model="courseInfo.courseName"></el-input>
           </el-col>
         </el-form-item>
-        <el-form-item label="班级类型">
+        <el-form-item label="课程类型">
           <el-cascader
                   expand-trigger="hover"
                   :options="courseTypes"
+                  :show-all-levels="false"
                   :props="typeProps"
                   v-model="selectedTypeId">
           </el-cascader>
@@ -35,10 +36,10 @@
         <el-form-item label="总课时">
           <el-col :span="12"><el-input v-model="courseInfo.courseTotal"></el-input></el-col>
         </el-form-item>
-        <el-form-item label="班级课时">
+        <el-form-item label="课程课时">
           <el-col :span="12"><el-input v-model="courseInfo.courseCurrent"></el-input></el-col>
         </el-form-item>
-        <el-form-item label="班级座位图">
+        <el-form-item label="课程座位图">
           <el-select v-model="courseInfo.seatId" placeholder="请选择座位图">
             <el-option v-for="(item, index) of seatList" :key="index" :label="seatTitle(item)" :value="item.seatId"></el-option>
           </el-select>
@@ -63,7 +64,7 @@
   import * as userApi from '../../../apis/userApi'
   // components
   export default {
-    title: '新建班级',
+    title: '新建课程',
     name: 'class-create-page',
     components: {
     },
@@ -121,12 +122,13 @@
           pageNum: 1,
           pageSage: 10,
           type: 2, // 用户类型:1学生2教师
+          deleted: false
         }).catch(e => e)
         this.teacherList = list || []
       },
       async onSubmit() {
-        this.courseInfo.courseStartTime = this.$moment(this.courseTime[0]).format('YYYY-MM-DD HH:mm:ss')
-        this.courseInfo.courseEndTime = this.$moment(this.courseTime[1]).format('YYYY-MM-DD HH:mm:ss')
+        this.courseInfo.courseStartTime = this.$moment(this.courseTime[0]).format('YYYY/MM/DD HH:mm:ss')
+        this.courseInfo.courseEndTime = this.$moment(this.courseTime[1]).format('YYYY/MM/DD HH:mm:ss')
         this.courseInfo.typeId = this.selectedTypeId[this.selectedTypeId.length - 1]
         console.log(this.courseInfo)
         // if (this.courseInfo) return

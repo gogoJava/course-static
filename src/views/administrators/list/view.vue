@@ -24,7 +24,7 @@
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button type="text" @click="editUser(scope.row)">详情</el-button>
-            <el-button type="text" @click="deleteUser(scope.row)">删除</el-button>
+            <el-button v-if="!scope.row.deleted" type="text" @click="deleteUser(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -38,10 +38,10 @@
     <el-dialog :title="isCreate ? '新建管理员' : '管理员详情'" :visible.sync="dialogFormVisible" width="70%">
       <el-form :model="userInfo" label-width="120px">
         <el-form-item label="用户名：">
-          <el-input v-model="userInfo.name"></el-input>
+          <el-input v-model="userInfo.username"></el-input>
         </el-form-item>
         <el-form-item label="管理员姓名：">
-          <el-input v-model="userInfo.username"></el-input>
+          <el-input v-model="userInfo.name"></el-input>
         </el-form-item>
         <el-form-item label="性别：">
           <el-radio-group v-model="userInfo.sex">

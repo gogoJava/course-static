@@ -2,18 +2,23 @@
   <div class="class-list-page">
     <el-card class="box-card">
       <div style="float: right">
-        <el-button type="primary" size="small" @click="$router.push('/home/class/create')">新建班级</el-button>
+        <el-button type="primary" size="small" @click="$router.push('/home/class/create')">新建课程</el-button>
       </div>
       <el-table :data="tableData.list" v-loading="tableData.loading" style="width: 100%">
-        <el-table-column prop="date" label="课程名称" width="180">
+        <el-table-column prop="courseName" label="课程名称" width="180">
         </el-table-column>
-        <el-table-column prop="name" label="任课教师" width="180">
+        <el-table-column prop="user.name" label="任课教师" width="180">
         </el-table-column>
-        <el-table-column prop="address" label="上课时间">
+        <el-table-column prop="courseStartTime" label="上课时间">
+          <template slot-scope="scope">
+            <span>{{$moment(scope.row.courseStartTime).format('YYYY-MM-DD')}} 至 {{$moment(scope.row.courseEndTime).format('YYYY-MM-DD')}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="courseTotal" label="总课时" width="180">
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button type="text">详情</el-button>
+            <el-button type="text" @click.native="$router.push('/home/class/edit/' + scope.row.courseId)">详情</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -32,7 +37,7 @@
   // API
   import * as classApi from '../../../apis/classApi'
   export default {
-    title: '班级列表',
+    title: '课程列表',
     name: 'class-list-page',
     components: {
       MyPagination

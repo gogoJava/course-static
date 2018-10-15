@@ -10,3 +10,13 @@ export const getCourseOrderList = (params) => request.post('/api/courseOrder/lis
  * 新建课程/班级
  */
 export const addCourse = (params) => request.post('/api/course/add', qs.stringify(params))
+
+/**
+ * 获取课程信息
+ */
+export const getCourseDetail = (params) => request.post('/api/course/detail', qs.stringify(params))
+
+/**
+ * 修改课程/班级
+ */
+export const updateCourse = (params) => request.post('/api/course/update', qs.stringify(params))

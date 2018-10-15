@@ -12,11 +12,11 @@
           <el-submenu index="/home/class">
             <template slot="title">
               <icon-font icon="banjixinxi" class="icon" size="24px"></icon-font>
-              <span>班级管理</span>
+              <span>课程管理</span>
             </template>
             <el-menu-item-group>
-              <el-menu-item index="/home/class/list">班级信息</el-menu-item>
-              <el-menu-item index="/home/class/edit">修改课程</el-menu-item>
+              <el-menu-item index="/home/class/list">课程信息</el-menu-item>
+              <!-- <el-menu-item index="/home/class/edit">修改课程</el-menu-item> -->
               <el-menu-item index="/home/class/attendance">出勤签到</el-menu-item>
               <el-menu-item index="/home/class/release">发布课程</el-menu-item>
             </el-menu-item-group>
@@ -76,8 +76,8 @@
             <el-dropdown trigger="click">
               <span class="el-dropdown-link"><i class="el-icon-arrow-down el-icon-more"></i></span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item @click.native="$router.push('/home/class/create')">新建班级</el-dropdown-item>
-                <el-dropdown-item @click.native="$router.push('/home/class/edit')">修改课程</el-dropdown-item>
+                <el-dropdown-item @click.native="$router.push('/home/class/create')">新建课程</el-dropdown-item>
+                <!-- <el-dropdown-item @click.native="$router.push('/home/class/edit')">修改课程</el-dropdown-item> -->
                 <el-dropdown-item @click.native="$router.push('/home/class/attendance')">出勤签到</el-dropdown-item>
                 <el-dropdown-item @click.native="$router.push('/home/class/release')">发布课程</el-dropdown-item>
                 <el-dropdown-item @click.native="$router.push('/home/student/list')">学员管理</el-dropdown-item>

@@ -45,7 +45,6 @@
           total: 0
         },
         searchForm: {
-          keyword: '',
           pageNum: 1,
           pageSize: 10,
         },

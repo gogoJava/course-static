@@ -5,7 +5,7 @@
         <el-button type="primary" size="small" @click="editUser()">新建学生</el-button>
       </div>
       <el-table :data="tableData.list" v-loading="tableData.loading" style="width: 100%">
-        <el-table-column prop="username" label="学生姓名" width="180">
+        <el-table-column prop="name" label="学生姓名" width="180">
         </el-table-column>
         <el-table-column prop="sex" label="性别">
           <template slot-scope="scope">
@@ -32,7 +32,7 @@
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button type="text" @click="editUser(scope.row)">详情</el-button>
-            <el-button type="text" @click="deleteUser(scope.row)">删除</el-button>
+            <el-button v-if="!scope.row.deleted" type="text" @click="deleteUser(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -46,10 +46,10 @@
     <el-dialog :title="isCreate ? '新建学生' : '学生详情'" :visible.sync="dialogFormVisible" width="70%">
       <el-form :model="userInfo" label-width="120px">
         <el-form-item label="用户名：">
-          <el-input v-model="userInfo.name"></el-input>
+          <el-input v-model="userInfo.username"></el-input>
         </el-form-item>
         <el-form-item label="学生姓名：">
-          <el-input v-model="userInfo.username"></el-input>
+          <el-input v-model="userInfo.name"></el-input>
         </el-form-item>
         <el-form-item label="性别：">
           <el-radio-group v-model="userInfo.sex">
