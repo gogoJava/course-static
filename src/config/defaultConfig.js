@@ -3,4 +3,6 @@ module.exports = {
   online: false,
   // 接口url
   apiUrl: null,
+  // apiUrl: '//ccjkjy.com/',
+  
 }

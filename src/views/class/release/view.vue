@@ -2,23 +2,28 @@
   <div class="class-release-page">
     <el-card class="box-card">
       <el-table :data="tableData.list" v-loading="tableData.loading" style="width: 100%">
-        <el-table-column type="selection" width="55">
+         <el-table-column type="selection" width="55">
         </el-table-column>
-        <el-table-column prop="date" label="课程名称" width="180">
+        <el-table-column prop="courseName" label="课程名称" width="180">
         </el-table-column>
-        <el-table-column prop="name" label="任课教师" width="180">
+        <el-table-column prop="user.name" label="任课教师" width="180">
         </el-table-column>
-        <el-table-column prop="address" label="上课时间">
+        <el-table-column prop="courseStartTime" label="上课时间">
+          <template slot-scope="scope">
+            <span>{{$moment(scope.row.courseStartTime).format('YYYY-MM-DD')}} 至 {{$moment(scope.row.courseEndTime).format('YYYY-MM-DD')}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="courseTotal" label="总课时" width="180">
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button type="text">详情</el-button>
+            <el-button type="text" @click.native="publishCourseOnclick(scope.row)">发布</el-button>
           </template>
         </el-table-column>
       </el-table>
       <my-pagination
               :total="tableData.total"
-              :currentPage.sync="searchForm.page"
+              :currentPage.sync="searchForm.pageNum"
               :page-size.sync="searchForm.pageSize"
               @current-change="onCurrentPageChange">
       </my-pagination>
@@ -30,6 +35,10 @@
   import MyPagination from '../../../components/pagination/MyPagination.vue'
   // API
   import * as classApi from '../../../apis/classApi'
+  import * as courseApi from '../../../apis/courseApi'
+  // store
+  import {mapGetters} from 'vuex'
+  import * as $account from '../../../store/modules/account/types'
   export default {
     title: '发布课程',
     name: 'class-release-page',
@@ -44,11 +53,26 @@
           total: 0
         },
         searchForm: {
-          keyword: '',
           pageNum: 1,
           pageSize: 10,
         },
       })
+    },
+    computed: {
+      ...mapGetters($account.namespace, {
+        currentUser: $account.getters.currentUser
+      }),
+      defaultActive() {
+        return this.$route.path
+      },
+       // 超级管理员
+      isSuperAdmin() {
+        return this.currentUser.type === '-1'
+      },
+      // 管理员
+      isAdmin() {
+        return this.currentUser.type === '0'
+      },
     },
     methods: {
       onCurrentPageChange(page) {
@@ -57,13 +81,18 @@
       },
       async queryClassList() {
         this.tableData.loading = true
-        const {total, list} = await classApi.getClassList({
-          ...this.searchForm,
-        }).catch(e => e)
-
+        const params = {...this.searchForm, accountId: this.currentUser.accountId}
+        const {data} = await classApi.getClassList(params).catch(e => e)
+        const {total, list} = data
         this.tableData.total = total || 0
         this.tableData.list = list || []
         this.tableData.loading = false
+      },
+      // 发布课程
+      async publishCourseOnclick(courseInfo) {
+        const {code, msg} = await courseApi.publishCourse({courseId: courseInfo.courseId}).catch(e => e)
+        if (code !== '200') return this.$message('发布课程失败，' + msg)
+        this.$message({type: 'success', message: '发布课程成功！'})
       }
     },
     mounted() {

@@ -1,7 +1,7 @@
 <template>
   <div class="class-list-page">
     <el-card class="box-card">
-      <div style="float: right">
+      <div v-if="isSuperAdmin" style="float: right">
         <el-button type="primary" size="small" @click="$router.push('/home/class/create')">新建课程</el-button>
       </div>
       <el-table :data="tableData.list" v-loading="tableData.loading" style="width: 100%">
@@ -36,6 +36,9 @@
   import MyPagination from '../../../components/pagination/MyPagination.vue'
   // API
   import * as classApi from '../../../apis/classApi'
+  // store
+  import {mapGetters} from 'vuex'
+  import * as $account from '../../../store/modules/account/types'
   export default {
     title: '课程列表',
     name: 'class-list-page',
@@ -55,6 +58,22 @@
         },
       })
     },
+    computed: {
+      ...mapGetters($account.namespace, {
+        currentUser: $account.getters.currentUser
+      }),
+      defaultActive() {
+        return this.$route.path
+      },
+       // 超级管理员
+      isSuperAdmin() {
+        return this.currentUser.type === '-1'
+      },
+      // 管理员
+      isAdmin() {
+        return this.currentUser.type === '0'
+      },
+    },
     methods: {
       onCurrentPageChange(page) {
         this.searchForm.pageNum = page
@@ -62,8 +81,8 @@
       },
       async queryClassList() {
         this.tableData.loading = true
-        // const params = {...this.searchForm}
-        const {data} = await classApi.getClassList(this.searchForm).catch(e => e)
+        const params = {...this.searchForm, accountId: this.currentUser.accountId}
+        const {data} = await classApi.getClassList(params).catch(e => e)
         const {total, list} = data
         this.tableData.total = total || 0
         this.tableData.list = list || []

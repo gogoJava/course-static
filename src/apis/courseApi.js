@@ -20,3 +20,8 @@ export const getCourseDetail = (params) => request.post('/api/course/detail', qs
  * 修改课程/班级
  */
 export const updateCourse = (params) => request.post('/api/course/update', qs.stringify(params))
+
+/**
+ * 发布课程
+ */
+export const publishCourse = (params) => request.post('/api/course/publish', qs.stringify(params))

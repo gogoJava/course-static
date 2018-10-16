@@ -47,7 +47,7 @@ import IconFont from '../../components/icon-font/IconFont'
 // api
 // import * as accountApi from '../../apis/accountApi'
 // store
-import {mapActions} from 'vuex'
+import {mapActions,mapGetters} from 'vuex'
 import * as $accountStore from '../../store/modules/account/types'
 
 export default {
@@ -91,6 +91,27 @@ export default {
     }
 
   },
+  computed: {
+      ...mapGetters($accountStore.namespace, {
+        currentUser: $accountStore.getters.currentUser
+      }),
+      // 超级管理员
+      isSuperAdmin() {
+        return this.currentUser.type === '-1'
+      },
+      // 管理员
+      isAdmin() {
+        return this.currentUser.type === '0'
+      },
+      // 教师
+      isTeacher() {
+        return this.currentUser.type === '2'
+      },
+      // 学生
+      isStudent() {
+        return this.currentUser.type === '1'
+      },
+    },
   created() {
     // window.addEventListener('hashchange', this.afterQRScan)
   },
@@ -117,7 +138,9 @@ export default {
       const {code, msg} = await this.login(params).catch(e => e)
       this.loading = false
       if (code !== '200') return this.$message('登录失败，' + msg)
-      this.$router.push({ path: this.redirect || '/home'})
+      const url = this.isAdmin ? '/home' : '/home/class/list'
+      // this.$router.push({ path: this.redirect || url})
+      this.$router.push(url)
     },
   }
 }

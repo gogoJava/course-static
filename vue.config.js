@@ -57,5 +57,6 @@ module.exports = {
   //       changeOrigin: true
   //     },
   //   },  // 配置多个代理
+  // disableHostCheck: true
   }
 }

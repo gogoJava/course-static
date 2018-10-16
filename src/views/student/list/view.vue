@@ -7,6 +7,8 @@
       <el-table :data="tableData.list" v-loading="tableData.loading" style="width: 100%">
         <el-table-column prop="name" label="学生姓名" width="180">
         </el-table-column>
+         <el-table-column prop="username" label="用户名">
+        </el-table-column>
         <el-table-column prop="sex" label="性别">
           <template slot-scope="scope">
             <span>{{scope.row.sex | sexMsg}}</span>

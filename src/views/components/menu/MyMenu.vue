@@ -9,7 +9,7 @@
                 :router="true"
                 text-color="#fff"
                 active-text-color="#ffd04b">
-          <el-submenu index="/home/class">
+          <el-submenu v-if="isAdmin || isSuperAdmin" index="/home/class">
             <template slot="title">
               <icon-font icon="banjixinxi" class="icon" size="24px"></icon-font>
               <span>课程管理</span>
@@ -21,39 +21,31 @@
               <el-menu-item index="/home/class/release">发布课程</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
-          <!--<el-submenu index="2">-->
-            <!--<template slot="title">-->
-              <!--<i class="el-icon-menu"></i>-->
-              <!--<span slot="title">学生管理</span>-->
-            <!--</template>-->
-            <!--<el-menu-item-group>-->
-              <!--<el-menu-item index="2-1">新建学员</el-menu-item>-->
-              <!--<el-menu-item index="2-2">学生信息</el-menu-item>-->
-            <!--</el-menu-item-group>-->
-          <!--</el-submenu>-->
-          <el-menu-item index="/home/student/list">
+          <el-menu-item v-if="isTeacher || isStudent" index="/home/class/list">
+            <icon-font icon="banjixinxi" class="icon" size="24px"></icon-font>
+            <span slot="title">我的课程</span>
+          </el-menu-item>
+          <el-menu-item v-if="isStudent" index="/home/class/list">
+            <icon-font icon="banjixinxi" class="icon" size="24px"></icon-font>
+            <span slot="title">课程支付管理</span>
+          </el-menu-item>
+          <el-menu-item v-if="isTeacher" index="/home/class/attendance">
+            <icon-font icon="banjixinxi" class="icon" size="24px"></icon-font>
+            <span slot="title">出勤签到</span>
+          </el-menu-item>
+          <el-menu-item v-if="isAdmin || isSuperAdmin" index="/home/student/list">
             <icon-font icon="xuesheng" class="icon" size="24px"></icon-font>
             <span slot="title">学员管理</span>
           </el-menu-item>
-          <el-menu-item index="/home/teacher/list">
+          <el-menu-item v-if="isSuperAdmin" index="/home/teacher/list">
             <icon-font icon="jiaolian1" class="icon" size="24px"></icon-font>
             <span slot="title">教师管理</span>
           </el-menu-item>
-          <!--<el-submenu index="3">-->
-            <!--<template slot="title">-->
-              <!--<i class="el-icon-menu"></i>-->
-              <!--<span slot="title">教师管理</span>-->
-            <!--</template>-->
-            <!--<el-menu-item-group>-->
-              <!--<el-menu-item index="3-1">新建教师</el-menu-item>-->
-              <!--<el-menu-item index="3-2">教师详情</el-menu-item>-->
-            <!--</el-menu-item-group>-->
-          <!--</el-submenu>-->
-          <el-menu-item index="/home/administrators/list">
+          <el-menu-item v-if="isSuperAdmin" index="/home/administrators/list">
             <icon-font icon="yonghu" class="icon" size="24px"></icon-font>
             <span slot="title">管理员</span>
           </el-menu-item>
-          <el-submenu index="/home/course/order">
+          <el-submenu v-if="isSuperAdmin" index="/home/course/order">
             <template slot="title">
               <icon-font icon="kecheng-" class="icon" size="24px"></icon-font>
               <span slot="title">课程订单</span>
@@ -64,7 +56,7 @@
               <el-menu-item index="/home/course/order/paid/list">支付成功订单</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
-          <el-menu-item index="/home/income/detail">
+          <el-menu-item v-if="isTeacher" index="/home/income/detail">
             <icon-font icon="caiwu" class="icon" size="24px"></icon-font>
             <span slot="title">收入详情</span>
           </el-menu-item>
@@ -76,17 +68,17 @@
             <el-dropdown trigger="click">
               <span class="el-dropdown-link"><i class="el-icon-arrow-down el-icon-more"></i></span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item @click.native="$router.push('/home/class/create')">新建课程</el-dropdown-item>
+                <el-dropdown-item v-if="isAdmin" @click.native="$router.push('/home/class/create')">新建课程</el-dropdown-item>
                 <!-- <el-dropdown-item @click.native="$router.push('/home/class/edit')">修改课程</el-dropdown-item> -->
-                <el-dropdown-item @click.native="$router.push('/home/class/attendance')">出勤签到</el-dropdown-item>
-                <el-dropdown-item @click.native="$router.push('/home/class/release')">发布课程</el-dropdown-item>
-                <el-dropdown-item @click.native="$router.push('/home/student/list')">学员管理</el-dropdown-item>
-                <el-dropdown-item @click.native="$router.push('/home/teacher/list')">教师管理</el-dropdown-item>
-                <el-dropdown-item @click.native="$router.push('/home/administrators/list')">管理员</el-dropdown-item>
-                <el-dropdown-item @click.native="$router.push('/home/course/order/refund/list')">退费订单</el-dropdown-item>
-                <el-dropdown-item @click.native="$router.push('/home/course/order/unpaid/list')">未支付订单</el-dropdown-item>
-                <el-dropdown-item @click.native="$router.push('/home/course/order/paid/list')">支付成功订单</el-dropdown-item>
-                <el-dropdown-item @click.native="$router.push('/home/income/detail')">收入详情</el-dropdown-item>
+                <el-dropdown-item v-if="isAdmin" @click.native="$router.push('/home/class/attendance')">出勤签到</el-dropdown-item>
+                <el-dropdown-item v-if="isAdmin" @click.native="$router.push('/home/class/release')">发布课程</el-dropdown-item>
+                <el-dropdown-item v-if="isAdmin" @click.native="$router.push('/home/student/list')">学员管理</el-dropdown-item>
+                <el-dropdown-item v-if="isAdmin" @click.native="$router.push('/home/teacher/list')">教师管理</el-dropdown-item>
+                <el-dropdown-item v-if="isAdmin" @click.native="$router.push('/home/administrators/list')">管理员</el-dropdown-item>
+                <el-dropdown-item v-if="isAdmin" @click.native="$router.push('/home/course/order/refund/list')">退费订单</el-dropdown-item>
+                <el-dropdown-item v-if="isAdmin" @click.native="$router.push('/home/course/order/unpaid/list')">未支付订单</el-dropdown-item>
+                <el-dropdown-item v-if="isAdmin" @click.native="$router.push('/home/course/order/paid/list')">支付成功订单</el-dropdown-item>
+                <el-dropdown-item v-if="isTeacher" @click.native="$router.push('/home/income/detail')">收入详情</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </span>
@@ -126,7 +118,23 @@
       }),
       defaultActive() {
         return this.$route.path
-      }
+      },
+       // 超级管理员
+      isSuperAdmin() {
+        return this.currentUser.type === '-1'
+      },
+      // 管理员
+      isAdmin() {
+        return this.currentUser.type === '0'
+      },
+      // 教师
+      isTeacher() {
+        return this.currentUser.type === '2'
+      },
+      // 学生
+      isStudent() {
+        return this.currentUser.type === '1'
+      },
     },
     methods: {
       ...mapActions($account.namespace, {
