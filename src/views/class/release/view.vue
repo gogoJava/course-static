@@ -2,18 +2,23 @@
   <div class="class-release-page">
     <el-card class="box-card">
       <el-table :data="tableData.list" v-loading="tableData.loading" style="width: 100%">
-         <el-table-column type="selection" width="55">
+         <!-- <el-table-column type="selection" width="55">
+        </el-table-column> -->
+        <el-table-column prop="courseName" label="课程名称">
         </el-table-column>
-        <el-table-column prop="courseName" label="课程名称" width="180">
-        </el-table-column>
-        <el-table-column prop="user.name" label="任课教师" width="180">
+        <el-table-column prop="user.name" label="任课教师">
         </el-table-column>
         <el-table-column prop="courseStartTime" label="上课时间">
           <template slot-scope="scope">
             <span>{{$moment(scope.row.courseStartTime).format('YYYY-MM-DD')}} 至 {{$moment(scope.row.courseEndTime).format('YYYY-MM-DD')}}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="courseTotal" label="总课时" width="180">
+        <el-table-column prop="courseTotal" label="总课时">
+        </el-table-column>
+        <el-table-column prop="courseStatus" label="状态">
+           <template slot-scope="scope">
+            <span>{{scope.row.courseStatus | courseStatusMsg}}</span>
+          </template>
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
@@ -74,6 +79,30 @@
         return this.currentUser.type === '0'
       },
     },
+    filters: {
+      courseStatusMsg(status) {
+        // 状态（-1取消0新建未发布1已发布2进行中3结束）
+        let msg = ''
+        switch (status) {
+          case '-1':
+            msg = '已取消'
+            break
+          case '0':
+            msg = '未发布'
+            break
+          case '1':
+            msg = '已发布'
+            break
+          case '2':
+            msg = '进行中'
+            break
+          case '3':
+            msg = '已结束'
+            break
+        }
+        return msg
+      },
+    },
     methods: {
       onCurrentPageChange(page) {
         this.searchForm.pageNum = page
@@ -90,9 +119,16 @@
       },
       // 发布课程
       async publishCourseOnclick(courseInfo) {
-        const {code, msg} = await courseApi.publishCourse({courseId: courseInfo.courseId}).catch(e => e)
-        if (code !== '200') return this.$message('发布课程失败，' + msg)
-        this.$message({type: 'success', message: '发布课程成功！'})
+        this.$confirm('确定要发布课程【' + courseInfo.courseName + '】吗?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(async () => {
+          const {code, msg} = await courseApi.publishCourse({courseId: courseInfo.courseId}).catch(e => e)
+          if (code !== '200') return this.$message('发布课程失败，' + msg)
+          this.$message({type: 'success', message: '发布课程成功！'})
+          this.queryClassList()
+        }).catch(() => {})
       }
     },
     mounted() {

@@ -46,14 +46,6 @@ const actions = {
       userName,
       password
     })
-    console.log('3333')
-
-    // const { loginSession } = resp
-
-    // 设置token
-    // if (resp.code === '200') {
-    //   request.setLoginSession(resp.data)
-    // }
 
     commit($mutations.loginSuccess, { loginInfo: resp.data })
 
@@ -62,25 +54,10 @@ const actions = {
 
   [$actions.logout]: async ({ commit }) => {
     const resp = await accountApi.logout().catch(e => e)
-    console.log('resp', resp)
-
-    // request.setLoginSession(null)
 
     commit($mutations.logoutSuccess)
     return resp
   },
-
-  // [$actions.getCurrentUser]: async ({ commit }) => {
-  //   const resp = await accountApi.getCurrentUserInfo().catch(e => e)
-  //
-  //   const { errCode, user, loginSession } = resp
-  //
-  //   if (!errCode) {
-  //     commit($mutations.getCurrentUserSuccess, { loginSession, userInfo: user })
-  //   }
-  //
-  //   return resp
-  // }
 }
 
 /**
@@ -91,7 +68,6 @@ const mutations = {
   [$mutations.loginSuccess] (state, { loginInfo }) {
     localStorage.setItem('currentUser', JSON.stringify(loginInfo))
     state.currentUser = loginInfo
-    // state.loginSession = loginInfo
   },
 
   [$mutations.logoutSuccess] (state) {
@@ -99,11 +75,6 @@ const mutations = {
     state.currentUser = null
     state.loginSession = null
   },
-
-  // [$mutations.getCurrentUserSuccess] (state, { loginSession, userInfo }) {
-  //   state.currentUser = userInfo
-  //   state.loginSession = loginSession
-  // }
 
 }
 

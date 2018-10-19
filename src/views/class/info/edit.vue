@@ -5,6 +5,9 @@
         <span>课程信息</span>
       </div>
       <el-form ref="form" :model="courseInfo" label-width="120px">
+        <el-form-item label="课程状态">
+          <div>-> {{courseInfo.courseStatus | courseStatusMsg}}</div>
+        </el-form-item>
         <el-form-item label="课程名称">
           <el-col :span="12">
             <el-input v-model="courseInfo.courseName"></el-input>
@@ -26,6 +29,7 @@
         </el-form-item>
         <el-form-item label="上课时间">
           <el-date-picker
+                  style="width: 500px;"
                   v-model="courseTime"
                   type="datetimerange"
                   range-separator="至"
@@ -82,7 +86,7 @@
           courseCost: null,
         },
         selectedTypeId: [],
-        courseTime: null,
+        courseTime: [],
         seatList: [], // 座位列表
         courseTypes: [], // 课程类型列表
         teacherList: [], // 教师数据
@@ -98,6 +102,30 @@
         return this.$route.params.id
       }
     },
+    filters: {
+      courseStatusMsg(status) {
+        // 状态（-1取消0新建未发布1已发布2进行中3结束）
+        let msg = ''
+        switch (status) {
+          case '-1':
+            msg = '已取消'
+            break
+          case '0':
+            msg = '未发布'
+            break
+          case '1':
+            msg = '已发布'
+            break
+          case '2':
+            msg = '进行中'
+            break
+          case '3':
+            msg = '已结束'
+            break
+        }
+        return msg
+      },
+    },
     methods: {
       seatTitle(seat) {
         return seat.seatLeft + 'x' + seat.seatMid + 'x' + seat.seatRight + 'x' + seat.seatRows
@@ -105,7 +133,6 @@
       async loadData() {
         Promise.all([
             this.querySeatList(),
-            this.getCourseType(),
             this.loadTeacherData(),
             this.queryCourseDetail()
         ])
@@ -113,7 +140,10 @@
       // 加载课程信息
        async queryCourseDetail() {
         const {data} = await courseApi.getCourseDetail({courseId: this.courseId}).catch(e => e)
-        console.log('加载课程信息', data)
+        this.courseInfo = {...data}
+        this.courseTime.push(data.courseStartTime)
+        this.courseTime.push(data.courseEndTime)
+        this.getCourseType(data.typeId)
       },
       // 加载座位结构数据
       async querySeatList() {
@@ -121,9 +151,24 @@
         this.seatList = data
       },
       // 加载课程类型
-      async getCourseType() {
+      async getCourseType(typeId) {
         const {data} = await courseTypeApi.getCourseTypeList({typeSeries: 0}).catch(e => e)
         this.courseTypes = data
+        // 匹配课程类型
+        this.courseTypes.forEach(element => {
+          if (element.typeId === typeId) {
+            this.selectedTypeId.push(element.typeId)
+            return
+          }
+          if (element.courseTypeList && element.courseTypeList.length) {
+            element.courseTypeList.forEach(item => {
+              if (item.typeId === typeId) {
+                this.selectedTypeId.push(element.typeId)
+                this.selectedTypeId.push(item.typeId)
+              }
+            })
+          }
+        })
       },
       // 加载教师信息
       async loadTeacherData() {
@@ -136,11 +181,20 @@
         this.teacherList = list || []
       },
       async onSubmit() {
-        this.courseInfo.courseStartTime = this.$moment(this.courseTime[0]).format('YYYY/MM/DD HH:mm:ss')
-        this.courseInfo.courseEndTime = this.$moment(this.courseTime[1]).format('YYYY/MM/DD HH:mm:ss')
-        this.courseInfo.typeId = this.selectedTypeId[this.selectedTypeId.length - 1]
+        const courseInfo = {
+          courseName: this.courseInfo.courseName,
+          courseStartTime: this.$moment(this.courseTime[0]).format('YYYY/MM/DD HH:mm:ss'),
+          courseEndTime: this.$moment(this.courseTime[1]).format('YYYY/MM/DD HH:mm:ss'),
+          courseTotal: this.courseInfo.courseTotal,
+          courseCurrent: this.courseInfo.courseCurrent,
+          seatId: this.courseInfo.seatId,
+          typeId: this.selectedTypeId[this.selectedTypeId.length - 1],
+          accountId: this.courseInfo.accountId,
+          courseCost: this.courseInfo.courseCost,
+          courseId: this.courseInfo.courseId
+        }
         // if (this.courseInfo) return
-        await courseApi.updateCourse(this.courseInfo).catch(e => e)
+        await courseApi.updateCourse(courseInfo).catch(e => e)
         this.$message({
           type: 'success',
           message: '修改成功！'

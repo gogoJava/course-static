@@ -5,16 +5,21 @@
         <el-button type="primary" size="small" @click="$router.push('/home/class/create')">新建课程</el-button>
       </div>
       <el-table :data="tableData.list" v-loading="tableData.loading" style="width: 100%">
-        <el-table-column prop="courseName" label="课程名称" width="180">
+        <el-table-column prop="courseName" label="课程名称">
         </el-table-column>
-        <el-table-column prop="user.name" label="任课教师" width="180">
+        <el-table-column prop="user.name" label="任课教师">
         </el-table-column>
         <el-table-column prop="courseStartTime" label="上课时间">
           <template slot-scope="scope">
             <span>{{$moment(scope.row.courseStartTime).format('YYYY-MM-DD')}} 至 {{$moment(scope.row.courseEndTime).format('YYYY-MM-DD')}}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="courseTotal" label="总课时" width="180">
+        <el-table-column prop="courseTotal" label="总课时">
+        </el-table-column>
+         <el-table-column prop="courseStatus" label="状态">
+           <template slot-scope="scope">
+            <span>{{scope.row.courseStatus | courseStatusMsg}}</span>
+          </template>
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
@@ -72,6 +77,30 @@
       // 管理员
       isAdmin() {
         return this.currentUser.type === '0'
+      },
+    },
+    filters: {
+      courseStatusMsg(status) {
+        // 状态（-1取消0新建未发布1已发布2进行中3结束）
+        let msg = ''
+        switch (status) {
+          case '-1':
+            msg = '已取消'
+            break
+          case '0':
+            msg = '未发布'
+            break
+          case '1':
+            msg = '已发布'
+            break
+          case '2':
+            msg = '进行中'
+            break
+          case '3':
+            msg = '已结束'
+            break
+        }
+        return msg
       },
     },
     methods: {

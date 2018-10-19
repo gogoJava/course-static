@@ -25,3 +25,8 @@ export const updateCourse = (params) => request.post('/api/course/update', qs.st
  * 发布课程
  */
 export const publishCourse = (params) => request.post('/api/course/publish', qs.stringify(params))
+
+/**
+ * 获取考勤列表
+ */
+export const getCourseAttendance = (params) => request.post('/api/course/courseAttendance', qs.stringify(params))

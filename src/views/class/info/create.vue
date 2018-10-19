@@ -26,6 +26,7 @@
         </el-form-item>
         <el-form-item label="上课时间">
           <el-date-picker
+                  style="width: 500px;"
                   v-model="courseTime"
                   type="datetimerange"
                   range-separator="至"
@@ -130,7 +131,6 @@
         this.courseInfo.courseStartTime = this.$moment(this.courseTime[0]).format('YYYY/MM/DD HH:mm:ss')
         this.courseInfo.courseEndTime = this.$moment(this.courseTime[1]).format('YYYY/MM/DD HH:mm:ss')
         this.courseInfo.typeId = this.selectedTypeId[this.selectedTypeId.length - 1]
-        console.log(this.courseInfo)
         // if (this.courseInfo) return
         await courseApi.addCourse(this.courseInfo).catch(e => e)
         this.$message({
