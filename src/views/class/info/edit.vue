@@ -4,7 +4,7 @@
       <div slot="header" class="clearfix">
         <span>课程信息</span>
       </div>
-      <el-form ref="form" :model="courseInfo" label-width="120px">
+      <el-form ref="form" :model="courseInfo" label-width="120px" :disabled="isTeacher || isStudent">
         <el-form-item label="课程状态">
           <div>-> {{courseInfo.courseStatus | courseStatusMsg}}</div>
         </el-form-item>
@@ -22,10 +22,15 @@
                   v-model="selectedTypeId">
           </el-cascader>
         </el-form-item>
-        <el-form-item label="任课教师">
+        <el-form-item v-if="isSuperAdmin || isAdmin" label="任课教师">
           <el-select v-model="courseInfo.accountId" placeholder="请任课教师">
             <el-option v-for="(item, index) of teacherList" :key="index" :label="item.username" :value="item.accountId"></el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item v-if="isTeacher || isStudent" label="任课教师">
+          <el-col  :span="12">
+            <el-input v-if="courseInfo && courseInfo.user" v-model="courseInfo.user.name"></el-input>
+          </el-col>
         </el-form-item>
         <el-form-item label="上课时间">
           <el-date-picker
@@ -48,15 +53,19 @@
             <el-option v-for="(item, index) of seatList" :key="index" :label="seatTitle(item)" :value="item.seatId"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="课时费">
+        <el-form-item label="总费用">
           <el-input v-model="courseInfo.courseCost" style="width: 140px"></el-input>
-          <span> /节</span>
+          <!--<span> /节</span>-->
         </el-form-item>
-        <el-form-item>
+        <el-form-item v-if="isSuperAdmin || isAdmin">
           <el-button @click="$router.back()">取消</el-button>
           <el-button type="primary" @click="onSubmit">修改</el-button>
         </el-form-item>
       </el-form>
+      <div v-if="isTeacher" style="text-align: center;">
+        <el-button type="primary" v-if="courseInfo.courseStatus === '1'" @click.native="handleStart">开始课程</el-button>
+        <el-button type="danger" v-if="courseInfo.courseStatus === '2'">结束课程</el-button>
+      </div>
     </el-card>
   </div>
 </template>
@@ -66,6 +75,9 @@
   import * as seatApi from '../../../apis/seatApi'
   import * as courseTypeApi from '../../../apis/courseTypeApi'
   import * as userApi from '../../../apis/userApi'
+  // store
+  import {mapGetters} from 'vuex'
+  import * as $account from '../../../store/modules/account/types'
   // components
   export default {
     title: '课程信息',
@@ -98,6 +110,25 @@
       })
     },
     computed: {
+      ...mapGetters($account.namespace, {
+        currentUser: $account.getters.currentUser
+      }),
+      // 超级管理员
+      isSuperAdmin() {
+        return this.currentUser.type === '-1'
+      },
+      // 管理员
+      isAdmin() {
+        return this.currentUser.type === '0'
+      },
+      // 教师
+      isTeacher() {
+        return this.currentUser.type === '2'
+      },
+      // 学生
+      isStudent() {
+        return this.currentUser.type === '1'
+      },
       courseId() {
         return this.$route.params.id
       }
@@ -172,6 +203,7 @@
       },
       // 加载教师信息
       async loadTeacherData() {
+        if (this.isStudent) return
         const {data: {list}} = await userApi.getUserList({
           pageNum: 1,
           pageSage: 10,
@@ -200,6 +232,15 @@
           message: '修改成功！'
         })
         this.$router.back()
+      },
+      // 开始上课
+      async handleStart() {
+        const {code, msg} = await courseApi.startCourse(this.courseInfo.courseId).catch(e => e)
+        if (code !== '200') return this.$message('开课失败，' + msg)
+        this.$message({
+          type: 'success',
+          message: '开课成功！'
+        })
       }
     },
     mounted() {

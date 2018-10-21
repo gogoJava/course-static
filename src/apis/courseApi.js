@@ -30,3 +30,13 @@ export const publishCourse = (params) => request.post('/api/course/publish', qs.
  * 获取考勤列表
  */
 export const getCourseAttendance = (params) => request.post('/api/course/courseAttendance', qs.stringify(params))
+
+/**
+ * 添加串课学生
+ */
+export const courseAdditional = (params) => request.post('/api/course/additional', qs.stringify(params))
+
+/**
+ * 老师开始上课
+ */
+export const startCourse = (courseId) => request.get('/api/course/courseStart?courseId=' + courseId)

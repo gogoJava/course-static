@@ -21,7 +21,7 @@
         </el-form-item>
         <el-form-item label="任课教师">
           <el-select v-model="courseInfo.accountId" placeholder="请任课教师">
-            <el-option v-for="(item, index) of teacherList" :key="index" :label="item.username" :value="item.accountId"></el-option>
+            <el-option v-for="(item, index) of teacherList" :key="index" :label="item.name" :value="item.accountId"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="上课时间">
@@ -45,9 +45,9 @@
             <el-option v-for="(item, index) of seatList" :key="index" :label="seatTitle(item)" :value="item.seatId"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="课时费">
+        <el-form-item label="总费用">
           <el-input v-model="courseInfo.courseCost" style="width: 140px"></el-input>
-          <span> /节</span>
+          <!--<span> /节</span>-->
         </el-form-item>
         <el-form-item>
           <el-button @click="$router.back()">取消</el-button>

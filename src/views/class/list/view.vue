@@ -21,6 +21,11 @@
             <span>{{scope.row.courseStatus | courseStatusMsg}}</span>
           </template>
         </el-table-column>
+        <el-table-column v-if="isStudent" prop="bought" label="购买状态">
+          <template slot-scope="scope">
+            <span>{{scope.row.bought ? '已购买' : '未购买'}}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button type="text" @click.native="$router.push('/home/class/edit/' + scope.row.courseId)">详情</el-button>
@@ -77,6 +82,14 @@
       // 管理员
       isAdmin() {
         return this.currentUser.type === '0'
+      },
+      // 教师
+      isTeacher() {
+        return this.currentUser.type === '2'
+      },
+      // 学生
+      isStudent() {
+        return this.currentUser.type === '1'
       },
     },
     filters: {

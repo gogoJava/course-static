@@ -25,7 +25,7 @@
             <icon-font icon="banjixinxi" class="icon" size="24px"></icon-font>
             <span slot="title">我的课程</span>
           </el-menu-item>
-          <el-menu-item v-if="isStudent" index="/home/class/list">
+          <el-menu-item v-if="isStudent" index="/home/class/list/pay">
             <icon-font icon="banjixinxi" class="icon" size="24px"></icon-font>
             <span slot="title">课程支付管理</span>
           </el-menu-item>
