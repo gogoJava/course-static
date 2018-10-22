@@ -21,11 +21,15 @@
               <el-menu-item index="/home/class/release">发布课程</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
-          <el-menu-item v-if="isTeacher || isStudent" index="/home/class/list">
+          <el-menu-item v-if="isTeacher" index="/home/class/list">
             <icon-font icon="banjixinxi" class="icon" size="24px"></icon-font>
             <span slot="title">我的课程</span>
           </el-menu-item>
           <el-menu-item v-if="isStudent" index="/home/class/list/pay">
+            <icon-font icon="banjixinxi" class="icon" size="24px"></icon-font>
+            <span slot="title">我的课程</span>
+          </el-menu-item>
+          <el-menu-item v-if="isStudent" index="/home/class/order/pay">
             <icon-font icon="banjixinxi" class="icon" size="24px"></icon-font>
             <span slot="title">课程支付管理</span>
           </el-menu-item>
@@ -56,9 +60,13 @@
               <el-menu-item index="/home/course/order/paid/list">支付成功订单</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
-          <el-menu-item v-if="isTeacher" index="/home/income/detail">
+          <el-menu-item v-if="isTeacher || isSuperAdmin" index="/home/income/detail">
             <icon-font icon="caiwu" class="icon" size="24px"></icon-font>
             <span slot="title">收入详情</span>
+          </el-menu-item>
+          <el-menu-item v-if="isStudent" index="/home/student/class/my">
+            <icon-font icon="caiwu" class="icon" size="24px"></icon-font>
+            <span slot="title">座位表</span>
           </el-menu-item>
         </el-menu>
       </el-aside>

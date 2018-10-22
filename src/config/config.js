@@ -7,8 +7,9 @@ const hostnameConfigMap = {
    */
   'localhost': {
     online: false,
-    // apiUrl: '//118.89.248.252:8089/',
-    apiUrl: '//ccjkjy.com/basics/',
+    // apiUrl: '//118.89.248.252:8089/basics/',
+    // apiUrl: '//ccjkjy.com/basics/',
+    apiUrl: '//lolcainiao.club/basics/',
   },
 
 }

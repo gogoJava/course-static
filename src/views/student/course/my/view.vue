@@ -7,11 +7,12 @@
           <el-option v-for="(item, index) in tableData.list" :key="index" :label="item.courseName" :value="item.courseId">
           </el-option>
         </el-select>
+        <span style="padding-bottom: 15px;padding-left: 30px;">课程进度：{{courseCurrent}} / {{courseTotal}}</span>
       </div>
       <el-col :span="24">
         <el-row :gutter="20" v-for="(item, i) of seatRowsList" :key="i">
         <el-col :span="8">
-          <el-checkbox-group v-model="checkboxGroup" size="small" :disabled="isTeacher || isStudent">
+          <el-checkbox-group v-model="checkboxGroup" size="small">
             <el-checkbox class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="i + ',' + a" border>座位座</el-checkbox>
           </el-checkbox-group>
           <el-col class="seat-icon" :gutter="0" :span="8" v-for="(item, a) of seatLeftList" :key="a">
@@ -19,7 +20,7 @@
           </el-col>
         </el-col>
         <el-col :span="8">
-          <el-checkbox-group v-model="checkboxGroup" size="small" :disabled="isTeacher || isStudent">
+          <el-checkbox-group v-model="checkboxGroup" size="small">
             <el-checkbox class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="i + ',' + b + seatLayout.seatLeft" border>座位</el-checkbox>
           </el-checkbox-group>
           <el-col class="seat-icon" :gutter="0" :span="8" v-for="(item, b) of seatMidList" :key="b">
@@ -27,7 +28,7 @@
           </el-col>
         </el-col>
         <el-col :span="8">
-          <el-checkbox-group v-model="checkboxGroup" size="small" :disabled="isTeacher || isStudent">
+          <el-checkbox-group v-model="checkboxGroup" size="small">
             <el-checkbox class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="i + ',' + c + seatLayout.seatLeft + seatLayout.seatMid" border>座位</el-checkbox>
           </el-checkbox-group>
           <el-col class="seat-icon" :gutter="0" :span="8" v-for="(item, c) of seatRightList" :key="c">
@@ -36,43 +37,21 @@
         </el-col>
       </el-row>
       </el-col>
-      <el-col :span="8" style="padding-bottom: 15px;">
-        <div style="padding-bottom: 15px;">课程进度：{{courseCurrent}} / {{courseTotal}}</div>
-        <el-card>
-          <div slot="header">
-            <span>串课名单</span>
-            <el-select v-if="isTeacher" style="float: right;position: relative;top: -6px;" @change="additionalStudents" clearable v-model="additionalStudent" filterable placeholder="添加串课学生">
-              <el-option
-                      v-for="item in studentList"
-                      :key="item.accountId"
-                      :label="item.name"
-                      :value="item.accountId">
-              </el-option>
-            </el-select>
-          </div>
-          <div style="height: 240px;">
-            <div v-for="(item, index) in courseAttendanceList" :key="index">
-              {{item.name}}
-            </div>
-          </div>
-        </el-card>
-      </el-col>
     </el-card>
   </div>
 </template>
 <script>
 // API
-  import * as classApi from '../../../apis/classApi'
-  import * as courseApi from '../../../apis/courseApi'
-  import * as userApi from '../../../apis/userApi'
+  import * as classApi from '../../../../apis/classApi'
+  // import * as userApi from '../../../../apis/userApi'
   // components
-  import IconFont from '../../../components/icon-font/IconFont'
+  import IconFont from '../../../../components/icon-font/IconFont'
   // store
   import {mapGetters} from 'vuex'
-  import * as $account from '../../../store/modules/account/types'
+  import * as $account from '../../../../store/modules/account/types'
   export default {
-    title: '出勤签到',
-    name: 'class-attendance-pagee',
+    title: '我的课程',
+    name: 'class-my',
     components: {
       IconFont
     },
@@ -152,7 +131,6 @@
             this.courseCurrent = element.courseCurrent
           }
         })
-        this.queryCourseAttendance()
       },
       checkboxGroup() {
         console.log('checkboxGroup', this.checkboxGroup)
@@ -171,52 +149,18 @@
         }
         this.tableData.loading = false
       },
-      // 获取考勤列表
-      async queryCourseAttendance() {
-        const {data} = await courseApi.getCourseAttendance({
-          courseCurrent: this.courseCurrent,
-          courseId: this.selectedCourseId, // 用户类型:1学生2教师
-        }).catch(e => e)
-        this.courseAttendanceList = data.list || []
-      },
       // 获取学生列表
-      async queryStudentList() {
-        const {data} = await userApi.getUserList({
-          pageNum: 1,
-          pageSize: 10,
-          type: 1, // 用户类型:1学生2教师
-        }).catch(e => e)
-        this.studentList = data.list || []
-      },
-      // 添加串课学生
-      async additionalStudents() {
-        const params = {
-          accountId: this.additionalStudent,
-          courseId: this.selectedCourseId,
-          rosterSeatX: -1,
-          rosterSeatY: -1
-        }
-        this.$confirm('确定要添加该学生?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(async () => {
-          const {code, msg} = await courseApi.courseAdditional(params).catch(e => e)
-          if (code !== '200') {
-            this.additionalStudent = null
-            return this.$message('添加失败，' + msg)
-          }
-          this.$message({
-            type: 'success',
-            message: '添加成功！'
-          })
-          this.additionalStudent = null
-        }).catch(() => {})
-      }
+      // async queryStudentList() {
+      //   const {data} = await userApi.getUserList({
+      //     pageNum: 1,
+      //     pageSize: 10,
+      //     type: 1, // 用户类型:1学生2教师
+      //   }).catch(e => e)
+      //   this.studentList = data.list || []
+      // },
     },
     mounted() {
       this.queryClassList()
-      this.queryStudentList()
     }
   }
 </script>
