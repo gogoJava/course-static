@@ -135,11 +135,18 @@ export default {
         userName: this.loginForm.username,
         password: this.loginForm.password
       }
-      const {code, msg} = await this.login(params).catch(e => e)
+      const {code, msg, data} = await this.login(params).catch(e => e)
       this.loading = false
       if (code !== '200') return this.$message('登录失败，' + msg)
-      const url = this.isAdmin ? '/home' : (this.isTeacher ? '/home/class/list' : 'home/class/list/pay')
-      // this.$router.push({ path: this.redirect || url})
+      let url = '/home'
+      if (data.type === '2') {
+        // 老师
+        url = '/home/class/list'
+      }
+      if (data.type === '1') {
+        // 学生
+        url = 'home/class/list/pay'
+      }
       this.$router.push(url)
     },
   }
