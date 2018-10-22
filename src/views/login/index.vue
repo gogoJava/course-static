@@ -138,7 +138,7 @@ export default {
       const {code, msg} = await this.login(params).catch(e => e)
       this.loading = false
       if (code !== '200') return this.$message('登录失败，' + msg)
-      const url = this.isAdmin ? '/home' : '/home/class/list'
+      const url = this.isAdmin ? '/home' : (this.isTeacher ? '/home/class/list' : 'home/class/list/pay')
       // this.$router.push({ path: this.redirect || url})
       this.$router.push(url)
     },
