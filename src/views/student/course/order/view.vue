@@ -18,14 +18,14 @@
         </el-table-column>
          <el-table-column prop="orderStatus" label="订单状态">
            <template slot-scope="scope">
-            <span>{{scope.row.orderStatus}}</span>
+            <span>{{scope.row.orderStatus | orderStatusMsg}}</span>
           </template>
         </el-table-column>
-        <el-table-column v-if="isStudent" prop="bought" label="支付状态">
-          <template slot-scope="scope">
-            <span>{{scope.row.bought ? '已支付' : '未支付'}}</span>
-          </template>
-        </el-table-column>
+        <!--<el-table-column v-if="isStudent" prop="bought" label="支付状态">-->
+          <!--<template slot-scope="scope">-->
+            <!--<span>{{scope.row.bought ? '已支付' : '未支付'}}</span>-->
+          <!--</template>-->
+        <!--</el-table-column>-->
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button v-if="scope.row.bought" type="text" @click.native="$router.push('/home/class/edit/' + scope.row.courseId)">详情</el-button>
@@ -49,6 +49,9 @@
       <el-dialog :visible.sync="dialogVisible" :show-close="false" custom-class="qrcode-img">
         <qr-code :value="'url'" :size="240" v-loading="qrCodeLoading"></qr-code>
         <div style="text-align: center;padding-top: 15px;">微信/支付宝扫码支付</div>
+        <div>
+          <el-button type="primary" @click.native="testPay">Test Pay</el-button>
+        </div>
       </el-dialog>
     </el-card>
   </div>
@@ -83,7 +86,8 @@
           pageSize: 10,
         },
         dialogVisible: false,
-        qrCodeLoading: false
+        qrCodeLoading: false,
+        orderInfo: null
       })
     },
     computed: {
@@ -111,24 +115,21 @@
       },
     },
     filters: {
-      courseStatusMsg(status) {
-        // 状态（-1取消0新建未发布1已发布2进行中3结束）
+      orderStatusMsg(status) {
+        // 状态(0未支付1成功2部分退款3申请退款)
         let msg = ''
         switch (status) {
-          case '-1':
-            msg = '已取消'
-            break
           case '0':
-            msg = '未发布'
+            msg = '未支付'
             break
           case '1':
-            msg = '已发布'
+            msg = '支付成功'
             break
           case '2':
-            msg = '进行中'
+            msg = '部分退款'
             break
           case '3':
-            msg = '已结束'
+            msg = '申请退款'
             break
         }
         return msg
@@ -150,6 +151,7 @@
       },
       // 去购买
       async goPay(info, type) {
+        this.orderInfo = info
         this.dialogVisible = true
         if (this.dialogVisible) return
         const params = {
@@ -160,6 +162,18 @@
         }
         const res = await courseOrderApi.payCourseOrder(params).catch(e => e)
         console.log('res', res)
+      },
+      // test pay 模拟支付
+      async testPay() {
+        const params = {
+          orderId: this.orderInfo.orderId
+        }
+        const res = await courseOrderApi.testCourseOrder(params).catch(e => e)
+        console.log('res', res)
+        if (res.code !== '200') return this.$message('支付失败，' + res.msg)
+        this.$message({type: 'success', message: '支付成功！'})
+        this.dialogVisible = false
+        this.queryClassList()
       }
     },
     mounted() {
@@ -175,6 +189,6 @@
   .qrcode-img {
     text-align: center;
     width: 300px;
-    height: 360px;
+    /*height: 360px;*/
   }
 </style>

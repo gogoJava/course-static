@@ -14,4 +14,9 @@ export const courseOrderList = (params) => request.post('/api/courseOrder/list',
 /**
  * 调起支付
  */
-export const payCourseOrder = (params) => request.post('/api/courseOrder/pay', qs.stringify(params))
+export const payCourseOrder = (params) => request.get('/api/courseOrder/pay', qs.stringify(params))
+
+/**
+ * 模拟下单支付
+ */
+export const testCourseOrder = (params) => request.post('/api/courseOrder/orderId', qs.stringify(params))

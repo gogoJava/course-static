@@ -12,15 +12,15 @@
         <el-row :gutter="20" v-for="(item, i) of seatRowsList" :key="i">
         <el-col :span="8">
           <el-checkbox-group v-model="checkboxGroup" size="small" :disabled="isTeacher || isStudent">
-            <el-checkbox class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="i + ',' + a" border>座位座</el-checkbox>
+            <el-checkbox class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border>{{item && item[i] ? item[i].name : '空位'}}</el-checkbox>
           </el-checkbox-group>
           <el-col class="seat-icon" :gutter="0" :span="8" v-for="(item, a) of seatLeftList" :key="a">
-            <icon-font icon="yizi" class="icon" :class="{'icon-selected': checkboxGroup.indexOf((i + ',' + a))}" size="32px"></icon-font>
+            <icon-font icon="yizi" class="icon" :class="{'icon-selected': checkboxGroup.indexOf((a + ',' + i))}" size="32px"></icon-font>
           </el-col>
         </el-col>
         <el-col :span="8">
           <el-checkbox-group v-model="checkboxGroup" size="small" :disabled="isTeacher || isStudent">
-            <el-checkbox class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="i + ',' + b + seatLayout.seatLeft" border>座位</el-checkbox>
+            <el-checkbox class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border>{{item && item[i] ? item[i].name : '空位'}}</el-checkbox>
           </el-checkbox-group>
           <el-col class="seat-icon" :gutter="0" :span="8" v-for="(item, b) of seatMidList" :key="b">
             <icon-font icon="yizi" class="icon" size="32px"></icon-font>
@@ -28,7 +28,7 @@
         </el-col>
         <el-col :span="8">
           <el-checkbox-group v-model="checkboxGroup" size="small" :disabled="isTeacher || isStudent">
-            <el-checkbox class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="i + ',' + c + seatLayout.seatLeft + seatLayout.seatMid" border>座位</el-checkbox>
+            <el-checkbox class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border>{{item && item[i] ? item[i].name : '空位'}}</el-checkbox>
           </el-checkbox-group>
           <el-col class="seat-icon" :gutter="0" :span="8" v-for="(item, c) of seatRightList" :key="c">
             <icon-font icon="yizi" class="icon" size="32px"></icon-font>
@@ -65,6 +65,7 @@
   import * as classApi from '../../../apis/classApi'
   import * as courseApi from '../../../apis/courseApi'
   import * as userApi from '../../../apis/userApi'
+  import * as classRosterApi from '../../../apis/classRosterApi'
   // components
   import IconFont from '../../../components/icon-font/IconFont'
   // store
@@ -94,7 +95,8 @@
         courseTotal: 0, // 总课时
         courseCurrent: 0,
         courseAttendanceList: [], // 考勤列表
-        additionalStudent: null
+        additionalStudent: null,
+        rostersStudent: [], // 已选座位学生
       })
     },
     computed: {
@@ -120,19 +122,42 @@
       // 左边座位
       seatLeftList() {
         if (!this.seatLayout) return []
-        const list = new Array(this.seatLayout.seatLeft) 
+        const list = new Array(this.seatLayout.seatLeft)
+        // 学生匹配座位
+        this.rostersStudent.forEach(item => {
+          if (item.rosterSeatX < this.seatLayout.seatLeft) {
+            list[item.rosterSeatX] = new Array(this.seatLayout.seatRows)
+            list[item.rosterSeatX][item.rosterSeatY] = item.user
+          }
+        })
         return list
       },
       // 中间座位
       seatMidList() {
         if (!this.seatLayout) return []
-        const list = new Array(this.seatLayout.seatMid) 
+        const list = new Array(this.seatLayout.seatMid)
+        // 学生匹配座位
+        this.rostersStudent.forEach(item => {
+          if (item.rosterSeatX < this.seatLayout.seatMid && item.rosterSeatX >= this.seatLayout.seatLeft) {
+            const x = item.rosterSeatX - this.seatLayout.seatLeft
+            list[x] = new Array(this.seatLayout.seatRows)
+            list[x][item.rosterSeatY] = item.user
+          }
+        })
         return list
       },
       // 右边座位
       seatRightList() {
         if (!this.seatLayout) return []
-        const list = new Array(this.seatLayout.seatRight) 
+        const list = new Array(this.seatLayout.seatRight)
+        // 学生匹配座位
+        this.rostersStudent.forEach(item => {
+          if (item.rosterSeatX >= (this.seatLayout.seatMid + this.seatLayout.seatLeft)) {
+            const x = item.rosterSeatX - this.seatLayout.seatMid - this.seatLayout.seatLeft
+            list[x] = new Array(this.seatLayout.seatRows)
+            list[x][item.rosterSeatY] = item.user
+          }
+        })
         return list
       },
       // 座位行数
@@ -145,6 +170,7 @@
     watch: {
       selectedCourseId(value) {
         this.checkboxGroup = []
+        this.rostersStudent = []
         this.tableData.list.forEach(element => {
           if (element.courseId === value) {
             this.seatLayout = element.seatLayout
@@ -152,11 +178,14 @@
             this.courseCurrent = element.courseCurrent
           }
         })
-        this.queryCourseAttendance()
+        Promise.all([
+          this.queryCourseAttendance(),
+          this.queryClassRosters()
+        ])
       },
-      checkboxGroup() {
-        console.log('checkboxGroup', this.checkboxGroup)
-      }
+      // checkboxGroup() {
+      //   console.log('checkboxGroup', this.checkboxGroup)
+      // }
     },
     methods: {
       async queryClassList() {
@@ -178,6 +207,16 @@
           courseId: this.selectedCourseId, // 用户类型:1学生2教师
         }).catch(e => e)
         this.courseAttendanceList = data.list || []
+      },
+      // 获取课程名单
+      async queryClassRosters() {
+        const {data} = await classRosterApi.getClassRosterList({courseId: this.selectedCourseId}).catch(e => e)
+        if (data && data.length) {
+          data.forEach(value => {
+            this.checkboxGroup.push((value.rosterSeatX + ',' + value.rosterSeatY))
+          })
+          this.rostersStudent = data
+        }
       },
       // 获取学生列表
       async queryStudentList() {
