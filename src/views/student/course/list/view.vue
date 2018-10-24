@@ -80,19 +80,19 @@
       },
        // 超级管理员
       isSuperAdmin() {
-        return this.currentUser.type === '-1'
+        return this.currentUser && this.currentUser.type === '-1'
       },
       // 管理员
       isAdmin() {
-        return this.currentUser.type === '0'
+        return this.currentUser && this.currentUser.type === '0'
       },
       // 教师
       isTeacher() {
-        return this.currentUser.type === '2'
+        return this.currentUser && this.currentUser.type === '2'
       },
       // 学生
       isStudent() {
-        return this.currentUser.type === '1'
+        return this.currentUser && this.currentUser.type === '1'
       },
     },
     filters: {

@@ -13,7 +13,7 @@
         <el-row :gutter="20" v-for="(item, i) of seatRowsList" :key="i">
           <el-col :span="8">
             <el-checkbox-group v-model="checkboxGroup" size="small">
-              <el-checkbox class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border>{{item && item[i] ? item[i].name : '空位'}}</el-checkbox>
+              <el-checkbox class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
             <el-col class="seat-icon" :gutter="0" :span="8" v-for="(item, a) of seatLeftList" :key="a">
               <icon-font icon="yizi" class="icon" :class="{'icon-selected': checkboxGroup.indexOf((a + ',' + i))}" size="32px"></icon-font>
@@ -21,7 +21,7 @@
           </el-col>
           <el-col :span="8">
             <el-checkbox-group v-model="checkboxGroup" size="small">
-              <el-checkbox class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border>{{item && item[i] ? item[i].name : '空位'}}</el-checkbox>
+              <el-checkbox class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
             <el-col class="seat-icon" :gutter="0" :span="8" v-for="(item, b) of seatMidList" :key="b">
               <icon-font icon="yizi" class="icon" size="32px"></icon-font>
@@ -29,7 +29,7 @@
           </el-col>
           <el-col :span="8">
             <el-checkbox-group v-model="checkboxGroup" size="small">
-              <el-checkbox class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border>{{item && item[i] ? item[i].name : '空位'}}</el-checkbox>
+              <el-checkbox class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
             <el-col class="seat-icon" :gutter="0" :span="8" v-for="(item, c) of seatRightList" :key="c">
               <icon-font icon="yizi" class="icon" size="32px"></icon-font>
@@ -87,19 +87,19 @@
       }),
        // 超级管理员
       isSuperAdmin() {
-        return this.currentUser.type === '-1'
+        return this.currentUser && this.currentUser.type === '-1'
       },
       // 管理员
       isAdmin() {
-        return this.currentUser.type === '0'
+        return this.currentUser && this.currentUser.type === '0'
       },
       // 教师
       isTeacher() {
-        return this.currentUser.type === '2'
+        return this.currentUser && this.currentUser.type === '2'
       },
       // 学生
       isStudent() {
-        return this.currentUser.type === '1'
+        return this.currentUser && this.currentUser.type === '1'
       },
       // 左边座位
       seatLeftList() {

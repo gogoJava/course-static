@@ -72,11 +72,11 @@
       },
        // 超级管理员
       isSuperAdmin() {
-        return this.currentUser.type === '-1'
+        return this.currentUser && this.currentUser.type === '-1'
       },
       // 管理员
       isAdmin() {
-        return this.currentUser.type === '0'
+        return this.currentUser && this.currentUser.type === '0'
       },
     },
     filters: {

@@ -13,7 +13,7 @@
         </span>
         <el-input
           v-model="loginForm.username"
-          placeholder="username"
+          placeholder="请输入用户名"
           name="username"
           type="text"
           auto-complete="on"
@@ -27,9 +27,8 @@
         <el-input
           :type="passwordType"
           v-model="loginForm.password"
-          placeholder="password"
+          placeholder="请输入密码"
           name="password"
-          auto-complete="on"
           @keyup.enter.native="handleLogin" />
       </el-form-item>
 
@@ -69,8 +68,8 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '123456'
+        username: '',
+        password: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -88,8 +87,10 @@ export default {
         this.redirect = route.query && route.query.redirect
       },
       immediate: true
+    },
+    'loginForm.username'() {
+      this.loginForm.password = ''
     }
-
   },
   computed: {
       ...mapGetters($accountStore.namespace, {

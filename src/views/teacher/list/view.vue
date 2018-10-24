@@ -41,7 +41,7 @@
       </my-pagination>
     </el-card>
     <el-dialog :title="isCreate ? '新建教师' : '教师详情'" :visible.sync="dialogFormVisible" width="70%">
-      <el-form :model="userInfo" label-width="120px">
+      <el-form :model="userInfo" label-width="120px" :disabled="userInfo.deleted">
         <el-form-item label="用户名：">
           <el-input v-model="userInfo.username"></el-input>
         </el-form-item>
@@ -65,7 +65,11 @@
           <el-input v-model="userInfo.phone" :maxlength="11"></el-input>
         </el-form-item>
         <el-form-item v-if="isCreate" label="验证码：">
-          <el-input v-model="userInfo.verification"></el-input>
+          <el-input v-model="userInfo.verification">
+            <template slot="append">
+              <div style="cursor: pointer;" @click="getVerificationCode">获取验证码</div>
+            </template>
+          </el-input>
         </el-form-item>
         <el-form-item label="教师工资">
           <el-radio-group v-model="userInfo.teacherChargeType">
@@ -88,14 +92,13 @@
           </el-row>
         </el-form-item>
         <el-form-item v-if="isCreate" label="密码：">
-          <el-input v-model="userInfo.password"></el-input>
+          <el-input v-model="userInfo.password" type="password"></el-input>
         </el-form-item>
         <el-form-item v-if="isCreate" label="确认密码：">
-          <el-input v-model="userInfo.password"></el-input>
+          <el-input v-model="userInfo.confirmPassword" type="password"></el-input>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button v-if="isCreate" @click="getVerificationCode">获取验证码</el-button>
+      <div slot="footer" class="dialog-footer" v-if="!userInfo.deleted">
         <el-button @click="dialogFormVisible = false">取消</el-button>
         <el-button type="primary" @click="createUser">{{isCreate ? '确定' : '修改'}}</el-button>
       </div>
@@ -134,6 +137,7 @@
           birthday: '', // 出生日期
           type: 2, // 用户类型:1学生2教师
           password: '',
+          confirmPassword: '',
           phone: null,
           verification: '', // 验证码
           cardNum: null, // 身份证号码
@@ -177,9 +181,11 @@
       },
       // 获取验证码
       async getVerificationCode() {
-        const phone = '15919161013'
-        const res = await userApi.getCode({phone}).catch(e => e)
-        console.log('res', res)
+        // const phone = '15919161013'
+        if (!this.userInfo.phone) return this.$message({type: 'info', message: '请输入正确的电话号码！'})
+        const {data, code, msg} = await userApi.getCode({phone: this.userInfo.phone}).catch(e => e)
+        if (code !== '200') return this.$message({type: 'info', message: msg})
+        this.userInfo.verification = data
       },
       // 创建/编辑教师
       editUser(info) {
@@ -207,6 +213,7 @@
         this.dialogFormVisible = true
       },
       async createUser() {
+        if (this.userInfo.password !== this.userInfo.confirmPassword) return this.$message({type: 'info', message: '两次输入密码不一致！'})
         let loadingInstance = Loading.service()
         if (this.isCreate) {
           const {code, msg, data} = await userApi.addUser(this.userInfo).catch(e=>e)

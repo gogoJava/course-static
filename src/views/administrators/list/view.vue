@@ -7,11 +7,11 @@
       <el-table :data="tableData.list" v-loading="tableData.loading" style="width: 100%">
         <el-table-column prop="username" label="管理员姓名" width="180">
         </el-table-column>
-        <el-table-column prop="sex" label="性别">
+        <!-- <el-table-column prop="sex" label="性别">
           <template slot-scope="scope">
             <span>{{scope.row.sex | sexMsg}}</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column prop="phone" label="联系电话" width="180">
         </el-table-column>
         <!--<el-table-column prop="createTime" label="注册时间">-->
@@ -36,41 +36,44 @@
       </my-pagination>
     </el-card>
     <el-dialog :title="isCreate ? '新建管理员' : '管理员详情'" :visible.sync="dialogFormVisible" width="70%">
-      <el-form :model="userInfo" label-width="120px">
-        <el-form-item label="用户名：">
+      <el-form :model="userInfo" label-width="120px" :disabled="userInfo.deleted">
+        <el-form-item label="管理员姓名：">
           <el-input v-model="userInfo.username"></el-input>
         </el-form-item>
-        <el-form-item label="管理员姓名：">
+        <!-- <el-form-item label="管理员姓名：">
           <el-input v-model="userInfo.name"></el-input>
-        </el-form-item>
-        <el-form-item label="性别：">
+        </el-form-item> -->
+        <!-- <el-form-item label="性别：">
           <el-radio-group v-model="userInfo.sex">
             <el-radio label="0">男</el-radio>
             <el-radio label="1">女</el-radio>
           </el-radio-group>
-        </el-form-item>
-        <el-form-item label="出生日期：">
+        </el-form-item> -->
+        <!-- <el-form-item label="出生日期：">
           <el-date-picker v-model="userInfo.birthday" type="date" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd" placeholder="选择日期">
           </el-date-picker>
-        </el-form-item>
-        <el-form-item label="身份证号码：">
+        </el-form-item> -->
+        <!-- <el-form-item label="身份证号码：">
           <el-input v-model="userInfo.cardNum"></el-input>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="联系电话：">
           <el-input v-model="userInfo.phone" :maxlength="11"></el-input>
         </el-form-item>
         <el-form-item v-if="isCreate" label="验证码：">
-          <el-input v-model="userInfo.verification"></el-input>
+          <el-input v-model="userInfo.verification">
+            <template slot="append">
+              <div style="cursor: pointer;" @click="getVerificationCode">获取验证码</div>
+            </template>
+          </el-input>
         </el-form-item>
         <el-form-item v-if="isCreate" label="密码：">
-          <el-input v-model="userInfo.password"></el-input>
+          <el-input v-model="userInfo.password" type="password"></el-input>
         </el-form-item>
         <el-form-item v-if="isCreate" label="确认密码：">
-          <el-input v-model="userInfo.password"></el-input>
+          <el-input v-model="userInfo.confirmPassword" type="password"></el-input>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button v-if="isCreate" @click="getVerificationCode">获取验证码</el-button>
+      <div slot="footer" class="dialog-footer" v-if="!userInfo.deleted">
         <el-button @click="dialogFormVisible = false">取消</el-button>
         <el-button type="primary" @click="createUser">{{isCreate ? '确定' : '修改'}}</el-button>
       </div>
@@ -109,6 +112,7 @@
           birthday: '', // 出生日期
           type: 1, // 用户类型:1学生2教师
           password: '',
+          confirmPassword: '',
           phone: null,
           verification: '', // 验证码
           cardNum: null, // 身份证号码
@@ -148,9 +152,11 @@
       },
       // 获取验证码
       async getVerificationCode() {
-        const phone = '15919161013'
-        const res = await userApi.getCode({phone}).catch(e => e)
-        console.log('res', res)
+        // const phone = '15919161013'
+        if (!this.userInfo.phone) return this.$message({type: 'info', message: '请输入正确的电话号码！'})
+        const {data, code, msg} = await userApi.getCode({phone: this.userInfo.phone}).catch(e => e)
+        if (code !== '200') return this.$message({type: 'info', message: msg})
+        this.userInfo.verification = data
       },
       // 创建/编辑学生
       editUser(info) {
@@ -174,6 +180,7 @@
         this.dialogFormVisible = true
       },
       async createUser() {
+        if (this.userInfo.password !== this.userInfo.confirmPassword) return this.$message({type: 'info', message: '两次输入密码不一致！'})
         let loadingInstance = Loading.service()
         if (this.isCreate) {
           const {code, msg, data} = await userApi.addAdmin(this.userInfo).catch(e=>e)
