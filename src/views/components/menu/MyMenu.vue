@@ -16,7 +16,6 @@
             </template>
             <el-menu-item-group>
               <el-menu-item index="/home/class/list">课程信息</el-menu-item>
-              <!-- <el-menu-item index="/home/class/edit">修改课程</el-menu-item> -->
               <el-menu-item index="/home/class/attendance">出勤签到</el-menu-item>
               <el-menu-item index="/home/class/release">发布课程</el-menu-item>
             </el-menu-item-group>
@@ -39,7 +38,7 @@
           </el-menu-item>
           <el-menu-item v-if="isAdmin || isSuperAdmin" index="/home/student/list">
             <icon-font icon="xuesheng" class="icon" size="24px"></icon-font>
-            <span slot="title">学员管理</span>
+            <span slot="title">学生管理</span>
           </el-menu-item>
           <el-menu-item v-if="isSuperAdmin" index="/home/teacher/list">
             <icon-font icon="jiaolian1" class="icon" size="24px"></icon-font>
@@ -76,17 +75,25 @@
             <el-dropdown trigger="click">
               <span class="el-dropdown-link"><i class="el-icon-arrow-down el-icon-more"></i></span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item v-if="isAdmin" @click.native="$router.push('/home/class/create')">新建课程</el-dropdown-item>
-                <!-- <el-dropdown-item @click.native="$router.push('/home/class/edit')">修改课程</el-dropdown-item> -->
-                <el-dropdown-item v-if="isAdmin" @click.native="$router.push('/home/class/attendance')">出勤签到</el-dropdown-item>
-                <el-dropdown-item v-if="isAdmin" @click.native="$router.push('/home/class/release')">发布课程</el-dropdown-item>
-                <el-dropdown-item v-if="isAdmin" @click.native="$router.push('/home/student/list')">学员管理</el-dropdown-item>
-                <el-dropdown-item v-if="isAdmin" @click.native="$router.push('/home/teacher/list')">教师管理</el-dropdown-item>
-                <el-dropdown-item v-if="isAdmin" @click.native="$router.push('/home/administrators/list')">管理员</el-dropdown-item>
-                <el-dropdown-item v-if="isAdmin" @click.native="$router.push('/home/course/order/refund/list')">退费订单</el-dropdown-item>
-                <el-dropdown-item v-if="isAdmin" @click.native="$router.push('/home/course/order/unpaid/list')">未支付订单</el-dropdown-item>
-                <el-dropdown-item v-if="isAdmin" @click.native="$router.push('/home/course/order/paid/list')">支付成功订单</el-dropdown-item>
-                <el-dropdown-item v-if="isTeacher" @click.native="$router.push('/home/income/detail')">收入详情</el-dropdown-item>
+                <!--超级管理员-->
+                <el-dropdown-item v-if="isSuperAdmin" @click.native="$router.push('/home/teacher/list')">教师管理</el-dropdown-item>
+                <el-dropdown-item v-if="isSuperAdmin" @click.native="$router.push('/home/administrators/list')">管理员</el-dropdown-item>
+                <el-dropdown-item v-if="isSuperAdmin" @click.native="$router.push('/home/course/order/refund/list')">退费订单</el-dropdown-item>
+                <el-dropdown-item v-if="isSuperAdmin" @click.native="$router.push('/home/course/order/unpaid/list')">未支付订单</el-dropdown-item>
+                <el-dropdown-item v-if="isSuperAdmin" @click.native="$router.push('/home/course/order/paid/list')">支付成功订单</el-dropdown-item>
+                <!--超级管理员或者管理员-->
+                <el-dropdown-item v-if="isAdmin || isSuperAdmin" @click.native="$router.push('/home/class/list')">课程信息</el-dropdown-item>
+                <el-dropdown-item v-if="isAdmin || isSuperAdmin" @click.native="$router.push('/home/class/attendance')">出勤签到</el-dropdown-item>
+                <el-dropdown-item v-if="isAdmin || isSuperAdmin" @click.native="$router.push('/home/class/release')">发布课程</el-dropdown-item>
+                <el-dropdown-item v-if="isAdmin || isSuperAdmin" @click.native="$router.push('/home/student/list')">学生管理</el-dropdown-item>
+                <!--教师-->
+                <el-dropdown-item v-if="isTeacher" @click.native="$router.push('/home/class/list')">我的课程</el-dropdown-item>
+                <el-dropdown-item v-if="isTeacher" @click.native="$router.push('/home/class/attendance')">出勤签到</el-dropdown-item>
+                <el-dropdown-item v-if="isTeacher || isSuperAdmin" @click.native="$router.push('/home/income/detail')">收入详情</el-dropdown-item>
+                <!--学生-->
+                <el-dropdown-item v-if="isStudent" @click.native="$router.push('/home/class/list/pay')">我的课程</el-dropdown-item>
+                <el-dropdown-item v-if="isStudent" @click.native="$router.push('/home/class/order/pay')">课程支付管理</el-dropdown-item>
+                <el-dropdown-item v-if="isStudent" @click.native="$router.push('/home/student/class/my')">座位表</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </span>
