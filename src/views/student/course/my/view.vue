@@ -15,24 +15,24 @@
             <el-checkbox-group v-model="checkboxGroup" size="small">
               <el-checkbox class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
-            <el-col class="seat-icon" :gutter="0" :span="8" v-for="(item, a) of seatLeftList" :key="a">
-              <icon-font icon="yizi" class="icon" :class="{'icon-selected': checkboxGroup.indexOf((a + ',' + i))}" size="32px"></icon-font>
+            <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, a) of seatLeftList" :key="a">
+              <img :src="seatImgUrl" style="width: 88px;" class="chenk-box-img" />
             </el-col>
           </el-col>
           <el-col :span="8">
             <el-checkbox-group v-model="checkboxGroup" size="small">
               <el-checkbox class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
-            <el-col class="seat-icon" :gutter="0" :span="8" v-for="(item, b) of seatMidList" :key="b">
-              <icon-font icon="yizi" class="icon" size="32px"></icon-font>
+            <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, b) of seatMidList" :key="b">
+              <img :src="seatImgUrl" style="width: 88px;" class="chenk-box-img" />
             </el-col>
           </el-col>
           <el-col :span="8">
             <el-checkbox-group v-model="checkboxGroup" size="small">
               <el-checkbox class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
-            <el-col class="seat-icon" :gutter="0" :span="8" v-for="(item, c) of seatRightList" :key="c">
-              <icon-font icon="yizi" class="icon" size="32px"></icon-font>
+            <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, c) of seatRightList" :key="c">
+              <img :src="seatImgUrl" style="width: 88px;" class="chenk-box-img" />
             </el-col>
           </el-col>
         </el-row>
@@ -79,6 +79,7 @@
         courseAttendanceList: [], // 考勤列表
         additionalStudent: null,
         rostersStudent: [], // 已选座位学生
+        seatImgUrl: require('../../../../assets/seat/seat.png')
       })
     },
     computed: {
@@ -233,8 +234,21 @@
       margin-bottom: 0;
     }
 }
+.class-attendance-page .chenk-box-col {
+  width: 100px;
+  text-align: center;
+}
 .class-attendance-page .chenk-box {
   width: 100px;
+  text-align: center;
+
+}
+.class-attendance-page .chenk-box-img {
+  width: 105px;
+  padding: 12px;
+}
+.class-attendance-page .chenk-box .el-checkbox__input {
+  display: none;
 }
 .class-attendance-page .seat-icon {
   width: 110px;
