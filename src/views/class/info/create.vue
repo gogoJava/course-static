@@ -49,6 +49,34 @@
           <el-input v-model="courseInfo.courseCost" style="width: 140px"></el-input>
           <!--<span> /节</span>-->
         </el-form-item>
+        <!--<el-form-item label="教师工资">-->
+          <!--<el-radio-group v-model="courseInfo.teacherChargeType">-->
+            <!--<el-radio label="1">人头</el-radio>-->
+            <!--<el-radio label="2">分成</el-radio>-->
+          <!--</el-radio-group>-->
+        <!--</el-form-item>-->
+        <el-form-item label="收费模式">
+          <el-row>
+            <el-col :span="6">半小时</el-col>
+            <el-col :span="6">超出（人）</el-col>
+            <el-col :span="6">提成（元）</el-col>
+            <el-col :span="6">出勤课时费</el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="6"><el-input v-model="courseInfo.averageHourCost" style="width: 80%"></el-input></el-col>
+            <el-col :span="6"><el-input v-model="courseInfo.exceedNum" style="width: 80%"></el-input></el-col>
+            <el-col :span="6"><el-input v-model="courseInfo.extraCharge" style="width: 80%"></el-input></el-col>
+            <el-col :span="6"><el-input v-model="courseInfo.percentageValue" style="width: 80%"></el-input><span> %</span></el-col>
+          </el-row>
+        </el-form-item>
+        <!--<el-form-item label="分成">-->
+          <!--<el-row>-->
+            <!--<el-col :span="6">出勤课时费</el-col>-->
+          <!--</el-row>-->
+          <!--<el-row>-->
+            <!--<el-col :span="6"><el-input v-model="courseInfo.percentageValue" style="width: 80%"></el-input><span> %</span></el-col>-->
+          <!--</el-row>-->
+        <!--</el-form-item>-->
         <el-form-item>
           <el-button @click="$router.back()">取消</el-button>
           <el-button type="primary" @click="onSubmit">立即创建</el-button>
@@ -81,6 +109,12 @@
           typeId: null,
           accountId: '',
           courseCost: null,
+          teacherChargeType: '1', // 教师收费类型:1按时(按课时出席人数)2按提成(分成)
+          averageHour: null, // 按【averageHour】小时收费
+          averageHourCost: null, // 按【averageHour】小时收费【averageHourCost】
+          percentage: null,
+          percentageValue: null, //
+          extraCharge: null
         },
         selectedTypeId: [],
         courseTime: null,
@@ -108,13 +142,11 @@
       // 加载座位结构数据
       async querySeatList() {
         const {data} = await seatApi.getSeatList().catch(e => e)
-        console.log('querygetSeatList', data)
         this.seatList = data
       },
       // 加载课程类型
       async getCourseType() {
         const {data} = await courseTypeApi.getCourseTypeList({typeSeries: 0}).catch(e => e)
-        console.log('getCourseType', data)
         this.courseTypes = data
       },
       // 加载教师信息
@@ -131,8 +163,11 @@
         this.courseInfo.courseStartTime = this.$moment(this.courseTime[0]).format('YYYY/MM/DD HH:mm:ss')
         this.courseInfo.courseEndTime = this.$moment(this.courseTime[1]).format('YYYY/MM/DD HH:mm:ss')
         this.courseInfo.typeId = this.selectedTypeId[this.selectedTypeId.length - 1]
-        // if (this.courseInfo) return
-        await courseApi.addCourse(this.courseInfo).catch(e => e)
+        this.courseInfo.percentage = this.courseInfo.percentageValue / 100 // 小数
+        const params = this.courseInfo
+        delete params.percentageValue
+        const {code} = await courseApi.addCourse(params).catch(e => e)
+        if (code !== '200') return this.$message({type: 'error', message: '创建失败！'})
         this.$message({
           type: 'success',
           message: '创建成功！'

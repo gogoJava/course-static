@@ -100,7 +100,7 @@
           <div>
             <!--<span class="log-out" @click="logout">退出登录</span>-->
             <el-dropdown trigger="click" class="log-out">
-              <span>{{currentUser ? currentUser.username : '用户名'}}</span>
+              <span>{{currentUser ? currentUser.name || currentUser.username : '用户名'}}</span>
               <i class="el-icon-caret-bottom"></i>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item @click.native="logoutOnClick">退出登录</el-dropdown-item>

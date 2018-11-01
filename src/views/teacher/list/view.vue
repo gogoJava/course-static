@@ -77,20 +77,20 @@
             <el-radio label="2">分成</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="">
-          <el-row>
-            <el-col :span="6">半小时</el-col>
-            <el-col v-if="userInfo.teacherChargeType === '1'" :span="6">超出（人）</el-col>
-            <el-col :span="6">提成（元）</el-col>
-            <el-col v-if="userInfo.teacherChargeType === '2'" :span="6">出勤课时费</el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="6"><el-input v-model="userInfo.averageHour" style="width: 80%"></el-input></el-col>
-            <el-col v-if="userInfo.teacherChargeType === '1'" :span="6"><el-input v-model="userInfo.exceedNum" style="width: 80%"></el-input></el-col>
-            <el-col :span="6"><el-input v-model="userInfo.averageHourCost" style="width: 80%"></el-input></el-col>
-            <el-col v-if="userInfo.teacherChargeType === '2'" :span="6"><el-input v-model="userInfo.percentage" style="width: 80%"></el-input><span> %</span></el-col>
-          </el-row>
-        </el-form-item>
+        <!--<el-form-item label="">-->
+          <!--<el-row>-->
+            <!--<el-col :span="6">半小时</el-col>-->
+            <!--<el-col v-if="userInfo.teacherChargeType === '1'" :span="6">超出（人）</el-col>-->
+            <!--<el-col :span="6">提成（元）</el-col>-->
+            <!--<el-col v-if="userInfo.teacherChargeType === '2'" :span="6">出勤课时费</el-col>-->
+          <!--</el-row>-->
+          <!--<el-row>-->
+            <!--<el-col :span="6"><el-input v-model="userInfo.averageHour" style="width: 80%"></el-input></el-col>-->
+            <!--<el-col v-if="userInfo.teacherChargeType === '1'" :span="6"><el-input v-model="userInfo.exceedNum" style="width: 80%"></el-input></el-col>-->
+            <!--<el-col :span="6"><el-input v-model="userInfo.averageHourCost" style="width: 80%"></el-input></el-col>-->
+            <!--<el-col v-if="userInfo.teacherChargeType === '2'" :span="6"><el-input v-model="userInfo.percentage" style="width: 80%"></el-input><span> %</span></el-col>-->
+          <!--</el-row>-->
+        <!--</el-form-item>-->
         <el-form-item v-if="isCreate" label="密码：">
           <el-input v-model="userInfo.password" type="password"></el-input>
         </el-form-item>

@@ -7,6 +7,7 @@
           <el-option v-for="(item, index) in tableData.list" :key="index" :label="item.courseName" :value="item.courseId">
           </el-option>
         </el-select>
+        <span style="padding-bottom: 15px; padding-left: 15px;">课程进度：{{courseCurrent}} / {{courseTotal}}</span>
       </div>
       <el-col :span="24">
         <el-row :gutter="20" v-for="(item, i) of seatRowsList" :key="i">
@@ -15,7 +16,7 @@
             <el-checkbox class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
           </el-checkbox-group>
           <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, a) of seatLeftList" :key="a">
-            <img :src="seatImgUrl" style="width: 88px;" class="chenk-box-img" />
+            <img :src="(item && item[i]) ? checkedSeatImgUrl : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
           </el-col>
         </el-col>
         <el-col :span="8">
@@ -23,7 +24,7 @@
             <el-checkbox class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
           </el-checkbox-group>
           <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, b) of seatMidList" :key="b">
-            <img :src="seatImgUrl" style="width: 88px;" class="chenk-box-img" />
+            <img :src="(item && item[i]) ? checkedSeatImgUrl : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
           </el-col>
         </el-col>
         <el-col :span="8">
@@ -31,13 +32,13 @@
             <el-checkbox class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
           </el-checkbox-group>
           <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, c) of seatRightList" :key="c">
-            <img :src="seatImgUrl" style="width: 88px;" class="chenk-box-img" />
+            <img :src="(item && item[i]) ? checkedSeatImgUrl : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
           </el-col>
         </el-col>
       </el-row>
       </el-col>
       <el-col :span="8" style="padding-bottom: 15px;">
-        <div style="padding-bottom: 15px;">课程进度：{{courseCurrent}} / {{courseTotal}}</div>
+        <!--<div style="padding-bottom: 15px;">课程进度：{{courseCurrent}} / {{courseTotal}}</div>-->
         <el-card>
           <div slot="header">
             <span>串课名单</span>
@@ -97,7 +98,8 @@
         courseAttendanceList: [], // 考勤列表
         additionalStudent: null,
         rostersStudent: [], // 已选座位学生
-        seatImgUrl: require('../../../assets/seat/seat.png')
+        seatImgUrl: require('../../../assets/seat/seat.png'),
+        checkedSeatImgUrl: require('../../../assets/seat/seat-checked.png')
       })
     },
     computed: {

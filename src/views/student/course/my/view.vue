@@ -16,7 +16,7 @@
               <el-checkbox class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
             <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, a) of seatLeftList" :key="a">
-              <img :src="seatImgUrl" style="width: 88px;" class="chenk-box-img" />
+              <img :src="(item && item[i]) ? (item.accountId === currentUser.accountId ? checkedSeatImgUrl : mySeatImgUrl) : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
             </el-col>
           </el-col>
           <el-col :span="8">
@@ -24,7 +24,7 @@
               <el-checkbox class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
             <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, b) of seatMidList" :key="b">
-              <img :src="seatImgUrl" style="width: 88px;" class="chenk-box-img" />
+              <img :src="(item && item[i]) ? (item.accountId === currentUser.accountId ? checkedSeatImgUrl : mySeatImgUrl) : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
             </el-col>
           </el-col>
           <el-col :span="8">
@@ -32,7 +32,7 @@
               <el-checkbox class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
             <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, c) of seatRightList" :key="c">
-              <img :src="seatImgUrl" style="width: 88px;" class="chenk-box-img" />
+              <img :src="(item && item[i]) ? (item.accountId === currentUser.accountId ? checkedSeatImgUrl : mySeatImgUrl) : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
             </el-col>
           </el-col>
         </el-row>
@@ -79,7 +79,9 @@
         courseAttendanceList: [], // 考勤列表
         additionalStudent: null,
         rostersStudent: [], // 已选座位学生
-        seatImgUrl: require('../../../../assets/seat/seat.png')
+        seatImgUrl: require('../../../../assets/seat/seat.png'),
+        checkedSeatImgUrl: require('../../../../assets/seat/seat-checked.png'),
+        mySeatImgUrl: require('../../../../assets/seat/seat-me.png')
       })
     },
     computed: {
