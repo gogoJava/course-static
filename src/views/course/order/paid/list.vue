@@ -4,7 +4,7 @@
       <div slot="header" class="clearfix">
         <span>支付成功订单</span>
       </div>
-      <el-table :data="tableData.list" v-loading="tableData.loading" style="width: 100%">
+      <el-table :data="tableData.list" v-loading="tableData.loading" style="width: 100%" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55">
         </el-table-column>
         <el-table-column prop="orderNo" label="订单号" width="180">
@@ -23,12 +23,15 @@
             <span>¥ {{scope.row.courseCost}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作">
-          <template slot-scope="scope">
-            <el-button type="text">详情</el-button>
-          </template>
-        </el-table-column>
+        <!--<el-table-column label="操作">-->
+          <!--<template slot-scope="scope">-->
+            <!--<el-button type="text">详情</el-button>-->
+          <!--</template>-->
+        <!--</el-table-column>-->
       </el-table>
+      <div style="text-align: right;padding-top: 15px;padding-right: 120px;">
+        <div>总计：{{totalIncomeAmount}}元</div>
+      </div>
       <my-pagination
               :total="tableData.total"
               :currentPage.sync="searchForm.page"
@@ -61,9 +64,16 @@
           pageNum: 1,
           pageSize: 10,
         },
+        totalIncomeAmount: 0
       })
     },
     methods: {
+      handleSelectionChange(val) {
+        this.totalIncomeAmount = 0
+        val.forEach(item => {
+          this.totalIncomeAmount = this.totalIncomeAmount + item.courseCost
+        })
+      },
       onCurrentPageChange(page) {
         this.searchForm.pageNum = page
         this.queryCourseOrderList()

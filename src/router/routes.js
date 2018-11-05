@@ -31,6 +31,7 @@ const routes = [
       {path: 'student/list', meta: {title: '学员管理'}, component: () => import('../views/student/list/view.vue')},
       // 教师管理
       {path: 'teacher/list', meta: {title: '教师管理'}, component: () => import('../views/teacher/list/view.vue')},
+      {path: 'class/teacher/list', meta: {title: '课程管理'}, component: () => import('../views/teacher/class/view.vue')},
       // 管理员
       {path: 'administrators/list', meta: {title: '管理员'}, component: () => import('../views/administrators/list/view.vue')},
       // 课程订单
@@ -39,6 +40,7 @@ const routes = [
       {path: 'course/order/unpaid/list', meta: {title: '未支付订单'}, component: () => import('../views/course/order/unpaid/list.vue')},
       // 收入
       {path: 'income/detail', meta: {title: '收入情况'}, component: () => import('../views/income/detail/view.vue')},
+      {path: 'income/teacher/detail', meta: {title: '个人信息'}, component: () => import('../views/teacher/income/view.vue')},
     ]
   },
   {

@@ -1,7 +1,7 @@
 <template>
   <div class="class-attendance-page">
     <el-card class="content">
-      <div slot="header" class="clearfix">
+      <div slot="header" class="clearfix" v-if="tableData.list.length">
         <span style="padding-right: 15px;">课程:</span>
         <el-select v-model="selectedCourseId" filterable placeholder="请选择">
           <el-option v-for="(item, index) in tableData.list" :key="index" :label="item.courseName" :value="item.courseId">
@@ -9,35 +9,41 @@
         </el-select>
         <span style="padding-bottom: 15px;padding-left: 30px;">课程进度：{{courseCurrent}} / {{courseTotal}}</span>
       </div>
-      <el-col :span="24">
+      <div v-if="!tableData.list.length" style="text-align: center;">
+        <div style="padding-top: 30px;">
+          <icon-font icon="ico_meiyoushuju" class="icon" size="120px"></icon-font>
+        </div>
+        <div style="padding-top: 30px;color: #999999;">您暂时还没有购买课程，请去购买课程哦</div>
+      </div>
+      <el-col :span="24" v-if="tableData.list.length">
         <el-row :gutter="20" v-for="(item, i) of seatRowsList" :key="i">
           <el-col :span="8">
-            <el-checkbox-group v-model="checkboxGroup" size="small">
-              <el-checkbox class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
+            <el-checkbox-group v-model="checkboxGroup" size="small" text-color="#F56C6C" fill="#F56C6C">
+              <el-checkbox class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border :disabled="(item && item[i] && item[i].accountId !== currentUser.accountId)">{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
             <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, a) of seatLeftList" :key="a">
-              <img :src="(item && item[i]) ? (item.accountId === currentUser.accountId ? checkedSeatImgUrl : mySeatImgUrl) : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
+              <img :src="(item && item[i]) ? (item[i].accountId === currentUser.accountId ? mySeatImgUrl : checkedSeatImgUrl) : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
             </el-col>
           </el-col>
           <el-col :span="8">
-            <el-checkbox-group v-model="checkboxGroup" size="small">
-              <el-checkbox class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
+            <el-checkbox-group v-model="checkboxGroup" size="small" text-color="#F56C6C" fill="#F56C6C">
+              <el-checkbox class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border :disabled="(item && item[i] && item[i].accountId !== currentUser.accountId)">{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
             <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, b) of seatMidList" :key="b">
-              <img :src="(item && item[i]) ? (item.accountId === currentUser.accountId ? checkedSeatImgUrl : mySeatImgUrl) : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
+              <img :src="(item && item[i]) ? (item[i].accountId === currentUser.accountId ? mySeatImgUrl : checkedSeatImgUrl) : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
             </el-col>
           </el-col>
           <el-col :span="8">
-            <el-checkbox-group v-model="checkboxGroup" size="small">
-              <el-checkbox class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
+            <el-checkbox-group v-model="checkboxGroup" size="small" text-color="#F56C6C" fill="#F56C6C">
+              <el-checkbox class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border :disabled="(item && item[i] && item[i].accountId !== currentUser.accountId)">{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
             <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, c) of seatRightList" :key="c">
-              <img :src="(item && item[i]) ? (item.accountId === currentUser.accountId ? checkedSeatImgUrl : mySeatImgUrl) : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
+              <img :src="(item && item[i]) ? (item[i].accountId === currentUser.accountId ? mySeatImgUrl : checkedSeatImgUrl) : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
             </el-col>
           </el-col>
         </el-row>
       </el-col>
-      <div style="">
+      <div v-if="tableData.list.length">
         <el-button type="primary" @click.native="confirmSeat">确定座位</el-button>
       </div>
     </el-card>
@@ -112,7 +118,7 @@
         this.rostersStudent.forEach(item => {
           if (item.rosterSeatX < this.seatLayout.seatLeft) {
             list[item.rosterSeatX] = new Array(this.seatLayout.seatRows)
-            list[item.rosterSeatX][item.rosterSeatY] = item.user
+            list[item.rosterSeatX][item.rosterSeatY] = {...item.user, accountId: item.accountId}
           }
         })
         return list
@@ -126,7 +132,7 @@
           if (item.rosterSeatX < this.seatLayout.seatMid && item.rosterSeatX >= this.seatLayout.seatLeft) {
             const x = item.rosterSeatX - this.seatLayout.seatLeft
             list[x] = new Array(this.seatLayout.seatRows)
-            list[x][item.rosterSeatY] = item.user
+            list[x][item.rosterSeatY] = {...item.user, accountId: item.accountId}
           }
         })
         return list
@@ -140,7 +146,7 @@
           if (item.rosterSeatX >= (this.seatLayout.seatMid + this.seatLayout.seatLeft)) {
             const x = item.rosterSeatX - this.seatLayout.seatMid - this.seatLayout.seatLeft
             list[x] = new Array(this.seatLayout.seatRows)
-            list[x][item.rosterSeatY] = item.user
+            list[x][item.rosterSeatY] = {...item.user, accountId: item.accountId}
           }
         })
         return list
@@ -165,16 +171,48 @@
         })
         this.queryClassRosters()
       },
-      // checkboxGroup() {
-      //   console.log('watch checkboxGroup', this.checkboxGroup)
-      // }
+      checkboxGroup() {
+        console.log('watch checkboxGroup', this.checkboxGroup)
+        console.log('rostersStudent 1', this.rostersStudent)
+        const indexItem = this.rostersStudent.find(item =>item.accountId === this.currentUser.accountId)
+        // if (index !== -1) {
+        //   // 原来数组存在，则去除
+        //   this.rostersStudent.splice(index, 1)
+        // }
+        const index = this.checkboxGroup.findIndex(item => {
+          const array = item.split(',')
+         return indexItem.rosterSeatX === (array[0] - 0) && indexItem.rosterSeatY === (array[1] - 0)
+        })
+        if (index !== -1) {
+          // 原来数组存在，则去除
+          this.checkboxGroup.splice(index, 1)
+        }
+        const rostersStudent = []
+        this.checkboxGroup.forEach((item) => {
+          this.rostersStudent.every(value => {
+            console.log('sasa')
+            const array = item.split(',')
+            if (value.rosterSeatX === (array[0] - 0) && value.rosterSeatY === (array[1] - 0)) {
+              console.log('+++')
+              rostersStudent.push(value)
+              return
+            } else {
+              console.log('----')
+              rostersStudent.push({
+                rosterSeatX: array[0] - 0,
+                rosterSeatY: array[1] - 0,
+                user: this.currentUser,
+                accountId: this.currentUser.accountId
+              })
+            }
+          })
+        })
+        console.log('index', rostersStudent)
+        // this.rostersStudent = rostersStudent
+        // console.log('rostersStudent 3', this.rostersStudent)
+      }
     },
     methods: {
-      checkedChange(value) {
-        if (value.length) {
-          this.checkboxGroup = [value[value.length - 1]]
-        }
-      },
       async queryClassList() {
         this.tableData.loading = true
         // bought:我的课程

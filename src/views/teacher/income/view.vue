@@ -1,33 +1,25 @@
 <template>
-  <div class="course-order-refund-list">
-    <el-card class="box-card">
+  <div class="income-detail-page">
+    <el-card>
       <div slot="header" class="clearfix">
-        <span>退费订单</span>
+        <span>个人信息</span>
       </div>
       <el-table :data="tableData.list" v-loading="tableData.loading" style="width: 100%" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55">
         </el-table-column>
-        <el-table-column prop="orderNo" label="订单号" width="180">
+        <el-table-column prop="courseName" label="班级名称" width="180">
         </el-table-column>
-        <el-table-column prop="name" label="学生姓名" width="180">
+        <el-table-column prop="updateTime" label="时间" width="180">
         </el-table-column>
-        <el-table-column prop="courseName" label="退费课程">
+        <el-table-column prop="updateTime" label=日期>
         </el-table-column>
-        <el-table-column prop="updateTime" label="时间">
+        <el-table-column prop="actualNumber" label="出勤人数">
+        </el-table-column>
+        <el-table-column prop="incomeAmount" label="收入">
           <template slot-scope="scope">
-            <span>{{$moment(scope.row.updateTime).format('YYYY-MM-DD HH:mm')}}</span>
+            <span>{{scope.row.incomeAmount}}元</span>
           </template>
         </el-table-column>
-        <el-table-column prop="courseCost" label="金额">
-          <template slot-scope="scope">
-            <span>¥ {{scope.row.courseCost}}</span>
-          </template>
-        </el-table-column>
-        <!--<el-table-column label="操作">-->
-          <!--<template slot-scope="scope">-->
-            <!--<el-button type="text">详情</el-button>-->
-          <!--</template>-->
-        <!--</el-table-column>-->
       </el-table>
       <div style="text-align: right;padding-top: 15px;padding-right: 120px;">
         <div>总计：{{totalIncomeAmount}}元</div>
@@ -43,12 +35,15 @@
 </template>
 <script>
   // components
-  import MyPagination from '../../../../components/pagination/MyPagination.vue'
+  import MyPagination from '../../../components/pagination/MyPagination.vue'
   // API
-  import * as courseApi from '../../../../apis/courseApi'
+  import * as incomeApi from '../../../apis/incomeApi'
+  // store
+  import {mapGetters} from 'vuex'
+  import * as $account from '../../../store/modules/account/types'
   export default {
-    title: '退费订单',
-    name: 'course-order-refund-list',
+    title: '个人信息',
+    name: 'income-detail-page',
     components: {
       MyPagination
     },
@@ -60,38 +55,44 @@
           total: 0
         },
         searchForm: {
-          keyword: '',
           pageNum: 1,
           pageSize: 10,
         },
+        multipleSelection: [],
         totalIncomeAmount: 0
       })
+    },computed: {
+      ...mapGetters($account.namespace, {
+        currentUser: $account.getters.currentUser
+      }),
     },
     methods: {
       handleSelectionChange(val) {
         this.totalIncomeAmount = 0
-        val.forEach(item => {
-          this.totalIncomeAmount = this.totalIncomeAmount + item.courseCost
+        this.multipleSelection = val
+        this.multipleSelection.forEach(item => {
+          this.totalIncomeAmount = this.totalIncomeAmount + item.incomeAmount
         })
       },
       onCurrentPageChange(page) {
         this.searchForm.pageNum = page
-        this.queryCourseOrderList()
+        this.queryIncomeList()
       },
-      async queryCourseOrderList() {
+      async queryIncomeList() {
+        const params = {
+            ...this.seagreen,
+          accountId: this.currentUser.accountId
+        }
         this.tableData.loading = true
-        const {data} = await courseApi.getCourseOrderList({
-          ...this.searchForm,
-          orderStatus: 2, //
-        }).catch(e => e)
-        const {total, list} = data
+        const {data: {total, list}} = await incomeApi.getIncomeList(params).catch(e => e)
+
         this.tableData.total = total || 0
         this.tableData.list = list || []
         this.tableData.loading = false
       }
     },
     mounted() {
-      this.queryCourseOrderList()
+      this.queryIncomeList()
     }
   }
 </script>

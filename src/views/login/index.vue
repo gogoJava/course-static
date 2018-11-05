@@ -142,7 +142,7 @@ export default {
       let url = '/home'
       if (data.type === '2') {
         // 老师
-        url = '/home/class/list'
+        url = '/home/class/teacher/list'
       }
       if (data.type === '1') {
         // 学生

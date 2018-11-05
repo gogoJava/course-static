@@ -45,9 +45,9 @@
         <el-form-item label="总课时">
           <el-col :span="12"><el-input v-model="courseInfo.courseTotal"></el-input></el-col>
         </el-form-item>
-        <el-form-item label="课程课时">
-          <el-col :span="12"><el-input v-model="courseInfo.courseCurrent"></el-input></el-col>
-        </el-form-item>
+        <!--<el-form-item label="课程课时">-->
+          <!--<el-col :span="12"><el-input v-model="courseInfo.courseCurrent"></el-input></el-col>-->
+        <!--</el-form-item>-->
         <el-form-item label="课程座位图">
           <el-select v-model="courseInfo.seatId" placeholder="请选择座位图">
             <el-option v-for="(item, index) of seatList" :key="index" :label="seatTitle(item)" :value="item.seatId"></el-option>

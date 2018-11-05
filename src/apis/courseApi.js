@@ -40,3 +40,13 @@ export const courseAdditional = (params) => request.post('/api/course/additional
  * 老师开始上课
  */
 export const startCourse = (courseId) => request.get('/api/course/courseStart?courseId=' + courseId)
+
+/**
+ * 老师结束上课
+ */
+export const endCourse = (courseId) => request.get('/api/course/courseEnd?courseId=' + courseId)
+
+/**
+ * 课程签到
+ */
+export const courseSign = (params) => request.post('/api/course/sign', qs.stringify(params))
