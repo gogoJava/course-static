@@ -66,9 +66,6 @@
         <el-form-item label="身份证号码：">
           <el-input v-model="userInfo.cardNum"></el-input>
         </el-form-item>
-        <el-form-item label="联系电话：">
-          <el-input v-model="userInfo.phone" :maxlength="11"></el-input>
-        </el-form-item>
         <el-form-item label="所在学校：">
           <el-input v-model="userInfo.schoolName" :maxlength="11"></el-input>
         </el-form-item>
@@ -78,10 +75,13 @@
         <el-form-item label="家长姓名：">
           <el-input v-model="userInfo.parentName" :maxlength="11"></el-input>
         </el-form-item>
+        <el-form-item label="联系电话：">
+          <el-input v-model="userInfo.phone" :maxlength="11"></el-input>
+        </el-form-item>
         <el-form-item v-if="isCreate" label="验证码：">
           <el-input v-model="userInfo.verification">
             <template slot="append">
-              <div style="cursor: pointer;" @click="getVerificationCode">获取验证码</div>
+              <div style="cursor: pointer;" :class="{'can-send': countDown === null || countDown <= 0}" @click="getVerificationCode">{{codeMsg}}</div>
             </template>
           </el-input>
         </el-form-item>
@@ -140,6 +140,7 @@
           schoolName: '', // 学校
         },
         isCreate: true, // 是否是创建
+        countDown: null, // 倒计时
       })
     },
     filters: {
@@ -154,6 +155,14 @@
             break;
         }
         return text
+      }
+    },
+    computed: {
+      codeMsg() {
+        if (this.countDown === null) return '获取验证码'
+        if (this.countDown > 0) return '在' + this.countDown + '秒后可重发验证码'
+        if (this.countDown <= 0) return '重新获取验证码'
+        return '获取验证码'
       }
     },
     methods: {
@@ -174,11 +183,13 @@
       },
       // 获取验证码
       async getVerificationCode() {
-        // const phone = '15919161013'
+        if (this.countDown !== null && this.countDown > 0) return
         if (!this.userInfo.phone) return this.$message({type: 'info', message: '请输入正确的电话号码！'})
-        const {data, code, msg} = await userApi.getCode({phone: this.userInfo.phone}).catch(e => e)
+        const {code, msg} = await userApi.getCode({phone: this.userInfo.phone}).catch(e => e)
         if (code !== '200') return this.$message({type: 'info', message: msg})
-        this.userInfo.verification = data
+        this.$message({type: 'success', message: '验证码已发送！'})
+        this.countDown = 60
+        this.startCountDown()
       },
       // 创建/编辑学生
       editUser(info) {
@@ -238,6 +249,15 @@
           })
           this.queryUserList()
         }).catch(() => {})
+      },
+      // 倒计时
+      startCountDown() {
+        setTimeout(() => {
+          if (this.countDown > 0) {
+            this.countDown--
+            this.startCountDown()
+          }
+        }, 1000)
       }
     },
     mounted() {
@@ -245,4 +265,8 @@
     }
   }
 </script>
-<style></style>
+<style>
+  .student-list-page .can-send {
+    color: #409EFF;
+  }
+</style>

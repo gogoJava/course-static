@@ -47,36 +47,27 @@
         </el-form-item>
         <el-form-item label="总费用">
           <el-input v-model="courseInfo.courseCost" style="width: 140px"></el-input>
-          <!--<span> /节</span>-->
         </el-form-item>
-        <!--<el-form-item label="教师工资">-->
-          <!--<el-radio-group v-model="courseInfo.teacherChargeType">-->
-            <!--<el-radio label="1">人头</el-radio>-->
-            <!--<el-radio label="2">分成</el-radio>-->
-          <!--</el-radio-group>-->
-        <!--</el-form-item>-->
-        <el-form-item label="收费模式">
+        <el-form-item label="收费方式一">
           <el-row>
             <el-col :span="6">半小时</el-col>
             <el-col :span="6">超出（人）</el-col>
             <el-col :span="6">提成（元）</el-col>
-            <el-col :span="6">出勤课时费</el-col>
           </el-row>
           <el-row>
             <el-col :span="6"><el-input v-model="courseInfo.averageHourCost" style="width: 80%"></el-input></el-col>
             <el-col :span="6"><el-input v-model="courseInfo.exceedNum" style="width: 80%"></el-input></el-col>
             <el-col :span="6"><el-input v-model="courseInfo.extraCharge" style="width: 80%"></el-input></el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item label="收费方式二">
+          <el-row>
+            <el-col :span="6">出勤课时费</el-col>
+          </el-row>
+          <el-row>
             <el-col :span="6"><el-input v-model="courseInfo.percentageValue" style="width: 80%"></el-input><span> %</span></el-col>
           </el-row>
         </el-form-item>
-        <!--<el-form-item label="分成">-->
-          <!--<el-row>-->
-            <!--<el-col :span="6">出勤课时费</el-col>-->
-          <!--</el-row>-->
-          <!--<el-row>-->
-            <!--<el-col :span="6"><el-input v-model="courseInfo.percentageValue" style="width: 80%"></el-input><span> %</span></el-col>-->
-          <!--</el-row>-->
-        <!--</el-form-item>-->
         <el-form-item>
           <el-button @click="$router.back()">取消</el-button>
           <el-button type="primary" @click="onSubmit">立即创建</el-button>

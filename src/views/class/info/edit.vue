@@ -45,9 +45,6 @@
         <el-form-item label="总课时">
           <el-col :span="12"><el-input v-model="courseInfo.courseTotal"></el-input></el-col>
         </el-form-item>
-        <!--<el-form-item label="课程课时">-->
-          <!--<el-col :span="12"><el-input v-model="courseInfo.courseCurrent"></el-input></el-col>-->
-        <!--</el-form-item>-->
         <el-form-item label="课程座位图">
           <el-select v-model="courseInfo.seatId" placeholder="请选择座位图">
             <el-option v-for="(item, index) of seatList" :key="index" :label="seatTitle(item)" :value="item.seatId"></el-option>
@@ -55,19 +52,24 @@
         </el-form-item>
         <el-form-item label="总费用">
           <el-input v-model="courseInfo.courseCost" style="width: 140px"></el-input>
-          <!--<span> /节</span>-->
         </el-form-item>
-        <el-form-item label="收费模式">
+        <el-form-item label="收费方式一">
           <el-row>
             <el-col :span="6">半小时</el-col>
             <el-col :span="6">超出（人）</el-col>
             <el-col :span="6">提成（元）</el-col>
-            <el-col :span="6">出勤课时费</el-col>
           </el-row>
           <el-row>
             <el-col :span="6"><el-input v-model="courseInfo.averageHourCost" style="width: 80%"></el-input></el-col>
             <el-col :span="6"><el-input v-model="courseInfo.exceedNum" style="width: 80%"></el-input></el-col>
             <el-col :span="6"><el-input v-model="courseInfo.extraCharge" style="width: 80%"></el-input></el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item label="收费方式二">
+          <el-row>
+            <el-col :span="6">出勤课时费</el-col>
+          </el-row>
+          <el-row>
             <el-col :span="6"><el-input v-model="courseInfo.percentageValue" style="width: 80%"></el-input><span> %</span></el-col>
           </el-row>
         </el-form-item>

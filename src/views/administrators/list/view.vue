@@ -40,29 +40,13 @@
         <el-form-item label="管理员姓名：">
           <el-input v-model="userInfo.username"></el-input>
         </el-form-item>
-        <!-- <el-form-item label="管理员姓名：">
-          <el-input v-model="userInfo.name"></el-input>
-        </el-form-item> -->
-        <!-- <el-form-item label="性别：">
-          <el-radio-group v-model="userInfo.sex">
-            <el-radio label="0">男</el-radio>
-            <el-radio label="1">女</el-radio>
-          </el-radio-group>
-        </el-form-item> -->
-        <!-- <el-form-item label="出生日期：">
-          <el-date-picker v-model="userInfo.birthday" type="date" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd" placeholder="选择日期">
-          </el-date-picker>
-        </el-form-item> -->
-        <!-- <el-form-item label="身份证号码：">
-          <el-input v-model="userInfo.cardNum"></el-input>
-        </el-form-item> -->
         <el-form-item label="联系电话：">
           <el-input v-model="userInfo.phone" :maxlength="11"></el-input>
         </el-form-item>
         <el-form-item v-if="isCreate" label="验证码：">
           <el-input v-model="userInfo.verification">
             <template slot="append">
-              <div style="cursor: pointer;" @click="getVerificationCode">获取验证码</div>
+              <div style="cursor: pointer;" :class="{'can-send': countDown === null || countDown <= 0}" @click="getVerificationCode">{{codeMsg}}</div>
             </template>
           </el-input>
         </el-form-item>
@@ -118,6 +102,7 @@
           cardNum: null, // 身份证号码
         },
         isCreate: true, // 是否是创建
+        countDown: null, // 倒计时
       })
     },
     filters: {
@@ -132,6 +117,14 @@
             break;
         }
         return text
+      }
+    },
+    computed: {
+      codeMsg() {
+        if (this.countDown === null) return '获取验证码'
+        if (this.countDown > 0) return '在' + this.countDown + '秒后可重发验证码'
+        if (this.countDown <= 0) return '重新获取验证码'
+        return '获取验证码'
       }
     },
     methods: {
@@ -152,11 +145,13 @@
       },
       // 获取验证码
       async getVerificationCode() {
-        // const phone = '15919161013'
+        if (this.countDown !== null && this.countDown > 0) return
         if (!this.userInfo.phone) return this.$message({type: 'info', message: '请输入正确的电话号码！'})
-        const {data, code, msg} = await userApi.getCode({phone: this.userInfo.phone}).catch(e => e)
+        const {code, msg} = await userApi.getCode({phone: this.userInfo.phone}).catch(e => e)
         if (code !== '200') return this.$message({type: 'info', message: msg})
-        this.userInfo.verification = data
+        this.$message({type: 'success', message: '验证码已发送！'})
+        this.countDown = 60
+        this.startCountDown()
       },
       // 创建/编辑学生
       editUser(info) {
@@ -214,6 +209,15 @@
           })
           this.queryUserList()
         }).catch(() => {})
+      },
+      // 倒计时
+      startCountDown() {
+        setTimeout(() => {
+          if (this.countDown > 0) {
+            this.countDown--
+            this.startCountDown()
+          }
+        }, 1000)
       }
     },
     mounted() {
@@ -221,4 +225,8 @@
     }
   }
 </script>
-<style></style>
+<style>
+  .admin-list-page .can-send {
+    color: #409EFF;
+  }
+</style>

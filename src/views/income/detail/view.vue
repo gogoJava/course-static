@@ -48,9 +48,15 @@
             <span>返回数据只有accountid</span>
           </template>
         </el-table-column>
-        <el-table-column prop="updateTime" label="时间" width="180">
+        <el-table-column prop="createTime" label="时间" width="180">
+          <template slot-scope="scope">
+            <span>{{scope.row.createTime.split(' ')[1]}}</span>
+          </template>
         </el-table-column>
-        <el-table-column prop="updateTime" label=日期>
+        <el-table-column prop="createTime" label=日期>
+          <template slot-scope="scope">
+            <span>{{scope.row.createTime.split(' ')[0]}}</span>
+          </template>
         </el-table-column>
         <el-table-column prop="actualNumber" label="出勤人数">
         </el-table-column>
