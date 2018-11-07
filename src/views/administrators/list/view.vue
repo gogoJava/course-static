@@ -5,7 +5,7 @@
         <el-button type="primary" size="small" @click="editUser()">新建管理员</el-button>
       </div>
       <el-table :data="tableData.list" v-loading="tableData.loading" style="width: 100%">
-        <el-table-column prop="username" label="管理员姓名" width="180">
+        <el-table-column prop="username" label="管理员账号" width="180">
         </el-table-column>
         <el-table-column prop="phone" label="联系电话" width="180">
         </el-table-column>
