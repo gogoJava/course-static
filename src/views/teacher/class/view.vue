@@ -12,8 +12,9 @@
         </div>
         <div>
           <span>上课时间：{{courseStartTime + ' 至 ' +  courseEndTime}} </span>
-          <el-button style="position: relative;left: 30px;" type="primary" @click.native="startCourseOnclick">开始课程</el-button>
-          <el-button style="position: relative;left: 30px;" type="primary" @click.native="endCourseOnclick">结束课程</el-button>
+          <!--classStatus: 0上课1下课-->
+          <el-button v-if="classStatus === '1' || classStatus === 1" style="position: relative;left: 30px;" type="primary" @click.native="startCourseOnclick">开始课程</el-button>
+          <el-button v-if="classStatus === '0' || classStatus === 0" style="position: relative;left: 30px;" type="primary" @click.native="endCourseOnclick">结束课程</el-button>
         </div>
       </div>
       <el-col :span="24">
@@ -83,6 +84,7 @@
         courseCurrent: 0,
         courseEndTime: '',
         courseStartTime: '',
+        classStatus: '1', // 0上课1下课
         courseAttendanceList: [], // 考勤列表
         additionalStudent: null,
         rostersStudent: [], // 已选座位学生
@@ -169,6 +171,7 @@
             this.courseCurrent = element.courseCurrent
             this.courseStartTime = element.courseStartTime
             this.courseEndTime = element.courseEndTime
+            this.classStatus = element.classStatus
           }
         })
         Promise.all([
