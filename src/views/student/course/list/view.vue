@@ -153,7 +153,7 @@
         const {code, msg} = await courseApi.courseSign({courseId: courseInfo.courseId}).catch(e => e)
         if (code !== '200') return this.$message('签到失败，' + msg)
         this.$message({type: 'success', message: '签到成功！'})
-      }
+      },
     },
     mounted() {
       this.queryClassList()

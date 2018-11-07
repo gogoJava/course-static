@@ -12,6 +12,11 @@ export const createCourseOrder = (params) => request.post('/api/courseOrder/crea
 export const courseOrderList = (params) => request.post('/api/courseOrder/list', qs.stringify(params))
 
 /**
+ * 学生申请退款
+ */
+export const courseOrderApplyBack = (params) => request.post('/api/courseOrder/applyback', qs.stringify(params))
+
+/**
  * 调起支付
  */
 export const payCourseOrder = (params) => request.get('/api/courseOrder/pay', qs.stringify(params))

@@ -1,5 +1,11 @@
 <template>
   <div class="income-detail-page">
+    <el-card style="margin-bottom: 15px;">
+      <el-select v-model="date" multiple filterable allow-create default-first-option placeholder="时间" style="width: 400px;">
+        <el-option v-for="item in timeList" :key="item.value" :label="item.label" :value="item.value">
+        </el-option>
+      </el-select>
+    </el-card>
     <el-card>
       <div slot="header" class="clearfix">
         <span>个人信息</span>
@@ -65,12 +71,48 @@
           pageSize: 10,
         },
         multipleSelection: [],
-        totalIncomeAmount: 0
+        totalIncomeAmount: 0,
+        date: []
       })
-    },computed: {
+    },
+    computed: {
       ...mapGetters($account.namespace, {
         currentUser: $account.getters.currentUser
       }),
+      timeList() {
+        // const list = new Array(10)
+        const data = []
+        data.push({
+          value: this.$moment().format('YYYY/MM'),
+          label: this.$moment().format('YYYY/MM')
+        })
+        data.push({
+          value: this.$moment().subtract(1, 'months').format('YYYY/MM'),
+          label: this.$moment().subtract(1, 'months').format('YYYY/MM')
+        })
+        data.push({
+          value: this.$moment().subtract(2, 'months').format('YYYY/MM'),
+          label: this.$moment().subtract(2, 'months').format('YYYY/MM')
+        })
+        data.push({
+          value: this.$moment().subtract(3, 'months').format('YYYY/MM'),
+          label: this.$moment().subtract(3, 'months').format('YYYY/MM')
+        })
+        data.push({
+          value: this.$moment().subtract(4, 'months').format('YYYY/MM'),
+          label: this.$moment().subtract(4, 'months').format('YYYY/MM')
+        })
+        data.push({
+          value: this.$moment().subtract(5, 'months').format('YYYY/MM'),
+          label: this.$moment().subtract(5, 'months').format('YYYY/MM')
+        })
+        return data
+      }
+    },
+    watch: {
+      date() {
+        this.queryIncomeList()
+      }
     },
     methods: {
       handleSelectionChange(val) {
@@ -87,7 +129,8 @@
       async queryIncomeList() {
         const params = {
             ...this.seagreen,
-          accountId: this.currentUser.accountId
+          accountId: this.currentUser.accountId,
+          date: this.date
         }
         this.tableData.loading = true
         const {data: {total, list}} = await incomeApi.getIncomeList(params).catch(e => e)

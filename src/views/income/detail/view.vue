@@ -1,5 +1,11 @@
 <template>
   <div class="income-detail-page">
+    <el-card style="margin-bottom: 15px;">
+      <el-select v-model="date" multiple filterable allow-create default-first-option placeholder="时间" style="width: 400px;">
+        <el-option v-for="item in timeList" :key="item.value" :label="item.label" :value="item.value">
+        </el-option>
+      </el-select>
+    </el-card>
     <el-card class="box-card" style="margin-bottom: 15px;">
       <!--<div slot="header" class="clearfix">-->
         <!--<span>支付成功订单</span>-->
@@ -41,12 +47,9 @@
       <el-table :data="tableData.list" v-loading="tableData.loading" style="width: 100%" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55">
         </el-table-column>
-        <el-table-column prop="courseName" label="班级名称" width="180">
+        <el-table-column prop="courseName" label="班级名称">
         </el-table-column>
-        <el-table-column prop="updateTime" label="教师姓名" width="180">
-          <template slot-scope="scope">
-            <span>返回数据只有accountid</span>
-          </template>
+        <el-table-column prop="user.name" label="教师姓名">
         </el-table-column>
         <el-table-column prop="createTime" label="时间" width="180">
           <template slot-scope="scope">
@@ -115,12 +118,51 @@
         },
         multipleSelection: [],
         totalIncomeAmount: 0,
-        totalOrderAmount: 0
+        totalOrderAmount: 0,
+        date: []
       })
-    },computed: {
+    },
+    computed: {
       ...mapGetters($account.namespace, {
         currentUser: $account.getters.currentUser
       }),
+      timeList() {
+        // const list = new Array(10)
+        const data = []
+        data.push({
+          value: this.$moment().format('YYYY/MM'),
+          label: this.$moment().format('YYYY/MM')
+        })
+        data.push({
+          value: this.$moment().subtract(1, 'months').format('YYYY/MM'),
+          label: this.$moment().subtract(1, 'months').format('YYYY/MM')
+        })
+        data.push({
+          value: this.$moment().subtract(2, 'months').format('YYYY/MM'),
+          label: this.$moment().subtract(2, 'months').format('YYYY/MM')
+        })
+        data.push({
+          value: this.$moment().subtract(3, 'months').format('YYYY/MM'),
+          label: this.$moment().subtract(3, 'months').format('YYYY/MM')
+        })
+        data.push({
+          value: this.$moment().subtract(4, 'months').format('YYYY/MM'),
+          label: this.$moment().subtract(4, 'months').format('YYYY/MM')
+        })
+        data.push({
+          value: this.$moment().subtract(5, 'months').format('YYYY/MM'),
+          label: this.$moment().subtract(5, 'months').format('YYYY/MM')
+        })
+        return data
+      }
+    },
+    watch: {
+      date() {
+        Promise.all([
+          this.queryIncomeList(),
+          this.orderQueryIncomeList()
+        ])
+      }
     },
     methods: {
       orderSelectionChange(val) {
@@ -147,7 +189,7 @@
       async queryIncomeList() {
         const params = {
           ...this.seagreen,
-          // accountId: this.currentUser.accountId
+          date: this.date
         }
         this.tableData.loading = true
         const {data: {total, list}} = await incomeApi.getIncomeList(params).catch(e => e)
@@ -161,6 +203,7 @@
         const {data} = await courseApi.getCourseOrderList({
           ...this.orderForm,
           orderStatus: 1, //
+          date: this.date
         }).catch(e => e)
         const {total, list} = data
         this.orderData.total = total || 0

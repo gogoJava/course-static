@@ -116,6 +116,7 @@
           averageHour: null, // 按【averageHour】小时收费
           averageHourCost: null, // 按【averageHour】小时收费【averageHourCost】
           percentage: null,
+          exceedNum: null,
           percentageValue: null, //
           extraCharge: null
         },
@@ -246,6 +247,8 @@
           accountId: this.courseInfo.accountId,
           courseCost: this.courseInfo.courseCost,
           courseId: this.courseInfo.courseId,
+          averageHourCost: this.courseInfo.averageHourCost,
+          exceedNum: this.courseInfo.exceedNum,
           percentage: this.courseInfo.percentageValue / 100, // 小数
           extraCharge: this.courseInfo.extraCharge
         }

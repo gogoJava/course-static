@@ -28,13 +28,14 @@
         <!--</el-table-column>-->
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button v-if="scope.row.bought" type="text" @click.native="$router.push('/home/class/edit/' + scope.row.courseId)">详情</el-button>
-            <el-tooltip class="item" effect="dark" content="微信扫码支付" placement="top">
+            <!--<el-button v-if="scope.row.bought" type="text" @click.native="$router.push('/home/class/edit/' + scope.row.courseId)">详情</el-button>-->
+            <el-tooltip v-if="scope.row.orderStatus === '0'" class="item" effect="dark" content="微信扫码支付" placement="top">
               <icon-font icon="wxpay" class="icon" size="32px" style="color: #67C23A" @click.native="goPay(scope.row, 'wechat')"></icon-font>
             </el-tooltip>
-            <el-tooltip class="item" effect="dark" content="支付宝扫码支付" placement="top">
+            <el-tooltip v-if="scope.row.orderStatus === '0'" class="item" effect="dark" content="支付宝扫码支付" placement="top">
               <icon-font icon="zhifubao" class="icon" size="32px" style="color: #409EFF" @click.native="goPay(scope.row, 'alipay')"></icon-font>
             </el-tooltip>
+            <el-button v-if="scope.row.orderStatus === '1'" type="text" @click.native="applyBack(scope.row)">申请退款</el-button>
             <!--<el-button v-if="!scope.row.bought" type="text" @click.native="goPay(scope.row, 'wechat')">微信支付</el-button>-->
             <!--<el-button v-if="!scope.row.bought" type="text" @click.native="goPay(scope.row, 'alipay')">支付宝支付</el-button>-->
           </template>
@@ -116,7 +117,7 @@
     },
     filters: {
       orderStatusMsg(status) {
-        // 状态(0未支付1成功2部分退款3申请退款)
+        // 状态(0未支付1成功2申请退款3退款)
         let msg = ''
         switch (status) {
           case '0':
@@ -126,10 +127,10 @@
             msg = '支付成功'
             break
           case '2':
-            msg = '部分退款'
+            msg = '申请退款'
             break
           case '3':
-            msg = '申请退款'
+            msg = '已退款'
             break
         }
         return msg
@@ -174,6 +175,19 @@
         this.$message({type: 'success', message: '支付成功！'})
         this.dialogVisible = false
         this.queryClassList()
+      },
+      // 申请退款
+      async applyBack(courseInfo) {
+        this.$confirm('是否确定申请退款该课程?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(async () => {
+          const {code, msg} = await courseOrderApi.courseOrderApplyBack({orderId: courseInfo.orderId}).catch(e => e)
+          if (code !== '200') return this.$message('申请退款失败，请联系管理员！' + msg)
+          this.$message({type: 'success', message: '已申请退款，请耐心等候审核！'})
+          this.queryClassList()
+        }).catch(() => {})
       }
     },
     mounted() {

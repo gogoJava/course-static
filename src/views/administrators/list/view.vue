@@ -7,15 +7,8 @@
       <el-table :data="tableData.list" v-loading="tableData.loading" style="width: 100%">
         <el-table-column prop="username" label="管理员姓名" width="180">
         </el-table-column>
-        <!-- <el-table-column prop="sex" label="性别">
-          <template slot-scope="scope">
-            <span>{{scope.row.sex | sexMsg}}</span>
-          </template>
-        </el-table-column> -->
         <el-table-column prop="phone" label="联系电话" width="180">
         </el-table-column>
-        <!--<el-table-column prop="createTime" label="注册时间">-->
-        <!--</el-table-column>-->
         <el-table-column prop="deleted" label="状态">
           <template slot-scope="scope">
             <span>{{scope.row.deleted ? '禁用' : '启用'}}</span>
@@ -37,7 +30,7 @@
     </el-card>
     <el-dialog :title="isCreate ? '新建管理员' : '管理员详情'" :visible.sync="dialogFormVisible" width="70%">
       <el-form :model="userInfo" label-width="120px" :disabled="userInfo.deleted">
-        <el-form-item label="管理员姓名：">
+        <el-form-item label="管理员账号：">
           <el-input v-model="userInfo.username"></el-input>
         </el-form-item>
         <el-form-item label="联系电话：">
