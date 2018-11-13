@@ -22,6 +22,7 @@ const routes = [
       {path: 'class/list', meta: {title: '课程管理'}, component: () => import('../views/class/list/view.vue')},
       {path: 'class/create', meta: {title: '创建课程'}, component: () => import('../views/class/info/create.vue')},
       {path: 'class/edit/:id', meta: {title: '课程详情'}, component: () => import('../views/class/info/edit.vue')},
+      {path: 'class/update', meta: {title: '修改课程'}, component: () => import('../views/class/update/view.vue')},
       {path: 'class/attendance', meta: {title: '出勤签到'}, component: () => import('../views/class/attendance/view.vue')},
       {path: 'class/release', meta: {title: '发布课程'}, component: () => import('../views/class/release/view.vue')},
       {path: 'class/list/pay', meta: {title: '课程支付'}, component: () => import('../views/student/course/list/view.vue')},

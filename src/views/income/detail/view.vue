@@ -19,9 +19,9 @@
         </el-table-column>
         <el-table-column prop="courseName" label="已支付课程">
         </el-table-column>
-        <el-table-column prop="updateTime" label="时间">
+        <el-table-column prop="orderPayTime" label="时间">
           <template slot-scope="scope">
-            <span>{{$moment(scope.row.updateTime).format('YYYY-MM-DD HH:mm')}}</span>
+            <span>{{$moment(scope.row.orderPayTime).format('YYYY-MM-DD HH:mm')}}</span>
           </template>
         </el-table-column>
         <el-table-column prop="courseCost" label="金额">

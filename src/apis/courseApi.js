@@ -50,3 +50,8 @@ export const endCourse = (courseId) => request.get('/api/course/courseEnd?course
  * 课程签到
  */
 export const courseSign = (params) => request.post('/api/course/sign', qs.stringify(params))
+
+/**
+ * 老师结束（取消）课程
+ */
+export const cancelCourse = (params) => request.post('/api/course/courseCancel', qs.stringify(params))

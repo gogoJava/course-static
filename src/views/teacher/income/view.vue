@@ -80,7 +80,6 @@
         currentUser: $account.getters.currentUser
       }),
       timeList() {
-        // const list = new Array(10)
         const data = []
         data.push({
           value: this.$moment().format('YYYY/MM'),

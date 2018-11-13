@@ -8,41 +8,50 @@
           </el-option>
         </el-select>
         <span style="padding-bottom: 15px; padding-left: 15px;">课程进度：{{courseCurrent}} / {{courseTotal}}</span>
+        <span style="padding-left: 15px;">
+          <el-button v-if="classStatus === '1' || classStatus === '-1'" style="position: relative;left: 30px;" type="primary" @click.native="startCourseOnclick">开始上课</el-button>
+          <el-button v-if="classStatus === '0'" style="position: relative;left: 30px;" type="primary" @click.native="endCourseOnclick">下课</el-button>
+        </span>
       </div>
-      <el-col :span="24">
-        <el-row :gutter="20" v-for="(item, i) of seatRowsList" :key="i">
-        <el-col :span="8">
-          <el-checkbox-group v-model="checkboxGroup" :disabled="isTeacher || isStudent">
-            <el-checkbox class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
+      <el-col :span="18" style="min-width: 1080px;">
+        <el-row :gutter="0" v-for="(item, i) of seatRowsList" :key="i">
+        <el-col style="width: 360px;">
+          <el-checkbox-group v-model="checkboxGroup" disabled>
+            <el-checkbox size="small" class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
           </el-checkbox-group>
           <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, a) of seatLeftList" :key="a">
-            <img :src="(item && item[i]) ? checkedSeatImgUrl : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
+            <el-tooltip class="item" effect="dark" :content="item && item[i] ? (item[i].name + '已签到') : ''" placement="top" :disabled="!(item && item[i] && item[i].attendType)">
+              <img :src="(item && item[i] && item[i].attendType) ? checkedSeatImgUrl : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
+            </el-tooltip>
           </el-col>
         </el-col>
-        <el-col :span="8">
-          <el-checkbox-group v-model="checkboxGroup" :disabled="isTeacher || isStudent">
-            <el-checkbox class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
+        <el-col style="width: 360px;">
+          <el-checkbox-group v-model="checkboxGroup" disabled>
+            <el-checkbox size="small" class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
           </el-checkbox-group>
           <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, b) of seatMidList" :key="b">
-            <img :src="(item && item[i]) ? checkedSeatImgUrl : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
+            <el-tooltip class="item" effect="dark" :content="item && item[i] ? (item[i].name + '已签到') : ''" placement="top" :disabled="!(item && item[i] && item[i].attendType)">
+              <img :src="(item && item[i] && item[i].attendType) ? checkedSeatImgUrl : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
+            </el-tooltip>
           </el-col>
         </el-col>
-        <el-col :span="8">
-          <el-checkbox-group v-model="checkboxGroup" :disabled="isTeacher || isStudent">
-            <el-checkbox class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
+        <el-col style="width: 360px;">
+          <el-checkbox-group v-model="checkboxGroup" disabled>
+            <el-checkbox size="small" class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
           </el-checkbox-group>
           <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, c) of seatRightList" :key="c">
-            <img :src="(item && item[i]) ? checkedSeatImgUrl : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
+            <el-tooltip class="item" effect="dark" :content="item && item[i] ? (item[i].name + '已签到') : ''" placement="top" :disabled="!(item && item[i] && item[i].attendType)">
+              <img :src="(item && item[i] && item[i].attendType) ? checkedSeatImgUrl : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
+            </el-tooltip>
           </el-col>
         </el-col>
       </el-row>
       </el-col>
-      <el-col :span="8" style="padding-bottom: 15px;">
-        <!--<div style="padding-bottom: 15px;">课程进度：{{courseCurrent}} / {{courseTotal}}</div>-->
+      <el-col :span="6">
         <el-card>
           <div slot="header">
             <span>串课名单</span>
-            <el-select v-if="isTeacher" style="float: right;position: relative;top: -6px;" @change="additionalStudents" clearable v-model="additionalStudent" filterable placeholder="添加串课学生">
+            <el-select v-if="isTeacher" style="float: right;position: relative;top: -6px;width: 160px;" @change="additionalStudents" clearable v-model="additionalStudent" filterable placeholder="添加串课学生">
               <el-option
                       v-for="item in studentList"
                       :key="item.accountId"
@@ -52,7 +61,7 @@
             </el-select>
           </div>
           <div style="height: 240px;">
-            <div v-for="(item, index) in courseAttendanceList" :key="index">
+            <div v-for="(item, index) in additionalStudentList" :key="index">
               {{item.name}}
             </div>
           </div>
@@ -96,8 +105,11 @@
         courseTotal: 0, // 总课时
         courseCurrent: 0,
         courseAttendanceList: [], // 考勤列表
+        additionalStudentList: [], // 考勤列表
         additionalStudent: null,
         rostersStudent: [], // 已选座位学生
+        classStatus: '1', // 0上课1下课-1未开始
+        courseStatus: null, // 课程状态
         seatImgUrl: require('../../../assets/seat/seat.png'),
         checkedSeatImgUrl: require('../../../assets/seat/seat-checked.png')
       })
@@ -125,12 +137,18 @@
       // 左边座位
       seatLeftList() {
         if (!this.seatLayout) return []
-        const list = new Array(this.seatLayout.seatLeft)
+        const list = new Array() //先声明一维
+        for ( let i = 0; i < this.seatLayout.seatLeft; i++) { //一维长度
+          list[i] = new Array() //再声明二维
+          for ( let j = 0; j < this.seatLayout.seatRows; j++) { //二维长度
+            list[i][j] = null
+          }
+        }
         // 学生匹配座位
         this.rostersStudent.forEach(item => {
           if (item.rosterSeatX < this.seatLayout.seatLeft) {
-            list[item.rosterSeatX] = new Array(this.seatLayout.seatRows)
-            list[item.rosterSeatX][item.rosterSeatY] = item.user
+            const info = this.courseAttendanceList.find(value => value.accountId === item.accountId)
+            list[item.rosterSeatX][item.rosterSeatY] = {...item.user, attendType: info ? info.attendType : null}
           }
         })
         return list
@@ -138,13 +156,19 @@
       // 中间座位
       seatMidList() {
         if (!this.seatLayout) return []
-        const list = new Array(this.seatLayout.seatMid)
+        const list = new Array() //先声明一维
+        for ( let i = 0; i < this.seatLayout.seatMid; i++) { //一维长度
+          list[i] = new Array() //再声明二维
+          for ( let j = 0; j < this.seatLayout.seatRows; j++) { //二维长度
+            list[i][j] = null
+          }
+        }
         // 学生匹配座位
         this.rostersStudent.forEach(item => {
-          if (item.rosterSeatX < this.seatLayout.seatMid && item.rosterSeatX >= this.seatLayout.seatLeft) {
+          if (item.rosterSeatX < (this.seatLayout.seatMid + this.seatLayout.seatLeft) && item.rosterSeatX >= this.seatLayout.seatLeft) {
+            const info = this.courseAttendanceList.find(value => value.accountId === item.accountId)
             const x = item.rosterSeatX - this.seatLayout.seatLeft
-            list[x] = new Array(this.seatLayout.seatRows)
-            list[x][item.rosterSeatY] = item.user
+            list[x][item.rosterSeatY] = {...item.user, attendType: info ? info.attendType : null}
           }
         })
         return list
@@ -152,13 +176,19 @@
       // 右边座位
       seatRightList() {
         if (!this.seatLayout) return []
-        const list = new Array(this.seatLayout.seatRight)
+        const list = new Array() //先声明一维
+        for ( let i = 0; i < this.seatLayout.seatRight; i++) { //一维长度
+          list[i] = new Array() //再声明二维
+          for ( let j = 0; j < this.seatLayout.seatRows; j++) { //二维长度
+            list[i][j] = null
+          }
+        }
         // 学生匹配座位
         this.rostersStudent.forEach(item => {
           if (item.rosterSeatX >= (this.seatLayout.seatMid + this.seatLayout.seatLeft)) {
+            const info = this.courseAttendanceList.find(value => value.accountId === item.accountId)
             const x = item.rosterSeatX - this.seatLayout.seatMid - this.seatLayout.seatLeft
-            list[x] = new Array(this.seatLayout.seatRows)
-            list[x][item.rosterSeatY] = item.user
+            list[x][item.rosterSeatY] = {...item.user, attendType: info ? info.attendType : null}
           }
         })
         return list
@@ -179,6 +209,8 @@
             this.seatLayout = element.seatLayout
             this.courseTotal = element.courseTotal
             this.courseCurrent = element.courseCurrent
+            this.classStatus = element.classStatus
+            this.courseStatus = element.courseStatus
           }
         })
         Promise.all([
@@ -186,9 +218,28 @@
           this.queryClassRosters()
         ])
       },
-      // checkboxGroup() {
-      //   console.log('checkboxGroup', this.checkboxGroup)
-      // }
+      checkboxGroup() {
+        const rostersStudent = []
+        this.checkboxGroup.forEach(item => {
+          const array = item.split(',')
+          const info = this.rostersStudent.find(indexItem => indexItem.rosterSeatX === (array[0] - 0) && indexItem.rosterSeatY === (array[1] - 0))
+          if (info) {
+            rostersStudent.push(info)
+          } else {
+            const index = this.rostersStudent.findIndex(value => value.accountId === this.currentUser.accountId)
+            if (index === -1) {
+              rostersStudent.push({
+                rosterSeatX: array[0] - 0,
+                rosterSeatY: array[1] - 0,
+                accountId: this.currentUser.accountId,
+                user: this.currentUser
+              })
+            }
+          }
+
+        })
+        this.rostersStudent = [...rostersStudent]
+      }
     },
     methods: {
       async queryClassList() {
@@ -209,7 +260,21 @@
           courseCurrent: this.courseCurrent,
           courseId: this.selectedCourseId, // 用户类型:1学生2教师
         }).catch(e => e)
-        this.courseAttendanceList = data.list || []
+        if (data) {
+          this.courseAttendanceList = []
+          data.forEach(item => {
+            // 签到名单
+            if (item.attendType === '1') {
+              this.courseAttendanceList.push(item)
+            }
+            // 窜课名单
+            if (item.attendType === '3') {
+              this.additionalStudentList.push(item)
+            }
+          })
+        }
+        // this.courseAttendanceList = data || []
+        // console.log('courseAttendanceList', this.courseAttendanceList)
       },
       // 获取课程名单
       async queryClassRosters() {
@@ -230,6 +295,11 @@
         }).catch(e => e)
         this.studentList = data.list || []
       },
+      // 加载窜课名单
+      // async queryCourseAdditional() {
+      //   const res = await courseApi.courseAdditional(params).catch(e => e)
+      //   console.log('sssss', res)
+      // },
       // 添加串课学生
       async additionalStudents() {
         const params = {
@@ -254,11 +324,49 @@
           })
           this.additionalStudent = null
         }).catch(() => {})
+      },
+      // 结束课程
+      async endCourseOnclick() {
+        this.$confirm('确定要结束该课程?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(async () => {
+          const {code, msg} = await courseApi.endCourse(this.selectedCourseId).catch(e => e)
+          if (code !== '200') {
+            return this.$message('结束课程失败，' + msg)
+          }
+          this.classStatus = '-1'
+          this.$message({
+            type: 'success',
+            message: '结束课程成功！'
+          })
+          this.queryClassList()
+        }).catch(() => {})
+      },
+      async startCourseOnclick() {
+        this.$confirm('确定要开始该课程?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(async () => {
+          const {code, msg} = await courseApi.startCourse(this.selectedCourseId).catch(e => e)
+          if (code !== '200') {
+            return this.$message('课程开始失败，' + msg)
+          }
+          this.classStatus = '0'
+          this.$message({
+            type: 'success',
+            message: '课程开始！'
+          })
+          this.queryClassList()
+        }).catch(() => {})
       }
     },
     mounted() {
       this.queryClassList()
       this.queryStudentList()
+      // this.queryCourseAdditional()
     }
   }
 </script>
@@ -284,7 +392,7 @@
 
 }
 .class-attendance-page .chenk-box-img {
-  width: 105px;
+  width: 95px;
   padding: 12px;
 }
 .class-attendance-page .chenk-box .el-checkbox__input {

@@ -2,27 +2,26 @@
   <div class="class-attendance-page">
     <el-card class="content">
       <div slot="header" class="clearfix">
-        <div>
-          <span style="padding-right: 15px;">课程:</span>
-          <el-select v-model="selectedCourseId" filterable placeholder="请选择">
-            <el-option v-for="(item, index) in tableData.list" :key="index" :label="item.courseName" :value="item.courseId">
-            </el-option>
-          </el-select>
+        <span style="padding-right: 15px;">课程:</span>
+        <el-select v-model="selectedCourseId" filterable placeholder="请选择">
+          <el-option v-for="(item, index) in tableData.list" :key="index" :label="item.courseName" :value="item.courseId">
+          </el-option>
+        </el-select>
+        <div style="padding-top: 15px;font-size: 32px;font-weight: bold;">
+          <span>任课老师：</span>
           <span style="padding-bottom: 15px; padding-left: 15px;">课程进度：{{courseCurrent}} / {{courseTotal}}</span>
-          <span>
-            <el-button v-if="courseStatus === '1' || courseStatus === '2'" style="position: relative;left: 30px;" type="danger" @click.native="endCourseOnclick">结束课程</el-button>
-          </span>
         </div>
-        <div>
-          <span>上课时间：{{courseStartTime + ' 至 ' +  courseEndTime}} </span>
-          <!--classStatus: 0上课1下课-->
+        <div style="padding: 15px;">
+          <el-input v-model="newValue" placeholder="输入学号或姓名" style="width: 300px;"></el-input>
+          <el-button type="primary" style="margin-left: 30px;" size="small">新增</el-button>
+          <el-button style="margin-left: 15px;" type="danger" size="small">删除</el-button>
         </div>
       </div>
-      <el-col :span="24">
-        <el-row :gutter="20" v-for="(item, i) of seatRowsList" :key="i">
-        <el-col :span="8">
-          <el-checkbox-group v-model="checkboxGroup" :disabled="isTeacher || isStudent">
-            <el-checkbox class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
+      <el-col :span="18" style="min-width: 1080px;">
+        <el-row :gutter="0" v-for="(item, i) of seatRowsList" :key="i">
+        <el-col style="width: 360px;">
+          <el-checkbox-group v-model="checkboxGroup" disabled>
+            <el-checkbox size="small" class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
           </el-checkbox-group>
           <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, a) of seatLeftList" :key="a">
             <el-tooltip class="item" effect="dark" :content="item && item[i] ? (item[i].name + '已签到') : ''" placement="top" :disabled="!(item && item[i] && item[i].attendType)">
@@ -30,9 +29,9 @@
             </el-tooltip>
           </el-col>
         </el-col>
-        <el-col :span="8">
-          <el-checkbox-group v-model="checkboxGroup" :disabled="isTeacher || isStudent">
-            <el-checkbox class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
+        <el-col style="width: 360px;">
+          <el-checkbox-group v-model="checkboxGroup" disabled>
+            <el-checkbox size="small" class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
           </el-checkbox-group>
           <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, b) of seatMidList" :key="b">
             <el-tooltip class="item" effect="dark" :content="item && item[i] ? (item[i].name + '已签到') : ''" placement="top" :disabled="!(item && item[i] && item[i].attendType)">
@@ -40,9 +39,9 @@
             </el-tooltip>
           </el-col>
         </el-col>
-        <el-col :span="8">
-          <el-checkbox-group v-model="checkboxGroup" :disabled="isTeacher || isStudent">
-            <el-checkbox class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
+        <el-col style="width: 360px;">
+          <el-checkbox-group v-model="checkboxGroup" disabled>
+            <el-checkbox size="small" class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
           </el-checkbox-group>
           <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, c) of seatRightList" :key="c">
             <el-tooltip class="item" effect="dark" :content="item && item[i] ? (item[i].name + '已签到') : ''" placement="top" :disabled="!(item && item[i] && item[i].attendType)">
@@ -52,6 +51,11 @@
         </el-col>
       </el-row>
       </el-col>
+      <el-col>
+        <div style="text-align: center;padding: 15px 0 60px 0">
+          <el-button type="primary" style="width: 200px;line-height: 30px;">完成</el-button>
+        </div>
+      </el-col>
     </el-card>
   </div>
 </template>
@@ -59,7 +63,7 @@
 // API
   import * as classApi from '../../../apis/classApi'
   import * as courseApi from '../../../apis/courseApi'
-  // import * as userApi from '../../../apis/userApi'
+  import * as userApi from '../../../apis/userApi'
   import * as classRosterApi from '../../../apis/classRosterApi'
   // components
   import IconFont from '../../../components/icon-font/IconFont'
@@ -67,7 +71,7 @@
   import {mapGetters} from 'vuex'
   import * as $account from '../../../store/modules/account/types'
   export default {
-    title: '课程管理',
+    title: '修改课程',
     name: 'class-attendance-pagee',
     components: {
       IconFont
@@ -89,15 +93,15 @@
         studentList: [], // 学生列表
         courseTotal: 0, // 总课时
         courseCurrent: 0,
-        courseEndTime: '',
-        courseStartTime: '',
-        classStatus: '1', // 0上课1下课-1未开始
-        courseStatus: null, // 课程状态
         courseAttendanceList: [], // 考勤列表
+        additionalStudentList: [], // 考勤列表
         additionalStudent: null,
         rostersStudent: [], // 已选座位学生
+        classStatus: '1', // 0上课1下课-1未开始
+        courseStatus: null, // 课程状态
         seatImgUrl: require('../../../assets/seat/seat.png'),
-        checkedSeatImgUrl: require('../../../assets/seat/seat-checked.png')
+        checkedSeatImgUrl: require('../../../assets/seat/seat-checked.png'),
+        newValue: null,
       })
     },
     computed: {
@@ -151,7 +155,7 @@
         }
         // 学生匹配座位
         this.rostersStudent.forEach(item => {
-          if (item.rosterSeatX < (this.seatLayout.seatMid + this.seatLayout.seatLeft) && item.rosterSeatX >= this.seatLayout.seatLeft) {
+          if (item.rosterSeatX < this.seatLayout.seatMid && item.rosterSeatX >= this.seatLayout.seatLeft) {
             const info = this.courseAttendanceList.find(value => value.accountId === item.accountId)
             const x = item.rosterSeatX - this.seatLayout.seatLeft
             list[x][item.rosterSeatY] = {...item.user, attendType: info ? info.attendType : null}
@@ -195,8 +199,6 @@
             this.seatLayout = element.seatLayout
             this.courseTotal = element.courseTotal
             this.courseCurrent = element.courseCurrent
-            this.courseStartTime = element.courseStartTime
-            this.courseEndTime = element.courseEndTime
             this.classStatus = element.classStatus
             this.courseStatus = element.courseStatus
           }
@@ -206,6 +208,28 @@
           this.queryClassRosters()
         ])
       },
+      checkboxGroup() {
+        const rostersStudent = []
+        this.checkboxGroup.forEach(item => {
+          const array = item.split(',')
+          const info = this.rostersStudent.find(indexItem => indexItem.rosterSeatX === (array[0] - 0) && indexItem.rosterSeatY === (array[1] - 0))
+          if (info) {
+            rostersStudent.push(info)
+          } else {
+            const index = this.rostersStudent.findIndex(value => value.accountId === this.currentUser.accountId)
+            if (index === -1) {
+              rostersStudent.push({
+                rosterSeatX: array[0] - 0,
+                rosterSeatY: array[1] - 0,
+                accountId: this.currentUser.accountId,
+                user: this.currentUser
+              })
+            }
+          }
+
+        })
+        this.rostersStudent = [...rostersStudent]
+      }
     },
     methods: {
       async queryClassList() {
@@ -226,8 +250,15 @@
           courseCurrent: this.courseCurrent,
           courseId: this.selectedCourseId, // 用户类型:1学生2教师
         }).catch(e => e)
-        this.courseAttendanceList = data || []
-        // console.log('courseAttendanceList', this.courseAttendanceList)
+        if (data) {
+          this.courseAttendanceList = []
+          data.forEach(item => {
+            // 签到名单
+            if (item.attendType === '1') {
+              this.courseAttendanceList.push(item)
+            }
+          })
+        }
       },
       // 获取课程名单
       async queryClassRosters() {
@@ -239,6 +270,15 @@
           this.rostersStudent = data
         }
       },
+      // 获取学生列表
+      async queryStudentList() {
+        const {data} = await userApi.getUserList({
+          pageNum: 1,
+          pageSize: 10,
+          type: 1, // 用户类型:1学生2教师
+        }).catch(e => e)
+        this.studentList = data.list || []
+      },
       // 结束课程
       async endCourseOnclick() {
         this.$confirm('确定要结束该课程?', '提示', {
@@ -246,10 +286,11 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(async () => {
-          const {code, msg} = await courseApi.cancelCourse(this.selectedCourseId).catch(e => e)
+          const {code, msg} = await courseApi.endCourse(this.selectedCourseId).catch(e => e)
           if (code !== '200') {
             return this.$message('结束课程失败，' + msg)
           }
+          this.classStatus = '-1'
           this.$message({
             type: 'success',
             message: '结束课程成功！'
@@ -257,28 +298,29 @@
           this.queryClassList()
         }).catch(() => {})
       },
-      // async startCourseOnclick() {
-      //   this.$confirm('确定要开始该课程?', '提示', {
-      //     confirmButtonText: '确定',
-      //     cancelButtonText: '取消',
-      //     type: 'warning'
-      //   }).then(async () => {
-      //     const {code, msg} = await courseApi.startCourse(this.selectedCourseId).catch(e => e)
-      //     if (code !== '200') {
-      //       return this.$message('课程开始失败，' + msg)
-      //     }
-      //     this.classStatus = '0'
-      //     this.$message({
-      //       type: 'success',
-      //       message: '课程开始！'
-      //     })
-      //     this.queryClassList()
-      //   }).catch(() => {})
-      // }
+      async startCourseOnclick() {
+        this.$confirm('确定要开始该课程?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(async () => {
+          const {code, msg} = await courseApi.startCourse(this.selectedCourseId).catch(e => e)
+          if (code !== '200') {
+            return this.$message('课程开始失败，' + msg)
+          }
+          this.classStatus = '0'
+          this.$message({
+            type: 'success',
+            message: '课程开始！'
+          })
+          this.queryClassList()
+        }).catch(() => {})
+      }
     },
     mounted() {
       this.queryClassList()
       // this.queryStudentList()
+      // this.queryCourseAdditional()
     }
   }
 </script>
@@ -304,7 +346,7 @@
 
 }
 .class-attendance-page .chenk-box-img {
-  width: 105px;
+  width: 95px;
   padding: 12px;
 }
 .class-attendance-page .chenk-box .el-checkbox__input {

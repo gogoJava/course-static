@@ -16,6 +16,7 @@
             </template>
             <el-menu-item-group>
               <el-menu-item index="/home/class/list">课程信息</el-menu-item>
+              <el-menu-item index="/home/class/update">修改课程</el-menu-item>
               <el-menu-item index="/home/class/attendance">出勤签到</el-menu-item>
               <el-menu-item index="/home/class/release">发布课程</el-menu-item>
             </el-menu-item-group>
@@ -69,7 +70,7 @@
           </el-menu-item>
           <el-menu-item v-if="isStudent" index="/home/student/class/my">
             <icon-font icon="caiwu" class="icon" size="24px"></icon-font>
-            <span slot="title">座位表</span>
+            <span slot="title">我的课程</span>
           </el-menu-item>
         </el-menu>
       </el-aside>
@@ -88,6 +89,7 @@
                 <el-dropdown-item v-if="isSuperAdmin" @click.native="$router.push('/home/income/detail')">收入详情</el-dropdown-item>
                 <!--超级管理员或者管理员-->
                 <el-dropdown-item v-if="isAdmin || isSuperAdmin" @click.native="$router.push('/home/class/list')">课程信息</el-dropdown-item>
+                <el-dropdown-item v-if="isAdmin || isSuperAdmin" @click.native="$router.push('/home/class/update')">修改课程</el-dropdown-item>
                 <el-dropdown-item v-if="isAdmin || isSuperAdmin" @click.native="$router.push('/home/class/attendance')">出勤签到</el-dropdown-item>
                 <el-dropdown-item v-if="isAdmin || isSuperAdmin" @click.native="$router.push('/home/class/release')">发布课程</el-dropdown-item>
                 <el-dropdown-item v-if="isAdmin || isSuperAdmin" @click.native="$router.push('/home/student/list')">学生管理</el-dropdown-item>
