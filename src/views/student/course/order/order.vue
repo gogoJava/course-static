@@ -408,6 +408,9 @@
             const index = this.tableData.list.findIndex(value => value.courseId === item.courseId)
             if (index !== -1) {
               this.tableData.list[index] = {...this.tableData.list[index], ...item}
+              if (this.selectedCourseId === item.courseId) {
+                this.orderId = item.orderId
+              }
             }
           })
         }

@@ -56,7 +56,7 @@
           </el-col>
         </el-row>
       </el-col>
-      <el-col :span="10">
+      <el-col :span="10" v-if="tableData.list.length">
         <div style="font-weight: bold;text-align: center;padding-bottom: 15px;border-bottom: 0.1px solid #ebeef5;">出勤表</div>
         <el-table :data="tableData2.list" v-loading="tableData2.loading" border>
           <el-table-column prop="" label="课程名称">
