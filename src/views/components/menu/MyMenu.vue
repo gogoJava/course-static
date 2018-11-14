@@ -25,8 +25,12 @@
             <icon-font icon="banjixinxi" class="icon" size="24px"></icon-font>
             <span slot="title">我的课程</span>
           </el-menu-item>
-          <el-menu-item v-if="isStudent" index="/home/class/list/pay">
-            <icon-font icon="banjixinxi" class="icon" size="24px"></icon-font>
+          <!--<el-menu-item v-if="isStudent" index="/home/class/list/pay">-->
+            <!--<icon-font icon="banjixinxi" class="icon" size="24px"></icon-font>-->
+            <!--<span slot="title">我的课程</span>-->
+          <!--</el-menu-item>-->
+          <el-menu-item v-if="isStudent" index="/home/student/class/my">
+            <icon-font icon="caiwu" class="icon" size="24px"></icon-font>
             <span slot="title">我的课程</span>
           </el-menu-item>
           <el-menu-item v-if="isStudent" index="/home/class/order/pay">
@@ -68,10 +72,6 @@
             <icon-font icon="caiwu" class="icon" size="24px"></icon-font>
             <span slot="title">个人信息</span>
           </el-menu-item>
-          <el-menu-item v-if="isStudent" index="/home/student/class/my">
-            <icon-font icon="caiwu" class="icon" size="24px"></icon-font>
-            <span slot="title">我的课程</span>
-          </el-menu-item>
         </el-menu>
       </el-aside>
       <el-container>
@@ -98,9 +98,9 @@
                 <el-dropdown-item v-if="isTeacher" @click.native="$router.push('/home/class/attendance')">出勤签到</el-dropdown-item>
                 <el-dropdown-item v-if="isTeacher" @click.native="$router.push('/home/income/teacher/detail')">个人信息</el-dropdown-item>
                 <!--学生-->
-                <el-dropdown-item v-if="isStudent" @click.native="$router.push('/home/class/list/pay')">我的课程</el-dropdown-item>
+                <el-dropdown-item v-if="isStudent" @click.native="$router.push('/home/student/class/my')">我的课程</el-dropdown-item>
                 <el-dropdown-item v-if="isStudent" @click.native="$router.push('/home/class/order/pay')">课程支付管理</el-dropdown-item>
-                <el-dropdown-item v-if="isStudent" @click.native="$router.push('/home/student/class/my')">座位表</el-dropdown-item>
+                <!--<el-dropdown-item v-if="isStudent" @click.native="$router.push('/home/student/class/my')">座位表</el-dropdown-item>-->
               </el-dropdown-menu>
             </el-dropdown>
           </span>
