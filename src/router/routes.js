@@ -32,6 +32,7 @@ const routes = [
       {path: 'student/list', meta: {title: '学员管理'}, component: () => import('../views/student/list/view.vue')},
       // 教师管理
       {path: 'teacher/list', meta: {title: '教师管理'}, component: () => import('../views/teacher/list/view.vue')},
+      {path: 'teacher/class/attendance', meta: {title: '出勤签到'}, component: () => import('../views/teacher/attendance/view.vue')},
       {path: 'class/teacher/list', meta: {title: '课程管理'}, component: () => import('../views/teacher/class/view.vue')},
       // 管理员
       {path: 'administrators/list', meta: {title: '管理员'}, component: () => import('../views/administrators/list/view.vue')},

@@ -37,7 +37,7 @@
             <icon-font icon="banjixinxi" class="icon" size="24px"></icon-font>
             <span slot="title">课程支付管理</span>
           </el-menu-item>
-          <el-menu-item v-if="isTeacher" index="/home/class/attendance">
+          <el-menu-item v-if="isTeacher" index="/home/teacher/class/attendance">
             <icon-font icon="banjixinxi" class="icon" size="24px"></icon-font>
             <span slot="title">出勤签到</span>
           </el-menu-item>
@@ -95,7 +95,7 @@
                 <el-dropdown-item v-if="isAdmin || isSuperAdmin" @click.native="$router.push('/home/student/list')">学生管理</el-dropdown-item>
                 <!--教师-->
                 <el-dropdown-item v-if="isTeacher" @click.native="$router.push('/home/teacher/class/list')">我的课程</el-dropdown-item>
-                <el-dropdown-item v-if="isTeacher" @click.native="$router.push('/home/class/attendance')">出勤签到</el-dropdown-item>
+                <el-dropdown-item v-if="isTeacher" @click.native="$router.push('/home/teacher/class/attendance')">出勤签到</el-dropdown-item>
                 <el-dropdown-item v-if="isTeacher" @click.native="$router.push('/home/income/teacher/detail')">个人信息</el-dropdown-item>
                 <!--学生-->
                 <el-dropdown-item v-if="isStudent" @click.native="$router.push('/home/student/class/my')">我的课程</el-dropdown-item>

@@ -20,10 +20,10 @@
             <span>{{scope.row.courseStatus | courseStatusMsg}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column label="">
           <template slot-scope="scope">
             <el-button v-if="scope.row.courseStatus === '0'" type="text" @click.native="publishCourseOnclick(scope.row)">发布</el-button>
-            <el-button v-if="scope.row.courseStatus === '2'" type="text" @click.native="endCourseOnclick(scope.row)">结束课程</el-button>
+            <!--<el-button v-if="scope.row.courseStatus === '2'" type="text" @click.native="endCourseOnclick(scope.row)">结束课程</el-button>-->
           </template>
         </el-table-column>
       </el-table>

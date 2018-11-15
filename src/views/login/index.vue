@@ -146,7 +146,7 @@ export default {
       }
       if (data.type === '1') {
         // 学生
-        url = 'home/class/list/pay'
+        url = 'home/student/class/my'
       }
       this.$router.push(url)
     },

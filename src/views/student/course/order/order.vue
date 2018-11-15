@@ -101,8 +101,8 @@
           total: 0
         },
         searchForm: {
-          // pageNum: 1,
-          // pageSize: 10,
+          pageNum: 1,
+          pageSize: 10,
         },
         selectedCourseId: null,
         seatLayout: null,
@@ -229,7 +229,9 @@
         this.rostersStudent.forEach(item => {
           if (item.rosterSeatX < (this.seatLayout.seatMid + this.seatLayout.seatLeft) && item.rosterSeatX >= this.seatLayout.seatLeft) {
             const x = item.rosterSeatX - this.seatLayout.seatLeft
-            list[x][item.rosterSeatY] = {...item.user, accountId: item.accountId}
+            if (list[x]) {
+              list[x][item.rosterSeatY] = {...item.user, accountId: item.accountId}
+            }
           }
         })
         return list
@@ -248,7 +250,9 @@
         this.rostersStudent.forEach(item => {
           if (item.rosterSeatX >= (this.seatLayout.seatMid + this.seatLayout.seatLeft)) {
             const x = item.rosterSeatX - this.seatLayout.seatMid - this.seatLayout.seatLeft
-            list[x][item.rosterSeatY] = {...item.user, accountId: item.accountId}
+            if (list[x]) {
+              list[x][item.rosterSeatY] = {...item.user, accountId: item.accountId}
+            }
           }
         })
         return list
@@ -402,7 +406,6 @@
         const params = {accountId: this.currentUser.accountId}
         const {data} = await courseOrderApi.courseOrderList(params).catch(e => e)
         const {list} = data
-        // console.log('list 支付订单', list)
         if (list) {
           list.forEach(item => {
             const index = this.tableData.list.findIndex(value => value.courseId === item.courseId)
@@ -410,6 +413,7 @@
               this.tableData.list[index] = {...this.tableData.list[index], ...item}
               if (this.selectedCourseId === item.courseId) {
                 this.orderId = item.orderId
+                this.orderStatus = item.orderStatus
               }
             }
           })
@@ -417,7 +421,6 @@
       },
       // 支付
       async goPay(type) {
-        // this.orderInfo = info
         this.dialogVisible = true
         if (this.dialogVisible) return
         const params = {

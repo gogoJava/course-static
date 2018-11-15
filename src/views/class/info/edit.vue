@@ -53,7 +53,13 @@
         <el-form-item label="总费用">
           <el-input v-model="courseInfo.courseCost" style="width: 140px"></el-input>
         </el-form-item>
-        <el-form-item label="收费方式一">
+        <el-form-item label="收费模式">
+          <el-radio-group v-model="courseInfo.chargeType">
+            <el-radio label="1">按时</el-radio>
+            <el-radio label="2">按分成</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="" v-if="courseInfo.chargeType === '1'">
           <el-row>
             <el-col :span="6">半小时</el-col>
             <el-col :span="6">超出（人）</el-col>
@@ -65,7 +71,7 @@
             <el-col :span="6"><el-input v-model="courseInfo.extraCharge" style="width: 80%"></el-input></el-col>
           </el-row>
         </el-form-item>
-        <el-form-item label="收费方式二">
+        <el-form-item label="" v-if="courseInfo.chargeType === '2'">
           <el-row>
             <el-col :span="6">出勤课时费</el-col>
           </el-row>
@@ -113,6 +119,7 @@
           accountId: '',
           courseCost: null,
           teacherChargeType: '1', // 教师收费类型:1按时(按课时出席人数)2按提成(分成)
+          chargeType: '1', // 1按时2按分成
           averageHour: null, // 按【averageHour】小时收费
           averageHourCost: null, // 按【averageHour】小时收费【averageHourCost】
           percentage: null,
@@ -194,7 +201,7 @@
       // 加载课程信息
        async queryCourseDetail() {
         const {data} = await courseApi.getCourseDetail({courseId: this.courseId}).catch(e => e)
-        this.courseInfo = {...data, percentageValue: data.percentage * 100}
+        this.courseInfo = {...data, percentageValue: data.percentage * 100, chargeType: data.chargeType || '1'}
         this.courseTime.push(data.courseStartTime)
         this.courseTime.push(data.courseEndTime)
         this.getCourseType(data.typeId)

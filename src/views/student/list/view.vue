@@ -47,44 +47,64 @@
     </el-card>
     <el-dialog :title="isCreate ? '新建学生' : '学生详情'" :visible.sync="dialogFormVisible" width="70%">
       <el-form :model="userInfo" label-width="120px" :disabled="userInfo.deleted">
-        <el-form-item label="用户名：">
-          <el-input v-model="userInfo.username"></el-input>
-        </el-form-item>
-        <el-form-item label="学生姓名：">
-          <el-input v-model="userInfo.name"></el-input>
-        </el-form-item>
-        <el-form-item label="性别：">
-          <el-radio-group v-model="userInfo.sex">
-            <el-radio label="0">男</el-radio>
-            <el-radio label="1">女</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="出生日期：">
-          <el-date-picker v-model="userInfo.birthday" type="date" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd" placeholder="选择日期">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="身份证号码：">
-          <el-input v-model="userInfo.cardNum"></el-input>
-        </el-form-item>
-        <el-form-item label="所在学校：">
-          <el-input v-model="userInfo.schoolName" :maxlength="11"></el-input>
-        </el-form-item>
-        <el-form-item label="所在年级：">
-          <el-input v-model="userInfo.gradeName" :maxlength="11"></el-input>
-        </el-form-item>
-        <el-form-item label="家长姓名：">
-          <el-input v-model="userInfo.parentName" :maxlength="11"></el-input>
-        </el-form-item>
-        <el-form-item label="联系电话：">
-          <el-input v-model="userInfo.phone" :maxlength="11"></el-input>
-        </el-form-item>
-        <el-form-item v-if="isCreate" label="验证码：">
-          <el-input v-model="userInfo.verification">
-            <template slot="append">
-              <div style="cursor: pointer;" :class="{'can-send': countDown === null || countDown <= 0}" @click="getVerificationCode">{{codeMsg}}</div>
-            </template>
-          </el-input>
-        </el-form-item>
+        <el-col :span="12">
+          <el-form-item label="用户名：">
+            <el-input v-model="userInfo.username"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="学生姓名：">
+            <el-input v-model="userInfo.name"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="性别：">
+            <el-radio-group v-model="userInfo.sex">
+              <el-radio label="0">男</el-radio>
+              <el-radio label="1">女</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="出生日期：">
+            <el-date-picker v-model="userInfo.birthday" type="date" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd" placeholder="选择日期">
+            </el-date-picker>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="身份证号码：">
+            <el-input v-model="userInfo.cardNum"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="所在学校：">
+            <el-input v-model="userInfo.schoolName" :maxlength="11"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="所在年级：">
+            <el-input v-model="userInfo.gradeName" :maxlength="11"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="家长姓名：">
+            <el-input v-model="userInfo.parentName" :maxlength="11"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="isCreate ? 12 : 24">
+          <el-form-item label="联系电话：">
+            <el-input v-model="userInfo.phone" :maxlength="11"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item v-if="isCreate" label="验证码：">
+            <el-input v-model="userInfo.verification">
+              <template slot="append">
+                <div style="cursor: pointer;" :class="{'can-send': countDown === null || countDown <= 0}" @click="getVerificationCode">{{codeMsg}}</div>
+              </template>
+            </el-input>
+          </el-form-item>
+        </el-col>
         <el-form-item v-if="isCreate" label="密码：">
           <el-input v-model="userInfo.password" type="password"></el-input>
         </el-form-item>
@@ -92,6 +112,19 @@
           <el-input v-model="userInfo.confirmPassword" type="password"></el-input>
         </el-form-item>
       </el-form>
+      <el-card v-if="!isCreate" header="课程列表">
+        <el-table :data="courseData.list" v-loading="courseData.loading">
+          <el-table-column prop="courseName" label="课程名称">
+          </el-table-column>
+          <el-table-column prop="user.name" label="任课老师">
+          </el-table-column>
+          <el-table-column prop="" label="上课日期">
+            <template slot-scope="scope">
+              <div>{{scope.row.courseStartDateStr}} 至 {{scope.row.courseEndDateStr}}</div>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-card>
       <div slot="footer" class="dialog-footer" v-if="!userInfo.deleted">
         <el-button @click="dialogFormVisible = false">取消</el-button>
         <el-button type="primary" @click="createUser">{{isCreate ? '确定' : '修改'}}</el-button>
@@ -105,6 +138,7 @@
   import { Loading } from 'element-ui'
   // API
   import * as userApi from '../../../apis/userApi'
+  import * as classApi from '../../../apis/classApi'
   export default {
     title: '学生管理',
     name: 'student-list-page',
@@ -114,6 +148,11 @@
     data() {
       return ({
         tableData: {
+          loading: true,
+          list: [],
+          total: 0
+        },
+        courseData: {
           loading: true,
           list: [],
           total: 0
@@ -196,6 +235,7 @@
         if (info) {
           this.isCreate = false
           this.userInfo = {...info}
+          this.queryClassList(info.accountId)
         } else {
           this.isCreate = true
           this.userInfo = {
@@ -214,6 +254,16 @@
           }
         }
         this.dialogFormVisible = true
+      },
+      async queryClassList(accountId) {
+        // bought:我的课程
+        this.courseData.loading = true
+        const params = {pageSize: 9999, studentId: accountId, bought: true}
+        const {data} = await classApi.getClassList(params).catch(e => e)
+        const {list, total} = data
+        this.courseData.list = list || []
+        this.courseData.total = total
+        this.courseData.loading = false
       },
       async createUser() {
         if (this.userInfo.password !== this.userInfo.confirmPassword) return this.$message({type: 'info', message: '两次输入密码不一致！'})

@@ -1,5 +1,5 @@
 <template>
-  <div class="class-attendance-page">
+  <div class="home-student-class-my">
     <el-card class="content">
       <div slot="header" class="clearfix" v-if="tableData.list.length">
         <div>
@@ -10,7 +10,7 @@
           </el-select>
           <span style="padding-left: 30px;">
             <el-button v-if="!rosterId && !loading" type="primary" @click.native="confirmSeat" size="small">确定座位</el-button>
-            <el-button v-if="classStatus === '0'" type="primary" @click.native="courseSignOnclick" size="small">签到</el-button>
+            <!--<el-button v-if="classStatus === '0'" type="primary" @click.native="courseSignOnclick" size="small">签到</el-button>-->
           </span>
         </div>
         <div style="font-size: 24px;font-weight: bold;height: 42px;padding-top: 15px;">
@@ -29,8 +29,8 @@
         <div style="padding-top: 30px;color: #999999;">您暂时还没有购买课程，请去购买课程哦</div>
       </div>
       <el-col :span="14" v-if="tableData.list.length">
-        <el-row :gutter="0" v-for="(item, i) of seatRowsList" :key="i" style="min-width: 630px;">
-          <el-col :span="8" style="width: 210px;">
+        <el-row :gutter="0" v-for="(item, i) of seatRowsList" :key="i" style="min-width: 700px;">
+          <el-col :span="8" style="width: 220px;">
             <el-checkbox-group v-model="checkboxGroup" size="small" text-color="#F56C6C" fill="#F56C6C">
               <el-checkbox class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border :disabled="(item && item[i] && item[i].accountId !== currentUser.accountId) || isChecked">{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
@@ -38,7 +38,7 @@
               <img :src="(item && item[i]) ? (item[i].accountId === currentUser.accountId ? mySeatImgUrl : checkedSeatImgUrl) : seatImgUrl" class="chenk-box-img" />
             </el-col>
           </el-col>
-          <el-col :span="8" style="width: 210px;">
+          <el-col :span="8" style="width: 220px;">
             <el-checkbox-group v-model="checkboxGroup" size="small" text-color="#F56C6C" fill="#F56C6C">
               <el-checkbox class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border :disabled="(item && item[i] && item[i].accountId !== currentUser.accountId) || isChecked">{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
@@ -46,7 +46,7 @@
               <img :src="(item && item[i]) ? (item[i].accountId === currentUser.accountId ? mySeatImgUrl : checkedSeatImgUrl) : seatImgUrl" class="chenk-box-img" />
             </el-col>
           </el-col>
-          <el-col :span="8" style="width: 210px;">
+          <el-col :span="8" style="width: 220px;">
             <el-checkbox-group v-model="checkboxGroup" size="small" text-color="#F56C6C" fill="#F56C6C">
               <el-checkbox class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border :disabled="(item && item[i] && item[i].accountId !== currentUser.accountId) || isChecked">{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
@@ -106,7 +106,7 @@
         },
         searchForm: {
           pageNum: 1,
-          pageSize: 10,
+          pageSize: 9999,
         },
         selectedCourseId: null,
         seatLayout: null,
@@ -209,7 +209,9 @@
         this.rostersStudent.forEach(item => {
           if (item.rosterSeatX < (this.seatLayout.seatMid + this.seatLayout.seatLeft) && item.rosterSeatX >= this.seatLayout.seatLeft) {
             const x = item.rosterSeatX - this.seatLayout.seatLeft
-            list[x][item.rosterSeatY] = {...item.user, accountId: item.accountId}
+            if (list[x]) {
+              list[x][item.rosterSeatY] = {...item.user, accountId: item.accountId}
+            }
           }
         })
         return list
@@ -228,7 +230,9 @@
         this.rostersStudent.forEach(item => {
           if (item.rosterSeatX >= (this.seatLayout.seatMid + this.seatLayout.seatLeft)) {
             const x = item.rosterSeatX - this.seatLayout.seatMid - this.seatLayout.seatLeft
-            list[x][item.rosterSeatY] = {...item.user, accountId: item.accountId}
+            if (list[x]) {
+              list[x][item.rosterSeatY] = {...item.user, accountId: item.accountId}
+            }
           }
         })
         return list
@@ -379,45 +383,45 @@
   }
 </script>
 <style>
-.class-attendance-page .content {
+.home-student-class-my .content {
   min-width: 1100px;
   overflow-x: auto;
   min-height: 900px;
 }
-.class-attendance-page .content .el-row {
+.home-student-class-my .content .el-row {
     margin-bottom: 20px;
     &:last-child {
       margin-bottom: 0;
     }
 }
-.class-attendance-page .chenk-box-col {
+.home-student-class-my .chenk-box-col {
   width: 60px;
   text-align: center;
 }
-.class-attendance-page .chenk-box {
+.home-student-class-my .chenk-box {
   width: 60px;
   text-align: center;
 
 }
-.class-attendance-page .el-checkbox__label {
+.home-student-class-my .el-checkbox__label {
   padding: 0;
 }
-.class-attendance-page .chenk-box-img {
+.home-student-class-my .chenk-box-img {
   width: 60px;
   padding: 8px;
 }
-.class-attendance-page .chenk-box .el-checkbox__input {
+.home-student-class-my .chenk-box .el-checkbox__input {
   display: none;
 }
-.class-attendance-page .seat-icon {
+.home-student-class-my .seat-icon {
   width: 90px;
   text-align: center;
   padding-top: 15px;
 }
-.class-attendance-page .seat-icon .icon {
+.home-student-class-my .seat-icon .icon {
   color: #606266;
 }
-.class-attendance-page .seat-icon .icon-selected {
+.home-student-class-my .seat-icon .icon-selected {
    /*color: #409EFF;*/
 }
 </style>

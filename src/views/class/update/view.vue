@@ -1,5 +1,5 @@
 <template>
-  <div class="class-attendance-page">
+  <div class="class-update-page">
     <el-card class="content">
       <div slot="header" class="clearfix">
         <span style="padding-right: 15px;">课程:</span>
@@ -8,13 +8,13 @@
           </el-option>
         </el-select>
         <div style="padding-top: 15px;font-size: 32px;font-weight: bold;">
-          <span>任课老师：</span>
-          <span style="padding-bottom: 15px; padding-left: 15px;">课程进度：{{courseCurrent}} / {{courseTotal}}</span>
+          <span>任课老师：{{courseTeacher ? courseTeacher.name : '无'}}</span>
+          <span style="padding-bottom: 15px; padding-left: 100px;">课程进度：{{courseCurrent}} / {{courseTotal}}</span>
         </div>
         <div style="padding: 15px;">
-          <el-input v-model="newValue" placeholder="输入学号或姓名" style="width: 300px;"></el-input>
+          <el-input v-model="addName" placeholder="输入学号或姓名" style="width: 300px;"></el-input>
           <el-button type="primary" style="margin-left: 30px;" size="small">新增</el-button>
-          <el-button style="margin-left: 15px;" type="danger" size="small">删除</el-button>
+          <el-button style="margin-left: 15px;" type="danger" size="small" @click="deleteStudent">删除</el-button>
         </div>
       </div>
       <el-col :span="18" style="min-width: 1080px;">
@@ -24,9 +24,7 @@
             <el-checkbox size="small" class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
           </el-checkbox-group>
           <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, a) of seatLeftList" :key="a">
-            <el-tooltip class="item" effect="dark" :content="item && item[i] ? (item[i].name + '已签到') : ''" placement="top" :disabled="!(item && item[i] && item[i].attendType)">
-              <img :src="(item && item[i] && item[i].attendType) ? checkedSeatImgUrl : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
-            </el-tooltip>
+            <img :src="(item && item[i]) ? checkedSeatImgUrl : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
           </el-col>
         </el-col>
         <el-col style="width: 360px;">
@@ -34,9 +32,7 @@
             <el-checkbox size="small" class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
           </el-checkbox-group>
           <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, b) of seatMidList" :key="b">
-            <el-tooltip class="item" effect="dark" :content="item && item[i] ? (item[i].name + '已签到') : ''" placement="top" :disabled="!(item && item[i] && item[i].attendType)">
-              <img :src="(item && item[i] && item[i].attendType) ? checkedSeatImgUrl : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
-            </el-tooltip>
+            <img :src="(item && item[i]) ? checkedSeatImgUrl : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
           </el-col>
         </el-col>
         <el-col style="width: 360px;">
@@ -44,9 +40,7 @@
             <el-checkbox size="small" class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
           </el-checkbox-group>
           <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, c) of seatRightList" :key="c">
-            <el-tooltip class="item" effect="dark" :content="item && item[i] ? (item[i].name + '已签到') : ''" placement="top" :disabled="!(item && item[i] && item[i].attendType)">
-              <img :src="(item && item[i] && item[i].attendType) ? checkedSeatImgUrl : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
-            </el-tooltip>
+            <img :src="(item && item[i]) ? checkedSeatImgUrl : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
           </el-col>
         </el-col>
       </el-row>
@@ -72,7 +66,7 @@
   import * as $account from '../../../store/modules/account/types'
   export default {
     title: '修改课程',
-    name: 'class-attendance-pagee',
+    name: 'class-update-pagee',
     components: {
       IconFont
     },
@@ -102,6 +96,8 @@
         seatImgUrl: require('../../../assets/seat/seat.png'),
         checkedSeatImgUrl: require('../../../assets/seat/seat-checked.png'),
         newValue: null,
+        courseTeacher: null, // 老师
+        addName: null,
       })
     },
     computed: {
@@ -158,7 +154,9 @@
           if (item.rosterSeatX < this.seatLayout.seatMid && item.rosterSeatX >= this.seatLayout.seatLeft) {
             const info = this.courseAttendanceList.find(value => value.accountId === item.accountId)
             const x = item.rosterSeatX - this.seatLayout.seatLeft
-            list[x][item.rosterSeatY] = {...item.user, attendType: info ? info.attendType : null}
+            if (list[x]) {
+              list[x][item.rosterSeatY] = {...item.user, attendType: info ? info.attendType : null}
+            }
           }
         })
         return list
@@ -178,7 +176,9 @@
           if (item.rosterSeatX >= (this.seatLayout.seatMid + this.seatLayout.seatLeft)) {
             const info = this.courseAttendanceList.find(value => value.accountId === item.accountId)
             const x = item.rosterSeatX - this.seatLayout.seatMid - this.seatLayout.seatLeft
-            list[x][item.rosterSeatY] = {...item.user, attendType: info ? info.attendType : null}
+            if (list[x]) {
+              list[x][item.rosterSeatY] = {...item.user, attendType: info ? info.attendType : null}
+            }
           }
         })
         return list
@@ -201,6 +201,7 @@
             this.courseCurrent = element.courseCurrent
             this.classStatus = element.classStatus
             this.courseStatus = element.courseStatus
+            this.courseTeacher = element.user
           }
         })
         Promise.all([
@@ -315,6 +316,20 @@
           })
           this.queryClassList()
         }).catch(() => {})
+      },
+      // 删除某个座位
+      deleteStudent() {
+        this.$confirm('确定要删除该学生座位?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(async () => {
+          console.log('addName', this.addName)
+          console.log('rostersStudent', this.rostersStudent)
+          this.rostersStudent.filter(item => {
+            return item.user.name !== this.addName
+          })
+        }).catch(() => {})
       }
     },
     mounted() {
@@ -325,42 +340,45 @@
   }
 </script>
 <style>
-.class-attendance-page .content {
+.class-update-page .content {
   min-width: 1100px;
   overflow-x: auto;
   min-height: 900px;
 }
-.class-attendance-page .content .el-row {
+.class-update-page .content .el-row {
     margin-bottom: 20px;
     &:last-child {
       margin-bottom: 0;
     }
 }
-.class-attendance-page .chenk-box-col {
+.class-update-page .chenk-box-col {
   width: 100px;
   text-align: center;
 }
-.class-attendance-page .chenk-box {
+.class-update-page .chenk-box {
   width: 100px;
   text-align: center;
 
 }
-.class-attendance-page .chenk-box-img {
+.class-update-page .chenk-box-img {
   width: 95px;
   padding: 12px;
 }
-.class-attendance-page .chenk-box .el-checkbox__input {
+.class-update-page .chenk-box .el-checkbox__input {
   display: none;
 }
-.class-attendance-page .seat-icon {
+.class-update-page .seat-icon {
   width: 110px;
   text-align: center;
   padding-top: 15px;
 }
-.class-attendance-page .seat-icon .icon {
+.class-update-page .seat-icon .icon {
   color: #606266;
 }
-.class-attendance-page .seat-icon .icon-selected {
+.class-update-page .seat-icon .icon-selected {
    /*color: #409EFF;*/
+}
+.class-update-page .el-checkbox__label {
+  padding-left: 0;
 }
 </style>

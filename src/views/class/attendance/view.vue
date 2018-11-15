@@ -7,51 +7,48 @@
           <el-option v-for="(item, index) in tableData.list" :key="index" :label="item.courseName" :value="item.courseId">
           </el-option>
         </el-select>
-        <span style="padding-bottom: 15px; padding-left: 15px;">课程进度：{{courseCurrent}} / {{courseTotal}}</span>
-        <span style="padding-left: 15px;">
-          <el-button v-if="classStatus === '1' || classStatus === '-1'" style="position: relative;left: 30px;" type="primary" @click.native="startCourseOnclick">开始上课</el-button>
-          <el-button v-if="classStatus === '0'" style="position: relative;left: 30px;" type="primary" @click.native="endCourseOnclick">下课</el-button>
-        </span>
+        <span style="padding-bottom: 15px; padding-left: 30px;font-weight: bold;">课程进度：{{courseCurrent}} / {{courseTotal}}</span>
       </div>
-      <el-col :span="18" style="min-width: 1080px;">
-        <el-row :gutter="0" v-for="(item, i) of seatRowsList" :key="i">
-        <el-col style="width: 360px;">
-          <el-checkbox-group v-model="checkboxGroup" disabled>
-            <el-checkbox size="small" class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
-          </el-checkbox-group>
-          <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, a) of seatLeftList" :key="a">
-            <el-tooltip class="item" effect="dark" :content="item && item[i] ? (item[i].name + '已签到') : ''" placement="top" :disabled="!(item && item[i] && item[i].attendType)">
-              <img :src="(item && item[i] && item[i].attendType) ? checkedSeatImgUrl : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
-            </el-tooltip>
+      <el-col :span="16">
+        <el-row :gutter="0" v-for="(item, i) of seatRowsList" :key="i" style="width: 720px;">
+          <el-col style="width: 240px;">
+            <el-checkbox-group v-model="checkboxGroup" disabled>
+              <el-checkbox size="small" class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
+            </el-checkbox-group>
+            <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, a) of seatLeftList" :key="a" @click.native="attendanceCourse(item[i])">
+              <el-tooltip class="item" effect="dark" :content="item && item[i] ? (item[i].name + '已签到') : ''" placement="top" :disabled="!(item && item[i] && item[i].attendType)">
+                <img :src="(item && item[i] && item[i].attendType) ? checkedSeatImgUrl : seatImgUrl" class="chenk-box-img" />
+              </el-tooltip>
+            </el-col>
           </el-col>
-        </el-col>
-        <el-col style="width: 360px;">
-          <el-checkbox-group v-model="checkboxGroup" disabled>
-            <el-checkbox size="small" class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
-          </el-checkbox-group>
-          <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, b) of seatMidList" :key="b">
-            <el-tooltip class="item" effect="dark" :content="item && item[i] ? (item[i].name + '已签到') : ''" placement="top" :disabled="!(item && item[i] && item[i].attendType)">
-              <img :src="(item && item[i] && item[i].attendType) ? checkedSeatImgUrl : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
-            </el-tooltip>
+          <el-col style="width: 240px;">
+            <el-checkbox-group v-model="checkboxGroup" disabled>
+              <el-checkbox size="small" class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
+            </el-checkbox-group>
+            <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, b) of seatMidList" :key="b" @click.native="attendanceCourse(item[i])">
+              <el-tooltip class="item" effect="dark" :content="item && item[i] ? (item[i].name + '已签到') : ''" placement="top" :disabled="!(item && item[i] && item[i].attendType)">
+                <img :src="(item && item[i] && item[i].attendType) ? checkedSeatImgUrl : seatImgUrl" class="chenk-box-img" />
+              </el-tooltip>
+            </el-col>
           </el-col>
-        </el-col>
-        <el-col style="width: 360px;">
-          <el-checkbox-group v-model="checkboxGroup" disabled>
-            <el-checkbox size="small" class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
-          </el-checkbox-group>
-          <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, c) of seatRightList" :key="c">
-            <el-tooltip class="item" effect="dark" :content="item && item[i] ? (item[i].name + '已签到') : ''" placement="top" :disabled="!(item && item[i] && item[i].attendType)">
-              <img :src="(item && item[i] && item[i].attendType) ? checkedSeatImgUrl : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
-            </el-tooltip>
+          <el-col style="width: 240px;">
+            <el-checkbox-group v-model="checkboxGroup" disabled>
+              <el-checkbox size="small" class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
+            </el-checkbox-group>
+            <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, c) of seatRightList" :key="c" @click.native="attendanceCourse(item[i])">
+              <el-tooltip class="item" effect="dark" :content="item && item[i] ? (item[i].name + '已签到') : ''" placement="top" :disabled="!(item && item[i] && item[i].attendType)">
+                <img :src="(item && item[i] && item[i].attendType) ? checkedSeatImgUrl : seatImgUrl" class="chenk-box-img" />
+              </el-tooltip>
+            </el-col>
           </el-col>
-        </el-col>
-      </el-row>
+        </el-row>
       </el-col>
-      <el-col :span="6">
+      <el-col :span="8">
+        <div style="text-align: center;padding-bottom: 15px;font-weight: bold;">窜课名单</div>
         <el-card>
           <div slot="header">
-            <span>串课名单</span>
-            <el-select v-if="isTeacher" style="float: right;position: relative;top: -6px;width: 160px;" @change="additionalStudents" clearable v-model="additionalStudent" filterable placeholder="添加串课学生">
+            <span>添加串课名单</span>
+            <el-select style="float: right;position: relative;top: -6px;width: 160px;" @change="additionalStudents" clearable v-model="additionalStudent" filterable placeholder="添加串课学生">
               <el-option
                       v-for="item in studentList"
                       :key="item.accountId"
@@ -60,18 +57,21 @@
               </el-option>
             </el-select>
           </div>
-          <div style="height: 240px;">
+          <div style="height: 300px;overflow-y: auto;">
             <div v-for="(item, index) in additionalStudentList" :key="index">
               {{item.name}}
             </div>
           </div>
         </el-card>
+        <div style="padding-top: 30px;text-align: center;">
+          <el-button type="primary" style="width: 120px;" @click.native="endCourseOnclick">完成</el-button>
+        </div>
       </el-col>
     </el-card>
   </div>
 </template>
 <script>
-// API
+  // API
   import * as classApi from '../../../apis/classApi'
   import * as courseApi from '../../../apis/courseApi'
   import * as userApi from '../../../apis/userApi'
@@ -118,7 +118,7 @@
       ...mapGetters($account.namespace, {
         currentUser: $account.getters.currentUser
       }),
-       // 超级管理员
+      // 超级管理员
       isSuperAdmin() {
         return this.currentUser && this.currentUser.type === '-1'
       },
@@ -168,7 +168,9 @@
           if (item.rosterSeatX < (this.seatLayout.seatMid + this.seatLayout.seatLeft) && item.rosterSeatX >= this.seatLayout.seatLeft) {
             const info = this.courseAttendanceList.find(value => value.accountId === item.accountId)
             const x = item.rosterSeatX - this.seatLayout.seatLeft
-            list[x][item.rosterSeatY] = {...item.user, attendType: info ? info.attendType : null}
+            if (list[x]) {
+              list[x][item.rosterSeatY] = {...item.user, attendType: info ? info.attendType : null}
+            }
           }
         })
         return list
@@ -188,7 +190,9 @@
           if (item.rosterSeatX >= (this.seatLayout.seatMid + this.seatLayout.seatLeft)) {
             const info = this.courseAttendanceList.find(value => value.accountId === item.accountId)
             const x = item.rosterSeatX - this.seatLayout.seatMid - this.seatLayout.seatLeft
-            list[x][item.rosterSeatY] = {...item.user, attendType: info ? info.attendType : null}
+            if (list[x]) {
+              list[x][item.rosterSeatY] = {...item.user, attendType: info ? info.attendType : null}
+            }
           }
         })
         return list
@@ -196,7 +200,7 @@
       // 座位行数
       seatRowsList() {
         if (!this.seatLayout) return []
-        const list = new Array(this.seatLayout.seatRows) 
+        const list = new Array(this.seatLayout.seatRows)
         return list
       },
     },
@@ -249,7 +253,7 @@
         const {total, list} = data
         this.tableData.total = total || 0
         this.tableData.list = list || []
-        if (list && list.length) {
+        if (list && list.length && !this.selectedCourseId) {
           this.selectedCourseId = list[0].courseId
         }
         this.tableData.loading = false
@@ -327,16 +331,15 @@
       },
       // 结束课程
       async endCourseOnclick() {
-        this.$confirm('确定要结束该课程?', '提示', {
+        this.$confirm('确定要完成该课程?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(async () => {
-          const {code, msg} = await courseApi.endCourse(this.selectedCourseId).catch(e => e)
+          const {code, msg} = await courseApi.cancelCourse(this.selectedCourseId).catch(e => e)
           if (code !== '200') {
             return this.$message('结束课程失败，' + msg)
           }
-          this.classStatus = '-1'
           this.$message({
             type: 'success',
             message: '结束课程成功！'
@@ -344,23 +347,16 @@
           this.queryClassList()
         }).catch(() => {})
       },
-      async startCourseOnclick() {
-        this.$confirm('确定要开始该课程?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(async () => {
-          const {code, msg} = await courseApi.startCourse(this.selectedCourseId).catch(e => e)
-          if (code !== '200') {
-            return this.$message('课程开始失败，' + msg)
-          }
-          this.classStatus = '0'
+      // 修改签到
+      async attendanceCourse(info) {
+        console.log('info', info)
+        if (info && info.attendType === '1') {
           this.$message({
             type: 'success',
-            message: '课程开始！'
+            message: '模拟签到！'
           })
-          this.queryClassList()
-        }).catch(() => {})
+          this.queryCourseAttendance()
+        }
       }
     },
     mounted() {
@@ -371,42 +367,46 @@
   }
 </script>
 <style>
-.class-attendance-page .content {
-  min-width: 1100px;
-  overflow-x: auto;
-  min-height: 900px;
-}
-.class-attendance-page .content .el-row {
+  .class-attendance-page .content {
+    min-width: 1100px;
+    overflow-x: auto;
+    min-height: 900px;
+  }
+  .class-attendance-page .content .el-row {
     margin-bottom: 20px;
     &:last-child {
       margin-bottom: 0;
     }
-}
-.class-attendance-page .chenk-box-col {
-  width: 100px;
-  text-align: center;
-}
-.class-attendance-page .chenk-box {
-  width: 100px;
-  text-align: center;
+  }
+  .class-attendance-page .chenk-box-col {
+    width: 70px;
+    text-align: center;
+  }
+  .class-attendance-page .chenk-box {
+    width: 70px;
+    text-align: center;
 
-}
-.class-attendance-page .chenk-box-img {
-  width: 95px;
-  padding: 12px;
-}
-.class-attendance-page .chenk-box .el-checkbox__input {
-  display: none;
-}
-.class-attendance-page .seat-icon {
-  width: 110px;
-  text-align: center;
-  padding-top: 15px;
-}
-.class-attendance-page .seat-icon .icon {
-  color: #606266;
-}
-.class-attendance-page .seat-icon .icon-selected {
-   /*color: #409EFF;*/
-}
+  }
+  .class-attendance-page .chenk-box-img {
+    width: 65px;
+    padding: 10px;
+    cursor: pointer;
+  }
+  .class-attendance-page .chenk-box .el-checkbox__input {
+    display: none;
+  }
+  .class-attendance-page .seat-icon {
+    width: 70px;
+    text-align: center;
+    padding-top: 15px;
+  }
+  .class-attendance-page .seat-icon .icon {
+    color: #606266;
+  }
+  .class-attendance-page .seat-icon .icon-selected {
+    /*color: #409EFF;*/
+  }
+  .class-attendance-page .el-checkbox__label {
+    padding-left: 0;
+  }
 </style>
