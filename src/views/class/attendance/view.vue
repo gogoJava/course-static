@@ -96,7 +96,7 @@
         },
         searchForm: {
           pageNum: 1,
-          pageSize: 10,
+          pageSize: 9999,
         },
         selectedCourseId: null,
         seatLayout: null,
@@ -248,7 +248,14 @@
     methods: {
       async queryClassList() {
         this.tableData.loading = true
-        const params = {...this.searchForm, accountId: this.currentUser.accountId}
+        let params = null
+        if (this.isSuperAdmin || this.isAdmin) {
+          params = {...this.searchForm}
+        } else if (this.isTeacher) {
+          params = {...this.searchForm, accountId: this.currentUser.accountId}
+        } else if (this.isStudent) {
+          params = {...this.searchForm}
+        }
         const {data} = await classApi.getClassList(params).catch(e => e)
         const {total, list} = data
         this.tableData.total = total || 0

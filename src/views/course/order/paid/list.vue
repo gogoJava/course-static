@@ -23,11 +23,6 @@
             <span>¥ {{scope.row.courseCost}}</span>
           </template>
         </el-table-column>
-        <!--<el-table-column label="操作">-->
-          <!--<template slot-scope="scope">-->
-            <!--<el-button type="text">详情</el-button>-->
-          <!--</template>-->
-        <!--</el-table-column>-->
       </el-table>
       <div style="text-align: right;padding-top: 15px;padding-right: 120px;">
         <div>总计：{{totalIncomeAmount}}元</div>

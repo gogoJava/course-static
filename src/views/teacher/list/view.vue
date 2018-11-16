@@ -146,9 +146,8 @@
           total: 0
         },
         searchForm: {
-          keyword: '',
           pageNum: 1,
-          pageSize: 10,
+          pageSize: 9999,
         },
         dialogFormVisible: false,
         userInfo: {
@@ -248,7 +247,15 @@
       async queryClassList(accountId) {
         // bought:我的课程
         this.courseData.loading = true
-        const params = {pageSize: 9999, accountId: accountId}
+        // const params = {pageSize: 9999, accountId: accountId}
+        let params = null
+        if (this.isSuperAdmin || this.isAdmin) {
+          params = {...this.searchForm}
+        } else if (this.isTeacher) {
+          params = {...this.searchForm, accountId: accountId}
+        } else if (this.isStudent) {
+          params = {...this.searchForm, bought: true, studentId: accountId}
+        }
         const {data} = await classApi.getClassList(params).catch(e => e)
         const {list, total} = data
         this.courseData.list = list || []
