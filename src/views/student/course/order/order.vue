@@ -19,17 +19,19 @@
             <el-col :span="12"><div>上课日期：{{courseStartDateStr + ' 至 ' + courseEndDateStr}}</div></el-col>
             <el-col :span="12"><div>上课时间：{{classStartTimeStr + ' 至 ' + classEndTimeStr}}</div></el-col>
           </div>
-        </div>
-        <div v-if="orderStatus">
-          <div style="font-size: 24px;font-weight: bold;height: 42px;padding-top: 15px; float: left;">订单状态：{{orderStatus | orderStatusMsg}}</div>
-          <div style="position: relative;height: 52px;padding-top: 10px;left: 45px;">
-            <el-tooltip v-if="orderStatus && orderStatus === '0'" class="item" effect="dark" content="微信扫码支付" placement="top">
-              <icon-font icon="wxpay" class="icon" size="32px" style="color: #67C23A" @click.native="goPay('wechat')"></icon-font>
-            </el-tooltip>
-            <el-tooltip v-if="orderStatus && orderStatus === '0'" class="item" effect="dark" content="支付宝扫码支付" placement="top">
-              <icon-font icon="zhifubao" class="icon" size="32px" style="color: #409EFF" @click.native="goPay('alipay')"></icon-font>
-            </el-tooltip>
-            <el-button v-if="orderStatus && orderStatus === '1'" type="text" @click.native="applyBack()">申请退款</el-button>
+          <div v-if="orderStatus">
+            <div style="font-size: 24px;font-weight: bold;">
+              <span>订单状态：{{orderStatus | orderStatusMsg}}</span>
+              <span style="position: relative;left: 45px;">
+              <el-tooltip v-if="orderStatus && orderStatus === '0'" class="item" effect="dark" content="微信扫码支付" placement="top">
+                <icon-font icon="wxpay" class="icon" size="32px" style="color: #67C23A" @click.native="goPay('wechat')"></icon-font>
+              </el-tooltip>
+              <el-tooltip v-if="orderStatus && orderStatus === '0'" class="item" effect="dark" content="支付宝扫码支付" placement="top">
+                <icon-font icon="zhifubao" class="icon" size="32px" style="color: #409EFF" @click.native="goPay('alipay')"></icon-font>
+              </el-tooltip>
+              <el-button v-if="orderStatus && orderStatus === '1'" type="text" @click.native="applyBack()">申请退款</el-button>
+            </span>
+            </div>
           </div>
         </div>
       </div>
@@ -43,7 +45,7 @@
         <el-row :gutter="0" v-for="(item, i) of seatRowsList" :key="i" style="min-width: 900px;">
           <el-col :span="8" style="width: 280px;">
             <el-checkbox-group v-model="checkboxGroup" size="small" text-color="#F56C6C" fill="#F56C6C">
-              <el-checkbox class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border :disabled="(item && item[i] && item[i].accountId !== currentUser.accountId) || isChecked || !bought">{{item && item[i] ? item[i].name : ''}}</el-checkbox>
+              <el-checkbox class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border :disabled="(item && item[i] && item[i].accountId !== currentUser.accountId) || !bought || (isChecked && !isMy(item ? item[i] : null))">{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
             <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, a) of seatLeftList" :key="a">
               <img :src="(item && item[i]) ? (item[i].accountId === currentUser.accountId ? mySeatImgUrl : checkedSeatImgUrl) : seatImgUrl" class="chenk-box-img" />
@@ -51,7 +53,7 @@
           </el-col>
           <el-col :span="8" style="width: 280px;">
             <el-checkbox-group v-model="checkboxGroup" size="small" text-color="#F56C6C" fill="#F56C6C">
-              <el-checkbox class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border :disabled="(item && item[i] && item[i].accountId !== currentUser.accountId) || isChecked || !bought">{{item && item[i] ? item[i].name : ''}}</el-checkbox>
+              <el-checkbox class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border :disabled="(item && item[i] && item[i].accountId !== currentUser.accountId) || !bought || (isChecked && !isMy(item ? item[i] : null))">{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
             <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, b) of seatMidList" :key="b">
               <img :src="(item && item[i]) ? (item[i].accountId === currentUser.accountId ? mySeatImgUrl : checkedSeatImgUrl) : seatImgUrl" class="chenk-box-img" />
@@ -59,7 +61,7 @@
           </el-col>
           <el-col :span="8" style="width: 280px;">
             <el-checkbox-group v-model="checkboxGroup" size="small" text-color="#F56C6C" fill="#F56C6C">
-              <el-checkbox class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border :disabled="(item && item[i] && item[i].accountId !== currentUser.accountId) || isChecked || !bought">{{item && item[i] ? item[i].name : ''}}</el-checkbox>
+              <el-checkbox class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border :disabled="(item && item[i] && item[i].accountId !== currentUser.accountId) || !bought || (isChecked && !isMy(item ? item[i] : null))">{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
             <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, c) of seatRightList" :key="c">
               <img :src="(item && item[i]) ? (item[i].accountId === currentUser.accountId ? mySeatImgUrl : checkedSeatImgUrl) : seatImgUrl" class="chenk-box-img" />
@@ -330,7 +332,7 @@
     methods: {
       isMy(info) {
         if (!info) return false
-        return this.currentUser.accountId === info.accountId
+        return this.currentUser.accountId === info.accountId && this.orderStatus && this.orderStatus === '1' && !this.rosterId
       },
       async queryClassList() {
         this.tableData.loading = true
@@ -366,6 +368,7 @@
       },
       // 确定座位
       async confirmSeat() {
+        if ((this.orderStatus && this.orderStatus === '0')) return this.$message('请先完成支付，再选座位！')
         const info = this.rostersStudent.find(indexItem => indexItem.accountId === this.currentUser.accountId)
         if (!info) return this.$message('请选择座位')
         if (this.rosterId) {
@@ -373,19 +376,15 @@
           const ids = []
           this.rostersStudent.forEach(item => {
             ids.push(((item.rosterId || this.rosterId) + ',' + item.rosterSeatX + ',' + item.rosterSeatY))
-            // ids.push({
-            //   rosterId: item.rosterId || this.rosterId,
-            //   seatX: item.rosterSeatX,
-            //   sertY: item.rosterSeatY
-            // })
           })
-          const data = {
+          const params = {
             courseId: this.selectedCourseId,
             ids
           }
           // console.log('data', data)
-          const {code, msg} = await classRosterApi.updateClassRoster(data).catch(e => e)
+          const {code, msg, data} = await classRosterApi.updateClassRoster(params).catch(e => e)
           if (code !== '200') return this.$message('选座失败，', msg)
+          this.rosterId = data.rosterId
           this.$message({type: 'success', message: '选座成功！'})
         } else {
           // 新增选择座位
@@ -394,8 +393,9 @@
             seatX: info.rosterSeatX,
             seatY: info.rosterSeatY
           }
-          const {code, msg} = await seatApi.choiceSeat(params).catch(e => e)
+          const {code, msg, data} = await seatApi.choiceSeat(params).catch(e => e)
           if (code !== '200') return this.$message('选座失败，', msg)
+          this.rosterId = data.rosterId
           this.$message({type: 'success', message: '选座成功！'})
         }
       },
@@ -409,7 +409,7 @@
           const {code, msg} = await courseOrderApi.createCourseOrder({courseId: this.selectedCourseId}).catch(e => e)
           if (code !== '200') return this.$message('购买失败，' + msg)
           this.$message({type: 'success', message: '购买成功！请去完成支付！'})
-          this.bought = true
+          // this.bought = true
           this.orderStatus = '0'
           await this.queryClassList()
           this.queryOrderList()
