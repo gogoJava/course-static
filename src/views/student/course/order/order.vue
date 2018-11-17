@@ -24,11 +24,11 @@
               <span>订单状态：{{orderStatus | orderStatusMsg}}</span>
               <span style="position: relative;left: 45px;">
               <el-tooltip v-if="orderStatus && orderStatus === '0'" class="item" effect="dark" content="微信扫码支付" placement="top">
-                <icon-font icon="wxpay" class="icon" size="32px" style="color: #67C23A" @click.native="goPay('wechat')"></icon-font>
+                <icon-font icon="wxpay" class="icon" size="32px" style="color: #67C23A;cursor: pointer;position: relative;top: 3px;" @click.native="goPay()"></icon-font>
               </el-tooltip>
-              <el-tooltip v-if="orderStatus && orderStatus === '0'" class="item" effect="dark" content="支付宝扫码支付" placement="top">
-                <icon-font icon="zhifubao" class="icon" size="32px" style="color: #409EFF" @click.native="goPay('alipay')"></icon-font>
-              </el-tooltip>
+              <!--<el-tooltip v-if="orderStatus && orderStatus === '0'" class="item" effect="dark" content="支付宝扫码支付" placement="top">-->
+                <!--<icon-font icon="zhifubao" class="icon" size="32px" style="color: #409EFF" @click.native="goPay('alipay')"></icon-font>-->
+              <!--</el-tooltip>-->
               <el-button v-if="orderStatus && orderStatus === '1'" type="text" @click.native="applyBack()">申请退款</el-button>
             </span>
             </div>
@@ -71,11 +71,12 @@
       </el-col>
     </el-card>
     <el-dialog :visible.sync="dialogVisible" :show-close="false" custom-class="qrcode-img">
-      <qr-code :value="'url'" :size="240" v-loading="qrCodeLoading"></qr-code>
-      <div style="text-align: center;padding-top: 15px;">微信/支付宝扫码支付</div>
-      <div>
-        <el-button type="primary" @click.native="testPay">Test Pay</el-button>
-      </div>
+      <qr-code :value="payUrl" :size="240" v-loading="qrCodeLoading"></qr-code>
+      <div style="text-align: center;padding-top: 15px;">微信扫码支付</div>
+      <div style="text-align: center;padding-top: 15px;color: #999999;">支付成功后请耐心等待，若太久请尝试刷新页面</div>
+      <!--<div>-->
+        <!--<el-button type="primary" @click.native="testPay">Test Pay</el-button>-->
+      <!--</div>-->
     </el-dialog>
   </div>
 </template>
@@ -135,10 +136,12 @@
         orderId: null,
         dialogVisible: false,
         qrCodeLoading: false,
+        payUrl: null, // 支付地址
         tableData2: { // 签到情况
           loading: true,
           list: [],
         },
+        queryNum: 0, // 轮询次数
       })
     },
     filters: {
@@ -428,23 +431,37 @@
               if (this.selectedCourseId === item.courseId) {
                 this.orderId = item.orderId
                 this.orderStatus = item.orderStatus
+                if (this.orderStatus !== '0') {
+                  this.bought = true
+                  this.dialogVisible = false
+                }
               }
             }
           })
         }
       },
       // 支付
-      async goPay(type) {
-        this.dialogVisible = true
-        if (this.dialogVisible) return
+      async goPay() {
+        // if (this.dialogVisible) return
         const params = {
-          gofalse: 'baidu.com',
-          gotrue: 'http://open.taobao.com/doc.htm?docId=73&docType=1',
-          orderId: this.orderId,
-          type // 支付类型:alipay,wechat
+          orderId: this.orderId
         }
-        const res = await courseOrderApi.payCourseOrder(params).catch(e => e)
-        console.log('res', res)
+        const {data} = await courseOrderApi.payCourseOrder(params).catch(e => e)
+        this.payUrl = data || ''
+        this.dialogVisible = true
+        this.getOrderStatus()
+      },
+      // 轮询查订单状态(5秒)
+      async getOrderStatus() {
+        setTimeout(async () => {
+          await this.queryOrderList().catch(e => e)
+          this.queryNum++
+          if (this.dialogVisible && this.queryNum < 10) {
+            this.getOrderStatus()
+          } else {
+            this.queryNum = 0
+          }
+        }, 6000)
       },
       // test pay 模拟支付
       async testPay() {

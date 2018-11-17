@@ -40,7 +40,7 @@
     <el-dialog :title="isCreate ? '新建管理员' : '管理员详情'" :visible.sync="dialogFormVisible" width="70%">
       <el-form :model="userInfo" label-width="120px" :disabled="userInfo.deleted">
         <el-form-item label="管理员账号：">
-          <el-input v-model="userInfo.username"></el-input>
+          <el-input v-model="userInfo.username" :disabled="!isCreate"></el-input>
         </el-form-item>
         <el-form-item label="联系电话：">
           <el-input v-model="userInfo.phone" :maxlength="11"></el-input>

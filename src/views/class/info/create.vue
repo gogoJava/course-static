@@ -40,16 +40,19 @@
           <el-time-picker v-model="endCourse" placeholder="下课时间">
           </el-time-picker>
         </el-form-item>
-        <el-form-item label="总课时">
-          <el-col :span="12"><el-input v-model="courseInfo.courseTotal"></el-input></el-col>
-        </el-form-item>
         <el-form-item label="课程座位图">
           <el-select v-model="courseInfo.seatId" placeholder="请选择座位图">
             <el-option v-for="(item, index) of seatList" :key="index" :label="seatTitle(item)" :value="item.seatId"></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="总课时">
+          <el-col :span="12"><el-input v-model="courseInfo.courseTotal"></el-input></el-col>
+        </el-form-item>
+        <el-form-item label="单节费用">
+          <el-input v-model="courseInfo.coursePerCost" style="width: 140px"></el-input>
+        </el-form-item>
         <el-form-item label="总费用">
-          <el-input v-model="courseInfo.courseCost" style="width: 140px"></el-input>
+          <div style="padding-left: 15px;">{{courseInfo.coursePerCost * courseInfo.courseTotal}}</div>
         </el-form-item>
         <el-form-item label="收费模式">
           <el-radio-group v-model="courseInfo.chargeType">
@@ -109,6 +112,7 @@
           typeId: null,
           accountId: '',
           courseCost: null,
+          coursePerCost: null,
           teacherChargeType: '1', // 教师收费类型:1按时(按课时出席人数)2按提成(分成)
           chargeType: '1', // 1按时2按分成
           averageHour: null, // 按【averageHour】小时收费
@@ -167,6 +171,7 @@
         this.courseInfo.courseEndTime = this.$moment(this.courseTime[1]).format('YYYY/MM/DD') + ' ' + this.$moment(this.endCourse).format('HH:mm:ss')
         this.courseInfo.typeId = this.selectedTypeId[this.selectedTypeId.length - 1]
         this.courseInfo.percentage = this.courseInfo.percentageValue / 100 // 小数
+        this.courseInfo.courseCost = this.courseInfo.coursePerCost * this.courseInfo.courseTotal
         const params = this.courseInfo
         delete params.percentageValue
         const {code} = await courseApi.addCourse(params).catch(e => e)

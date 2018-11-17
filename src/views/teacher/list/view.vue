@@ -45,7 +45,7 @@
       <el-form :model="userInfo" label-width="120px" :disabled="userInfo.deleted">
         <el-col :span="12">
           <el-form-item label="用户名：">
-            <el-input v-model="userInfo.username"></el-input>
+            <el-input v-model="userInfo.username" :disabled="!isCreate"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
