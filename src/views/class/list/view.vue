@@ -13,12 +13,13 @@
             <el-button type="primary" size="small" @click="$router.push('/home/class/create')">新建课程</el-button>
           </span>
         </div>
-        <div style="font-size: 24px;font-weight: bold;height: 42px;padding-top: 15px;">
-          <span>任课老师：{{courseTeacher ? courseTeacher.name : '无'}}</span>
-          <span style="padding-bottom: 15px; padding-left: 100px;">课程进度：{{courseCurrent}} / {{courseTotal}}</span>
-        </div>
-        <div style="font-size: 24px;font-weight: bold;height: 42px;padding-top: 5px;">
-          <div>上课时间：{{courseStartTime + ' 至 ' + courseEndTime}}</div>
+        <div style="font-size: 24px;font-weight: bold;padding: 15px;">
+          <div>
+            <span>任课老师：{{courseTeacher ? courseTeacher.name : '无'}}</span>
+            <span style="padding-bottom: 15px; padding-left: 100px;">课程进度：{{courseCurrent}} / {{courseTotal}}</span>
+          </div>
+          <div>上课日期：{{courseStartDateStr + ' 至 ' + courseEndDateStr}}</div>
+          <div>上课时间：{{classStartTimeStr + ' 至 ' + classEndTimeStr}}</div>
         </div>
       </div>
       <el-col :span="18" style="min-width: 1080px;">
@@ -96,8 +97,10 @@
         checkedSeatImgUrl: require('../../../assets/seat/seat-checked.png'),
         newValue: null,
         courseTeacher: null, // 老师
-        courseStartTime: null, // 上课时间
-        courseEndTime: null, // 结束时间
+        courseStartDateStr: null, // 上课日期
+        courseEndDateStr: null, // 结束日期
+        classStartTimeStr: null, // 上课时间
+        classEndTimeStr: null, // 下课时间
         addName: null,
       })
     },
@@ -203,8 +206,10 @@
             this.classStatus = element.classStatus
             this.courseStatus = element.courseStatus
             this.courseTeacher = element.user
-            this.courseStartTime = element.courseStartTime
-            this.courseEndTime = element.courseEndTime
+            this.courseStartDateStr = element.courseStartDateStr
+            this.courseEndDateStr = element.courseEndDateStr
+            this.classStartTimeStr = element.classStartTimeStr
+            this.classEndTimeStr = element.classEndTimeStr
           }
         })
         Promise.all([
@@ -250,8 +255,29 @@
         const {total, list} = data
         this.tableData.total = total || 0
         this.tableData.list = list || []
-        if (list && list.length) {
+        if (list && list.length && !this.selectedCourseId) {
           this.selectedCourseId = list[0].courseId
+        } else {
+          this.checkboxGroup = []
+          this.rostersStudent = []
+          this.tableData.list.forEach(element => {
+            if (element.courseId === this.selectedCourseId) {
+              this.seatLayout = element.seatLayout
+              this.courseTotal = element.courseTotal
+              this.courseCurrent = element.courseCurrent
+              this.classStatus = element.classStatus
+              this.courseStatus = element.courseStatus
+              this.courseTeacher = element.user
+              this.courseStartDateStr = element.courseStartDateStr
+              this.courseEndDateStr = element.courseEndDateStr
+              this.classStartTimeStr = element.classStartTimeStr
+              this.classEndTimeStr = element.classEndTimeStr
+            }
+          })
+          Promise.all([
+            this.queryCourseAttendance(),
+            this.queryClassRosters()
+          ])
         }
         this.tableData.loading = false
       },
@@ -334,8 +360,6 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(async () => {
-          console.log('addName', this.addName)
-          console.log('rostersStudent', this.rostersStudent)
           this.rostersStudent.filter(item => {
             return item.user.name !== this.addName
           })
@@ -343,9 +367,8 @@
       }
     },
     mounted() {
+      this.selectedCourseId = this.$route.query.courseId ? this.$route.query.courseId - 0 : null
       this.queryClassList()
-      // this.queryStudentList()
-      // this.queryCourseAdditional()
     }
   }
 </script>

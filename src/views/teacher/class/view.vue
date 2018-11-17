@@ -13,9 +13,9 @@
             <el-button v-if="courseStatus === '1' || courseStatus === '2'" style="position: relative;left: 30px;" type="danger" @click.native="endCourseOnclick">结束课程</el-button>
           </span>
         </div>
-        <div>
-          <span>上课时间：{{courseStartTime + ' 至 ' +  courseEndTime}} </span>
-          <!--classStatus: 0上课1下课-->
+        <div style="font-size: 24px;font-weight: bold;padding: 15px;">
+          <div>上课日期：{{courseStartDateStr + ' 至 ' + courseEndDateStr}}</div>
+          <div>上课时间：{{classStartTimeStr + ' 至 ' + classEndTimeStr}}</div>
         </div>
       </div>
       <el-col :span="24">
@@ -91,7 +91,11 @@
         additionalStudent: null,
         rostersStudent: [], // 已选座位学生
         seatImgUrl: require('../../../assets/seat/seat.png'),
-        checkedSeatImgUrl: require('../../../assets/seat/seat-checked.png')
+        checkedSeatImgUrl: require('../../../assets/seat/seat-checked.png'),
+        courseStartDateStr: null, // 上课日期
+        courseEndDateStr: null, // 结束日期
+        classStartTimeStr: null, // 上课时间
+        classEndTimeStr: null, // 下课时间
       })
     },
     computed: {
@@ -193,10 +197,12 @@
             this.seatLayout = element.seatLayout
             this.courseTotal = element.courseTotal
             this.courseCurrent = element.courseCurrent
-            this.courseStartTime = element.courseStartTime
-            this.courseEndTime = element.courseEndTime
             this.classStatus = element.classStatus
             this.courseStatus = element.courseStatus
+            this.courseStartDateStr = element.courseStartDateStr
+            this.courseEndDateStr = element.courseEndDateStr
+            this.classStartTimeStr = element.classStartTimeStr
+            this.classEndTimeStr = element.classEndTimeStr
           }
         })
         Promise.all([
@@ -263,24 +269,6 @@
           this.queryClassList()
         }).catch(() => {})
       },
-      // async startCourseOnclick() {
-      //   this.$confirm('确定要开始该课程?', '提示', {
-      //     confirmButtonText: '确定',
-      //     cancelButtonText: '取消',
-      //     type: 'warning'
-      //   }).then(async () => {
-      //     const {code, msg} = await courseApi.startCourse(this.selectedCourseId).catch(e => e)
-      //     if (code !== '200') {
-      //       return this.$message('课程开始失败，' + msg)
-      //     }
-      //     this.classStatus = '0'
-      //     this.$message({
-      //       type: 'success',
-      //       message: '课程开始！'
-      //     })
-      //     this.queryClassList()
-      //   }).catch(() => {})
-      // }
     },
     mounted() {
       this.queryClassList()

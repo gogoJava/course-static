@@ -148,7 +148,7 @@
         this.rostersStudent.forEach(item => {
           if (item.rosterSeatX < this.seatLayout.seatLeft) {
             const info = this.courseAttendanceList.find(value => value.accountId === item.accountId)
-            list[item.rosterSeatX][item.rosterSeatY] = {...item.user, attendType: info ? info.attendType : null}
+            list[item.rosterSeatX][item.rosterSeatY] = {...item.user, accountId: item.accountId, attendType: info ? info.attendType : null}
           }
         })
         return list
@@ -169,7 +169,7 @@
             const info = this.courseAttendanceList.find(value => value.accountId === item.accountId)
             const x = item.rosterSeatX - this.seatLayout.seatLeft
             if (list[x]) {
-              list[x][item.rosterSeatY] = {...item.user, attendType: info ? info.attendType : null}
+              list[x][item.rosterSeatY] = {...item.user, accountId: item.accountId, attendType: info ? info.attendType : null}
             }
           }
         })
@@ -191,7 +191,7 @@
             const info = this.courseAttendanceList.find(value => value.accountId === item.accountId)
             const x = item.rosterSeatX - this.seatLayout.seatMid - this.seatLayout.seatLeft
             if (list[x]) {
-              list[x][item.rosterSeatY] = {...item.user, attendType: info ? info.attendType : null}
+              list[x][item.rosterSeatY] = {...item.user, accountId: item.accountId, attendType: info ? info.attendType : null}
             }
           }
         })
@@ -279,9 +279,9 @@
               this.courseAttendanceList.push(item)
             }
             // 窜课名单
-            if (item.attendType === '3') {
-              this.additionalStudentList.push(item)
-            }
+            // if (item.attendType === '3') {
+            //   this.additionalStudentList.push(item)
+            // }
           })
         }
         // this.courseAttendanceList = data || []
@@ -357,12 +357,26 @@
       // 修改签到
       async attendanceCourse(info) {
         console.log('info', info)
-        if (info && info.attendType === '1') {
-          this.$message({
-            type: 'success',
-            message: '模拟签到！'
-          })
-          this.queryCourseAttendance()
+        if (info && info.attendType !== '1') {
+          this.$confirm('确定【' + info.name + '】签到?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(async () => {
+            const params = {
+              courseId: this.selectedCourseId,
+              studentId: info.accountId
+            }
+            const {code, msg} = await courseApi.courseSign(params).catch(e => e)
+            if (code !== '200') {
+              return this.$message('签到失败，' + msg)
+            }
+            this.$message({
+              type: 'success',
+              message: '签到成功！'
+            })
+            this.queryCourseAttendance()
+          }).catch(() => {})
         }
       }
     },

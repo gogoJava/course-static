@@ -10,16 +10,16 @@
           </el-select>
           <span style="padding-left: 30px;">
             <el-button v-if="!rosterId && !loading" type="primary" @click.native="confirmSeat" size="small">确定座位</el-button>
-            <!--<el-button v-if="classStatus === '0'" type="primary" @click.native="courseSignOnclick" size="small">签到</el-button>-->
           </span>
         </div>
-        <div style="font-size: 24px;font-weight: bold;height: 42px;padding-top: 15px;">
-          <el-col :span="6"><div>任课教师：{{courseTeacher.name}}</div></el-col>
-          <el-col :span="18"><div style="padding-left: 90px;">上课时间：{{courseStartTime + ' 至 ' + courseEndTime}}</div></el-col>
-        </div>
-        <div style="font-size: 24px;font-weight: bold;height: 42px;">
-          <el-col :span="6"><div>课程进度：{{courseCurrent}} / {{courseTotal}}</div></el-col>
-          <el-col :span="18"> <div style="padding-left: 90px;">我的未上课时：x</div></el-col>
+        <div style="font-size: 24px;font-weight: bold;padding: 15px;">
+          <div>
+            <el-col :span="8"><div>任课教师：{{courseTeacher.name}}</div></el-col>
+            <el-col :span="8"><div>课程进度：{{courseCurrent}} / {{courseTotal}}</div></el-col>
+            <el-col :span="8"><div>我的未上课时：x</div></el-col>
+          </div>
+          <div>上课日期：{{courseStartDateStr + ' 至 ' + courseEndDateStr}}</div>
+          <div>上课时间：{{classStartTimeStr + ' 至 ' + classEndTimeStr}}</div>
         </div>
       </div>
       <div v-if="!tableData.list.length" style="text-align: center;">
@@ -122,8 +122,10 @@
         mySeatImgUrl: require('../../../../assets/seat/seat-me.png'),
         rosterId: null, // 当前用户座位id
         courseTeacher: null, // 任课老师
-        courseStartTime: null, // 上课时间
-        courseEndTime: null, // 结束时间
+        courseStartDateStr: null, // 上课日期
+        courseEndDateStr: null, // 结束日期
+        classStartTimeStr: null, // 上课时间
+        classEndTimeStr: null, // 下课时间
         courseName: null,
         classStatus: null, // // 0上课1下课-1未开始(字符串)
         loading: false,
@@ -260,8 +262,10 @@
             this.courseTotal = element.courseTotal
             this.courseCurrent = element.courseCurrent
             this.courseTeacher = element.user
-            this.courseStartTime = element.courseStartTime
-            this.courseEndTime = element.courseEndTime
+            this.courseStartDateStr = element.courseStartDateStr
+            this.courseEndDateStr = element.courseEndDateStr
+            this.classStartTimeStr = element.classStartTimeStr
+            this.classEndTimeStr = element.classEndTimeStr
             this.courseName = element.courseName
             this.classStatus = element.classStatus
           }
@@ -430,5 +434,8 @@
 }
 .home-student-class-my .seat-icon .icon-selected {
    /*color: #409EFF;*/
+}
+.home-student-class-my .el-checkbox__label {
+  padding-left: 0;
 }
 </style>

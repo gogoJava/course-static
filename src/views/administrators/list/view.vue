@@ -5,9 +5,17 @@
         <el-button type="primary" size="small" @click="editUser()">新建管理员</el-button>
       </div>
       <el-table :data="tableData.list" v-loading="tableData.loading" style="width: 100%">
-        <el-table-column prop="username" label="管理员账号" width="180">
+        <el-table-column prop="username" label="管理员账号">
         </el-table-column>
-        <el-table-column prop="phone" label="联系电话" width="180">
+        <el-table-column prop="phone" label="联系电话">
+          <template slot-scope="scope">
+            <span>{{scope.row.phone || '--'}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="cardNum" label="身份证号码">
+          <template slot-scope="scope">
+            <span>{{scope.row.cardNum || '--'}}</span>
+          </template>
         </el-table-column>
         <el-table-column prop="deleted" label="状态">
           <template slot-scope="scope">
@@ -17,6 +25,7 @@
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button type="text" @click="editUser(scope.row)">详情</el-button>
+            <el-button type="text" @click="updatePassword(scope.row)">修改密码</el-button>
             <el-button v-if="!scope.row.deleted" type="text" @click="deleteUser(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -36,6 +45,9 @@
         <el-form-item label="联系电话：">
           <el-input v-model="userInfo.phone" :maxlength="11"></el-input>
         </el-form-item>
+        <el-form-item label="身份证号码：">
+          <el-input v-model="userInfo.cardNum"></el-input>
+        </el-form-item>
         <el-form-item v-if="isCreate" label="验证码：">
           <el-input v-model="userInfo.verification">
             <template slot="append">
@@ -53,6 +65,18 @@
       <div slot="footer" class="dialog-footer" v-if="!userInfo.deleted">
         <el-button @click="dialogFormVisible = false">取消</el-button>
         <el-button type="primary" @click="createUser">{{isCreate ? '确定' : '修改'}}</el-button>
+      </div>
+    </el-dialog>
+    <!--修改密码-->
+    <el-dialog :title="'修改【' + passwordName + '】的密码'" :visible.sync="passwordDialogVisible" width="50%">
+      <el-form label-width="120px">
+        <el-form-item label="新密码：">
+          <el-input v-model="newPassword" type="password"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="passwordDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="updatePasswordConfirm">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -82,12 +106,12 @@
           pageSize: 10,
         },
         dialogFormVisible: false,
+        passwordDialogVisible: false,
+        newPassword: null,
+        passwordName: null, // 修改用户名
         userInfo: {
           name: '',
           username: '',
-          sex: '0', // 性别：0、1
-          birthday: '', // 出生日期
-          type: 1, // 用户类型:1学生2教师
           password: '',
           confirmPassword: '',
           phone: null,
@@ -156,9 +180,6 @@
           this.userInfo = {
             name: '',
             username: '',
-            sex: '0', // 性别：0、1
-            birthday: '',
-            type: 1, // 用户类型:1学生2教师
             password: '',
             phone: null,
             verification: '', // 验证码
@@ -171,16 +192,20 @@
         if (this.userInfo.password !== this.userInfo.confirmPassword) return this.$message({type: 'info', message: '两次输入密码不一致！'})
         let loadingInstance = Loading.service()
         if (this.isCreate) {
-          const {code, msg, data} = await userApi.addAdmin(this.userInfo).catch(e=>e)
-          console.log('data', data)
+          const {code, msg} = await userApi.addAdmin(this.userInfo).catch(e=>e)
           loadingInstance.close()
           if (code !== '200') return this.$message(msg)
           this.$message({type: 'success', message: '创建成功！'})
         } else {
-          delete this.userInfo.createTime
-          delete this.userInfo.updateTime
-          const {code, msg, data} = await userApi.updateUser(this.userInfo).catch(e=>e)
-          console.log('data', data)
+          const params = {
+            accountId: this.userInfo.accountId,
+            cardNum: this.userInfo.cardNum,
+            name: this.userInfo.name,
+            phone: this.userInfo.phone,
+            username: this.userInfo.username,
+            type: '0'
+          }
+          const {code, msg} = await userApi.updateUser(params).catch(e=>e)
           loadingInstance.close()
           if (code !== '200') return this.$message(msg)
           this.$message({type: 'success', message: '修改管理员资料成功！'})
@@ -211,6 +236,28 @@
             this.startCountDown()
           }
         }, 1000)
+      },
+      // 修改密码
+      async updatePassword (info) {
+        this.passwordName = info.username
+        this.updateAccountId = info.accountId
+        this.passwordDialogVisible = true
+      },
+      async updatePasswordConfirm() {
+        if (!this.newPassword) return this.$message('请填入新密码')
+        const params = {
+          accountId: this.updateAccountId,
+          newPassword: this.newPassword
+        }
+        const {code, msg} = await userApi.updatePasswor(params).catch(e => e)
+        if (code !== '200') return this.$message('修改密码失败,' + msg)
+        this.$message({
+          type: 'success',
+          message: '修改密码成功!'
+        })
+        this.passwordDialogVisible = false
+        this.newPassword = null
+        this.passwordName = null
       }
     },
     mounted() {

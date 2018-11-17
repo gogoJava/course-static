@@ -25,13 +25,13 @@
             <icon-font icon="banjixinxi" class="icon" size="24px"></icon-font>
             <span slot="title">我的课程</span>
           </el-menu-item>
-          <!--<el-menu-item v-if="isStudent" index="/home/class/list/pay">-->
-            <!--<icon-font icon="banjixinxi" class="icon" size="24px"></icon-font>-->
-            <!--<span slot="title">我的课程</span>-->
-          <!--</el-menu-item>-->
           <el-menu-item v-if="isStudent" index="/home/student/class/my">
             <icon-font icon="caiwu" class="icon" size="24px"></icon-font>
             <span slot="title">我的课程</span>
+          </el-menu-item>
+          <el-menu-item v-if="isStudent" index="/home/student/class/all">
+            <icon-font icon="banjixinxi" class="icon" size="24px"></icon-font>
+            <span slot="title">全部课程</span>
           </el-menu-item>
           <el-menu-item v-if="isStudent" index="/home/class/order/pay">
             <icon-font icon="banjixinxi" class="icon" size="24px"></icon-font>
@@ -98,6 +98,7 @@
                 <el-dropdown-item v-if="isTeacher" @click.native="$router.push('/home/teacher/class/attendance')">出勤签到</el-dropdown-item>
                 <el-dropdown-item v-if="isTeacher" @click.native="$router.push('/home/income/teacher/detail')">个人信息</el-dropdown-item>
                 <!--学生-->
+                <el-dropdown-item v-if="isStudent" @click.native="$router.push('/home/student/class/all')">全部课程</el-dropdown-item>
                 <el-dropdown-item v-if="isStudent" @click.native="$router.push('/home/student/class/my')">我的课程</el-dropdown-item>
                 <el-dropdown-item v-if="isStudent" @click.native="$router.push('/home/class/order/pay')">课程支付管理</el-dropdown-item>
                 <!--<el-dropdown-item v-if="isStudent" @click.native="$router.push('/home/student/class/my')">座位表</el-dropdown-item>-->
@@ -111,6 +112,7 @@
               <i class="el-icon-caret-bottom"></i>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item @click.native="logoutOnClick">退出登录</el-dropdown-item>
+                <el-dropdown-item @click.native="dialogVisible = true">修改密码</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </div>
@@ -120,11 +122,27 @@
         </el-main>
       </el-container>
     </el-container>
+    <!--修改密码-->
+    <el-dialog title="修改密码" :visible.sync="dialogVisible" width="50%">
+      <el-form :model="password" label-width="120px">
+        <el-form-item label="旧密码：">
+          <el-input v-model="password.old" type="password"></el-input>
+        </el-form-item>
+        <el-form-item label="新密码：">
+          <el-input v-model="password.new" type="password"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="updatePassword">确定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
   import IconFont from '../../../components/icon-font/IconFont'
+  import * as userApi from '../../../apis/userApi'
   // store
   import {mapGetters,mapActions} from 'vuex'
   import * as $account from '../../../store/modules/account/types'
@@ -133,6 +151,15 @@
     name: 'my-menu',
     components: {
       IconFont
+    },
+    data() {
+      return {
+        dialogVisible: false,
+        password: {
+          old: null, // 旧密码
+          new: null // 新密码
+        }
+      }
     },
     computed: {
       ...mapGetters($account.namespace, {
@@ -173,6 +200,24 @@
             this.$router.push('/login')
           }
         }).catch(() => {})
+      },
+      // 修改密码
+      async updatePassword() {
+        if (!this.password.old) return this.$message('请填入旧密码')
+        if (!this.password.new) return this.$message('请填入新密码')
+        const params = {
+          accountId: this.currentUser.accountId,
+          newPassword: this.password.new,
+          oldPassword: this.password.old
+        }
+        const {code, msg} = await userApi.updatePasswor(params).catch(e => e)
+        if (code !== '200') return this.$message('修改密码失败,' + msg)
+        this.$alert('修改密码成功，请重新登录', '提示', {
+          confirmButtonText: '确定',
+          callback: () => {
+            this.$router.push('/login')
+          }
+        })
       }
     }
   }

@@ -32,15 +32,21 @@
             <el-input v-if="courseInfo && courseInfo.user" v-model="courseInfo.user.name"></el-input>
           </el-col>
         </el-form-item>
-        <el-form-item label="上课时间">
+        <el-form-item label="上课日期">
           <el-date-picker
-                  style="width: 500px;"
                   v-model="courseTime"
-                  type="datetimerange"
+                  type="daterange"
                   range-separator="至"
                   start-placeholder="开始日期"
                   end-placeholder="结束日期">
           </el-date-picker>
+        </el-form-item>
+        <el-form-item label="课程时间">
+          <el-time-picker v-model="startCourse" placeholder="上课时间">
+          </el-time-picker>
+          <span> 至 </span>
+          <el-time-picker v-model="endCourse" placeholder="下课时间">
+          </el-time-picker>
         </el-form-item>
         <el-form-item label="总课时">
           <el-col :span="12"><el-input v-model="courseInfo.courseTotal"></el-input></el-col>
@@ -127,6 +133,8 @@
           percentageValue: null, //
           extraCharge: null
         },
+        startCourse: null, // 上课时间
+        endCourse: null, // 下课时间
         selectedTypeId: [],
         courseTime: [],
         seatList: [], // 座位列表
@@ -200,11 +208,13 @@
       },
       // 加载课程信息
        async queryCourseDetail() {
-        const {data} = await courseApi.getCourseDetail({courseId: this.courseId}).catch(e => e)
-        this.courseInfo = {...data, percentageValue: data.percentage * 100, chargeType: data.chargeType || '1'}
-        this.courseTime.push(data.courseStartTime)
-        this.courseTime.push(data.courseEndTime)
-        this.getCourseType(data.typeId)
+         const {data} = await courseApi.getCourseDetail({courseId: this.courseId}).catch(e => e)
+         this.courseInfo = {...data, percentageValue: data.percentage * 100, chargeType: data.chargeType || '1'}
+         this.courseTime.push(data.courseStartTime)
+         this.courseTime.push(data.courseEndTime)
+         this.startCourse = this.$moment(data.courseStartDateStr + ' ' + data.classStartTimeStr)
+         this.endCourse = this.$moment(data.courseEndDateStr + ' ' + data.classEndTimeStr)
+         this.getCourseType(data.typeId)
       },
       // 加载座位结构数据
       async querySeatList() {
@@ -243,10 +253,12 @@
         this.teacherList = list || []
       },
       async onSubmit() {
+        const courseStartTime = this.$moment(this.courseTime[0]).format('YYYY/MM/DD') + ' ' + this.$moment(this.startCourse).format('HH:mm:ss')
+        const courseEndTime = this.$moment(this.courseTime[1]).format('YYYY/MM/DD') + ' ' + this.$moment(this.endCourse).format('HH:mm:ss')
         const courseInfo = {
           courseName: this.courseInfo.courseName,
-          courseStartTime: this.$moment(this.courseTime[0]).format('YYYY/MM/DD HH:mm:ss'),
-          courseEndTime: this.$moment(this.courseTime[1]).format('YYYY/MM/DD HH:mm:ss'),
+          courseStartTime,
+          courseEndTime,
           courseTotal: this.courseInfo.courseTotal,
           courseCurrent: this.courseInfo.courseCurrent,
           seatId: this.courseInfo.seatId,

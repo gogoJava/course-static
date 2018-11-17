@@ -30,3 +30,8 @@ export const deleteUser = (params) => request.post('/api/user/delete', qs.string
  * 新建管理员
  */
 export const addAdmin = (params) => request.post('/api/user/addManager', qs.stringify(params))
+
+/**
+ * 修改密码
+ */
+export const updatePasswor = (params) => request.post('/api/user/updPassword', qs.stringify(params))

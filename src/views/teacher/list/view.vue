@@ -29,6 +29,7 @@
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button type="text" @click="editUser(scope.row)">详情</el-button>
+            <el-button type="text" @click="updatePassword(scope.row)">修改密码</el-button>
             <el-button v-if="!scope.row.deleted" @click="deleteUser(scope.row)" type="text">删除</el-button>
           </template>
         </el-table-column>
@@ -106,9 +107,14 @@
           </el-table-column>
           <el-table-column prop="user.name" label="任课老师">
           </el-table-column>
-          <el-table-column prop="" label="上课日期">
+          <el-table-column prop="" label="上课日期" min-width="180px;">
             <template slot-scope="scope">
               <div>{{scope.row.courseStartDateStr}} 至 {{scope.row.courseEndDateStr}}</div>
+            </template>
+          </el-table-column>
+          <el-table-column label="">
+            <template slot-scope="scope">
+              <el-button type="text" @click.native="goCourseDetail(scope.row)">详情</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -116,6 +122,18 @@
       <div slot="footer" class="dialog-footer" v-if="!userInfo.deleted">
         <el-button @click="dialogFormVisible = false">取消</el-button>
         <el-button type="primary" @click="createUser">{{isCreate ? '确定' : '修改'}}</el-button>
+      </div>
+    </el-dialog>
+    <!--修改密码-->
+    <el-dialog :title="'修改【' + passwordName + '】的密码'" :visible.sync="passwordDialogVisible" width="50%">
+      <el-form label-width="120px">
+        <el-form-item label="新密码：">
+          <el-input v-model="newPassword" type="password"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="passwordDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="updatePasswordConfirm">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -150,6 +168,9 @@
           pageSize: 9999,
         },
         dialogFormVisible: false,
+        passwordDialogVisible: false,
+        newPassword: null,
+        passwordName: null, // 修改用户名
         userInfo: {
           name: '',
           username: '',
@@ -161,7 +182,7 @@
           phone: null,
           verification: '', // 验证码
           cardNum: null, // 身份证号码
-          teacherChargeType: '1', // 教师收费类型:1按时(按课时出席人数)2按提成(分成)
+          // teacherChargeType: '1', // 教师收费类型:1按时(按课时出席人数)2按提成(分成)
           averageHour: null, // 按【averageHour】小时收费
           averageHourCost: null, // 按【averageHour】小时收费【averageHourCost】
           percentage: null, //
@@ -236,7 +257,7 @@
             phone: null,
             verification: '', // 验证码
             cardNum: null, // 身份证号码
-            teacherChargeType: '1', // 教师收费类型:1按时(按课时出席人数)2按提成(分成)
+            // teacherChargeType: '1', // 教师收费类型:1按时(按课时出席人数)2按提成(分成)
             averageHour: null, // 按【averageHour】小时收费
             averageHourCost: null, // 按【averageHour】小时收费【averageHourCost】
             percentage: null, //
@@ -248,14 +269,7 @@
         // bought:我的课程
         this.courseData.loading = true
         // const params = {pageSize: 9999, accountId: accountId}
-        let params = null
-        if (this.isSuperAdmin || this.isAdmin) {
-          params = {...this.searchForm}
-        } else if (this.isTeacher) {
-          params = {...this.searchForm, accountId: accountId}
-        } else if (this.isStudent) {
-          params = {...this.searchForm, bought: true, studentId: accountId}
-        }
+        const params = {...this.searchForm, accountId: accountId}
         const {data} = await classApi.getClassList(params).catch(e => e)
         const {list, total} = data
         this.courseData.list = list || []
@@ -266,16 +280,14 @@
         if (this.userInfo.password !== this.userInfo.confirmPassword) return this.$message({type: 'info', message: '两次输入密码不一致！'})
         let loadingInstance = Loading.service()
         if (this.isCreate) {
-          const {code, msg, data} = await userApi.addUser(this.userInfo).catch(e=>e)
-          console.log('data', data)
+          const {code, msg} = await userApi.addUser(this.userInfo).catch(e=>e)
           loadingInstance.close()
           if (code !== '200') return this.$message(msg)
           this.$message({type: 'success', message: '创建成功！'})
         } else {
           delete this.userInfo.createTime
           delete this.userInfo.updateTime
-          const {code, msg, data} = await userApi.updateUser(this.userInfo).catch(e=>e)
-          console.log('data', data)
+          const {code, msg} = await userApi.updateUser(this.userInfo).catch(e=>e)
           loadingInstance.close()
           if (code !== '200') return this.$message(msg)
           this.$message({type: 'success', message: '修改教师资料成功！'})
@@ -307,6 +319,32 @@
             this.startCountDown()
           }
         }, 1000)
+      },
+      // 跳转到课程详情
+      goCourseDetail(info) {
+        this.$router.push({path: '/home/class/list', query: {courseId: info.courseId}})
+      },
+      // 修改密码
+      async updatePassword (info) {
+        this.passwordName = info.name
+        this.updateAccountId = info.accountId
+        this.passwordDialogVisible = true
+      },
+      async updatePasswordConfirm() {
+        if (!this.newPassword) return this.$message('请填入新密码')
+        const params = {
+          accountId: this.updateAccountId,
+          newPassword: this.newPassword
+        }
+        const {code, msg} = await userApi.updatePasswor(params).catch(e => e)
+        if (code !== '200') return this.$message('修改密码失败,' + msg)
+        this.$message({
+          type: 'success',
+          message: '修改密码成功!'
+        })
+        this.passwordDialogVisible = false
+        this.newPassword = null
+        this.passwordName = null
       }
     },
     mounted() {

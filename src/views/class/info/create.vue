@@ -24,22 +24,25 @@
             <el-option v-for="(item, index) of teacherList" :key="index" :label="item.name" :value="item.accountId"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="上课时间">
+        <el-form-item label="上课日期">
           <el-date-picker
-                  style="width: 500px;"
                   v-model="courseTime"
-                  type="datetimerange"
+                  type="daterange"
                   range-separator="至"
                   start-placeholder="开始日期"
                   end-placeholder="结束日期">
           </el-date-picker>
         </el-form-item>
+        <el-form-item label="课程时间">
+          <el-time-picker v-model="startCourse" placeholder="上课时间">
+          </el-time-picker>
+          <span> 至 </span>
+          <el-time-picker v-model="endCourse" placeholder="下课时间">
+          </el-time-picker>
+        </el-form-item>
         <el-form-item label="总课时">
           <el-col :span="12"><el-input v-model="courseInfo.courseTotal"></el-input></el-col>
         </el-form-item>
-        <!--<el-form-item label="课程课时">-->
-          <!--<el-col :span="12"><el-input v-model="courseInfo.courseCurrent"></el-input></el-col>-->
-        <!--</el-form-item>-->
         <el-form-item label="课程座位图">
           <el-select v-model="courseInfo.seatId" placeholder="请选择座位图">
             <el-option v-for="(item, index) of seatList" :key="index" :label="seatTitle(item)" :value="item.seatId"></el-option>
@@ -114,6 +117,8 @@
           percentageValue: null, //
           extraCharge: null
         },
+        startCourse: null, // 上课时间
+        endCourse: null, // 下课时间
         selectedTypeId: [],
         courseTime: null,
         seatList: [], // 座位列表
@@ -158,8 +163,8 @@
         this.teacherList = list || []
       },
       async onSubmit() {
-        this.courseInfo.courseStartTime = this.$moment(this.courseTime[0]).format('YYYY/MM/DD HH:mm:ss')
-        this.courseInfo.courseEndTime = this.$moment(this.courseTime[1]).format('YYYY/MM/DD HH:mm:ss')
+        this.courseInfo.courseStartTime = this.$moment(this.courseTime[0]).format('YYYY/MM/DD') + ' ' + this.$moment(this.startCourse).format('HH:mm:ss')
+        this.courseInfo.courseEndTime = this.$moment(this.courseTime[1]).format('YYYY/MM/DD') + ' ' + this.$moment(this.endCourse).format('HH:mm:ss')
         this.courseInfo.typeId = this.selectedTypeId[this.selectedTypeId.length - 1]
         this.courseInfo.percentage = this.courseInfo.percentageValue / 100 // 小数
         const params = this.courseInfo

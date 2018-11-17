@@ -19,8 +19,8 @@
           <el-checkbox-group v-model="checkboxGroup" disabled>
             <el-checkbox size="small" class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
           </el-checkbox-group>
-          <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, a) of seatLeftList" :key="a">
-            <el-tooltip class="item" effect="dark" :content="item && item[i] ? (item[i].name + item[i].attendType === '1' ? '已签到' : '缺席') : ''" placement="top" :disabled="!(item && item[i] && item[i].attendType)">
+          <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, a) of seatLeftList" :key="a" @click.native="attendanceCourse(item && item[i])">
+            <el-tooltip class="item" effect="dark" :content="item && item[i] ? (item[i].name + '已签到') : ''" placement="top" :disabled="!(item && item[i] && item[i].attendType)">
               <img :src="(item && item[i] && item[i].attendType) ? checkedSeatImgUrl : seatImgUrl" class="chenk-box-img" />
             </el-tooltip>
           </el-col>
@@ -29,8 +29,8 @@
           <el-checkbox-group v-model="checkboxGroup" disabled>
             <el-checkbox size="small" class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
           </el-checkbox-group>
-          <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, b) of seatMidList" :key="b">
-            <el-tooltip class="item" effect="dark" :content="item && item[i] ? (item[i].name + item[i].attendType === '1' ? '已签到' : '缺席') : ''" placement="top" :disabled="!(item && item[i] && item[i].attendType)">
+          <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, b) of seatMidList" :key="b" @click.native="attendanceCourse(item && item[i])">
+            <el-tooltip class="item" effect="dark" :content="item && item[i] ? (item[i].name + '已签到') : ''" placement="top" :disabled="!(item && item[i] && item[i].attendType)">
               <img :src="(item && item[i] && item[i].attendType) ? checkedSeatImgUrl : seatImgUrl" class="chenk-box-img" />
             </el-tooltip>
           </el-col>
@@ -39,8 +39,8 @@
           <el-checkbox-group v-model="checkboxGroup" disabled>
             <el-checkbox size="small" class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
           </el-checkbox-group>
-          <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, c) of seatRightList" :key="c">
-            <el-tooltip class="item" effect="dark" :content="item && item[i] ? (item[i].name + item[i].attendType === '1' ? '已签到' : '缺席') : ''" placement="top" :disabled="!(item && item[i] && item[i].attendType)">
+          <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, c) of seatRightList" :key="c" @click.native="attendanceCourse(item && item[i])">
+            <el-tooltip class="item" effect="dark" :content="item && item[i] ? (item[i].name + '已签到') : ''" placement="top" :disabled="!(item && item[i] && item[i].attendType)">
               <img :src="(item && item[i] && item[i].attendType) ? checkedSeatImgUrl : seatImgUrl" class="chenk-box-img" />
             </el-tooltip>
           </el-col>
@@ -148,7 +148,7 @@
         this.rostersStudent.forEach(item => {
           if (item.rosterSeatX < this.seatLayout.seatLeft) {
             const info = this.courseAttendanceList.find(value => value.accountId === item.accountId)
-            list[item.rosterSeatX][item.rosterSeatY] = {...item.user, attendType: info ? info.attendType : null}
+            list[item.rosterSeatX][item.rosterSeatY] = {...item.user, accountId: item.accountId, attendType: info ? info.attendType : null}
           }
         })
         return list
@@ -169,7 +169,7 @@
             const info = this.courseAttendanceList.find(value => value.accountId === item.accountId)
             const x = item.rosterSeatX - this.seatLayout.seatLeft
             if (list[x]) {
-              list[x][item.rosterSeatY] = {...item.user, attendType: info ? info.attendType : null}
+              list[x][item.rosterSeatY] = {...item.user, accountId: item.accountId, attendType: info ? info.attendType : null}
             }
           }
         })
@@ -191,7 +191,7 @@
             const info = this.courseAttendanceList.find(value => value.accountId === item.accountId)
             const x = item.rosterSeatX - this.seatLayout.seatMid - this.seatLayout.seatLeft
             if (list[x]) {
-              list[x][item.rosterSeatY] = {...item.user, attendType: info ? info.attendType : null}
+              list[x][item.rosterSeatY] = {...item.user, accountId: item.accountId, attendType: info ? info.attendType : null}
             }
           }
         })
@@ -276,13 +276,13 @@
           this.courseAttendanceList = []
           data.forEach(item => {
             // 签到名单（1已签到 4缺席）
-            if (item.attendType === '1' || item.attendType === '4') {
+            if (item.attendType === '1') {
               this.courseAttendanceList.push(item)
             }
             // 窜课名单
-            if (item.attendType === '3') {
-              this.additionalStudentList.push(item)
-            }
+            // if (item.attendType === '3') {
+            //   this.additionalStudentList.push(item)
+            // }
           })
         }
         // this.courseAttendanceList = data || []
@@ -373,6 +373,30 @@
           })
           this.queryClassList()
         }).catch(() => {})
+      },
+      // 签到
+      async attendanceCourse(info) {
+        if (info && info.attendType !== '1') {
+          this.$confirm('确定【' + info.name + '】签到?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(async () => {
+            const params = {
+              courseId: this.selectedCourseId,
+              studentId: info.accountId
+            }
+            const {code, msg} = await courseApi.courseSign(params).catch(e => e)
+            if (code !== '200') {
+              return this.$message('签到失败，' + msg)
+            }
+            this.$message({
+              type: 'success',
+              message: '签到成功！'
+            })
+            this.queryCourseAttendance()
+          }).catch(() => {})
+        }
       }
     },
     mounted() {
@@ -406,6 +430,7 @@
 .class-attendance-page .chenk-box-img {
   width: 65px;
   padding: 10px;
+  cursor: pointer;
 }
 .class-attendance-page .chenk-box .el-checkbox__input {
   display: none;
@@ -420,5 +445,8 @@
 }
 .class-attendance-page .seat-icon .icon-selected {
    /*color: #409EFF;*/
+}
+.class-attendance-page .el-checkbox__label {
+  padding-left: 0;
 }
 </style>

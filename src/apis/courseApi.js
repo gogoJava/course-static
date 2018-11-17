@@ -55,3 +55,8 @@ export const courseSign = (params) => request.post('/api/course/sign', qs.string
  * 老师结束（取消）课程
  */
 export const cancelCourse = (params) => request.post('/api/course/courseCancel', qs.stringify(params))
+
+/**
+ * 学生签到
+ */
+// export const courseSign = (params) => request.post('/api/course/sign', qs.stringify(params))

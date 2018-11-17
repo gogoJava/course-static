@@ -25,7 +25,7 @@ const routes = [
       {path: 'class/update', meta: {title: '修改课程'}, component: () => import('../views/class/update/view.vue')},
       {path: 'class/attendance', meta: {title: '出勤签到'}, component: () => import('../views/class/attendance/view.vue')},
       {path: 'class/release', meta: {title: '发布课程'}, component: () => import('../views/class/release/view.vue')},
-      {path: 'class/list/pay', meta: {title: '课程支付'}, component: () => import('../views/student/course/list/view.vue')},
+      {path: 'student/class/all', meta: {title: '全部课程'}, component: () => import('../views/student/course/list/view.vue')},
       {path: 'class/order/pay', meta: {title: '课程支付'}, component: () => import('../views/student/course/order/order.vue')},
       {path: 'student/class/my', meta: {title: '座位表'}, component: () => import('../views/student/course/my/view.vue')},
       // 学生管理
