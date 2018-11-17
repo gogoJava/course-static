@@ -14,7 +14,7 @@
           </span>
         </div>
         <div style="font-size: 24px;font-weight: bold;padding: 15px 15px 0 15px;">
-          <div>任课教师：{{courseTeacher.name}}</div>
+          <div>任课教师：{{courseTeacher ? courseTeacher.name : '无'}}</div>
           <div style="height: 42px;">
             <el-col :span="12"><div>上课日期：{{courseStartDateStr + ' 至 ' + courseEndDateStr}}</div></el-col>
             <el-col :span="12"><div>上课时间：{{classStartTimeStr + ' 至 ' + classEndTimeStr}}</div></el-col>
@@ -495,7 +495,10 @@
     },
     async mounted() {
       await this.queryClassList()
-      this.queryOrderList()
+      await this.queryOrderList()
+      if (this.$route.query.courseId) {
+        this.selectedCourseId = this.$route.query.courseId - 0
+      }
     }
   }
 </script>

@@ -16,7 +16,7 @@
           <div>
             <el-col :span="8"><div>任课教师：{{courseTeacher.name}}</div></el-col>
             <el-col :span="8"><div>课程进度：{{courseCurrent}} / {{courseTotal}}</div></el-col>
-            <el-col :span="8"><div>我的未上课时：x</div></el-col>
+            <el-col :span="8"><div>我的未上课时：{{rosterCourseCountRest === null ? courseTotal : rosterCourseCountRest}}</div></el-col>
           </div>
           <div>上课日期：{{courseStartDateStr + ' 至 ' + courseEndDateStr}}</div>
           <div>上课时间：{{classStartTimeStr + ' 至 ' + classEndTimeStr}}</div>
@@ -32,7 +32,7 @@
         <el-row :gutter="0" v-for="(item, i) of seatRowsList" :key="i" style="min-width: 700px;">
           <el-col :span="8" style="width: 220px;">
             <el-checkbox-group v-model="checkboxGroup" size="small" text-color="#F56C6C" fill="#F56C6C">
-              <el-checkbox class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border :disabled="(item && item[i] && item[i].accountId !== currentUser.accountId) || isChecked">{{item && item[i] ? item[i].name : ''}}</el-checkbox>
+              <el-checkbox class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border :disabled="(item && item[i] && item[i].accountId !== currentUser.accountId) || !bought || (isChecked && !isMy(item ? item[i] : null))">{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
             <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, a) of seatLeftList" :key="a">
               <img :src="(item && item[i]) ? (item[i].accountId === currentUser.accountId ? mySeatImgUrl : checkedSeatImgUrl) : seatImgUrl" class="chenk-box-img" />
@@ -40,7 +40,7 @@
           </el-col>
           <el-col :span="8" style="width: 220px;">
             <el-checkbox-group v-model="checkboxGroup" size="small" text-color="#F56C6C" fill="#F56C6C">
-              <el-checkbox class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border :disabled="(item && item[i] && item[i].accountId !== currentUser.accountId) || isChecked">{{item && item[i] ? item[i].name : ''}}</el-checkbox>
+              <el-checkbox class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border :disabled="(item && item[i] && item[i].accountId !== currentUser.accountId) || !bought || (isChecked && !isMy(item ? item[i] : null))">{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
             <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, b) of seatMidList" :key="b">
               <img :src="(item && item[i]) ? (item[i].accountId === currentUser.accountId ? mySeatImgUrl : checkedSeatImgUrl) : seatImgUrl" class="chenk-box-img" />
@@ -48,7 +48,7 @@
           </el-col>
           <el-col :span="8" style="width: 220px;">
             <el-checkbox-group v-model="checkboxGroup" size="small" text-color="#F56C6C" fill="#F56C6C">
-              <el-checkbox class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border :disabled="(item && item[i] && item[i].accountId !== currentUser.accountId) || isChecked">{{item && item[i] ? item[i].name : ''}}</el-checkbox>
+              <el-checkbox class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border :disabled="(item && item[i] && item[i].accountId !== currentUser.accountId) || !bought || (isChecked && !isMy(item ? item[i] : null))">{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
             <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, c) of seatRightList" :key="c">
               <img :src="(item && item[i]) ? (item[i].accountId === currentUser.accountId ? mySeatImgUrl : checkedSeatImgUrl) : seatImgUrl" class="chenk-box-img" />
@@ -85,7 +85,7 @@
   import * as classRosterApi from '../../../../apis/classRosterApi'
   import * as rosterAttendanceApi from '../../../../apis/rosterAttendanceApi'
   import * as courseApi from '../../../../apis/courseApi'
-
+  import * as courseOrderApi from '../../../../apis/courseOrderApi'
   // components
   import IconFont from '../../../../components/icon-font/IconFont'
   // store
@@ -126,9 +126,12 @@
         courseEndDateStr: null, // 结束日期
         classStartTimeStr: null, // 上课时间
         classEndTimeStr: null, // 下课时间
+        bought: true, // 是否已购买课程
+        orderStatus: null, // 状态(0未支付1成功2申请退款3退款)(字符串)
         courseName: null,
         classStatus: null, // // 0上课1下课-1未开始(字符串)
         loading: false,
+        rosterCourseCountRest: null, // 未上课时
         tableData2: { // 签到情况
           loading: true,
           list: [],
@@ -252,11 +255,13 @@
     },
     watch: {
       async selectedCourseId(value) {
+        this.rosterCourseCountRest = null
         this.loading = true
         this.checkboxGroup = []
         this.rostersStudent = []
         this.rosterId = null
         this.tableData.list.forEach(element => {
+          // console.log(element)
           if (element.courseId === value) {
             this.seatLayout = element.seatLayout
             this.courseTotal = element.courseTotal
@@ -268,6 +273,8 @@
             this.classEndTimeStr = element.classEndTimeStr
             this.courseName = element.courseName
             this.classStatus = element.classStatus
+            this.bought = element.bought
+            this.orderStatus = element.orderStatus
           }
         })
         await Promise.all([
@@ -300,6 +307,10 @@
       }
     },
     methods: {
+      isMy(info) {
+        if (!info) return false
+        return this.currentUser.accountId === info.accountId && this.orderStatus && this.orderStatus === '1' && !this.rosterId
+      },
       async queryClassList() {
         this.tableData.loading = true
         // bought:我的课程
@@ -328,6 +339,7 @@
             this.checkboxGroup.push((value.rosterSeatX + ',' + value.rosterSeatY))
             if (value.accountId === this.currentUser.accountId) {
               this.rosterId = value.rosterId
+              this.rosterCourseCountRest = value.rosterCourseCountRest
             }
           })
           this.rostersStudent = data
@@ -342,18 +354,12 @@
           const ids = []
           this.rostersStudent.forEach(item => {
             ids.push(((item.rosterId || this.rosterId) + ',' + item.rosterSeatX + ',' + item.rosterSeatY))
-            // ids.push({
-            //   rosterId: item.rosterId || this.rosterId,
-            //   seatX: item.rosterSeatX,
-            //   sertY: item.rosterSeatY
-            // })
           })
-          const data = {
+          const params = {
             courseId: this.selectedCourseId,
             ids
           }
-          console.log('data', data)
-          const {code, msg} = await classRosterApi.updateClassRoster(data).catch(e => e)
+          const {code, msg} = await classRosterApi.updateClassRoster(params).catch(e => e)
           if (code !== '200') return this.$message('选座失败，', msg)
           this.$message({type: 'success', message: '选座成功！'})
         } else {
@@ -363,8 +369,9 @@
             seatX: info.rosterSeatX,
             seatY: info.rosterSeatY
           }
-          const {code, msg} = await seatApi.choiceSeat(params).catch(e => e)
+          const {code, msg, data} = await seatApi.choiceSeat(params).catch(e => e)
           if (code !== '200') return this.$message('选座失败，', msg)
+          this.rosterId = data.rosterId
           this.$message({type: 'success', message: '选座成功！'})
         }
       },
@@ -387,9 +394,31 @@
         this.rosterAttendance()
         this.$message({type: 'success', message: '签到成功！'})
       },
+      // 获取支付订单列表
+      async queryOrderList() {
+        const params = {accountId: this.currentUser.accountId}
+        const {data} = await courseOrderApi.courseOrderList(params).catch(e => e)
+        const {list} = data
+        if (list) {
+          list.forEach(item => {
+            const index = this.tableData.list.findIndex(value => value.courseId === item.courseId)
+            if (index !== -1) {
+              this.tableData.list[index] = {...this.tableData.list[index], orderId: item.orderId, orderStatus: item.orderStatus}
+              if (this.selectedCourseId === item.courseId) {
+                this.orderId = item.orderId
+                this.orderStatus = item.orderStatus
+                if (this.orderStatus !== '0') {
+                  this.bought = true
+                }
+              }
+            }
+          })
+        }
+      },
     },
-    mounted() {
-      this.queryClassList()
+    async mounted() {
+      await this.queryClassList()
+      this.queryOrderList()
     }
   }
 </script>

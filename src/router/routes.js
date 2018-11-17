@@ -18,6 +18,8 @@ const routes = [
     component: () => import('../views/Home.vue'),
     children: [
       {path:'',redirect: 'class/list'},
+      // 课程类型
+      {path: 'course/type/list', meta: {title: '课程类型'}, component: () => import('../views/courseType/list/view.vue')},
       //  课程信息
       {path: 'class/list', meta: {title: '课程管理'}, component: () => import('../views/class/list/view.vue')},
       {path: 'class/create', meta: {title: '创建课程'}, component: () => import('../views/class/info/create.vue')},

@@ -19,6 +19,7 @@
               <el-menu-item index="/home/class/update">修改课程</el-menu-item>
               <el-menu-item index="/home/class/attendance">出勤签到</el-menu-item>
               <el-menu-item index="/home/class/release">发布课程</el-menu-item>
+              <el-menu-item v-if="isSuperAdmin" index="/home/course/type/list">课程类型</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
           <el-menu-item v-if="isTeacher" index="/home/class/teacher/list">

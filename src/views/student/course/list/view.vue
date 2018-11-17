@@ -29,7 +29,7 @@
         <el-table-column label="">
           <template slot-scope="scope">
             <!--<el-button type="text" @click.native="$router.push('/home/class/edit/' + scope.row.courseId)">详情</el-button>-->
-            <el-button v-if="!scope.row.bought" type="text" @click.native="goPay(scope.row)">去下单购买</el-button>
+            <el-button v-if="!scope.row.bought && (scope.row.courseStatus === '1' || scope.row.courseStatus === '2')" type="text" @click.native="goPay(scope.row)">去下单购买</el-button>
             <!--<el-button type="text" @click.native="courseSignOnclick(scope.row)">签到</el-button>-->
           </template>
         </el-table-column>
@@ -152,7 +152,8 @@
           const {code, msg} = await courseOrderApi.createCourseOrder({courseId: courseInfo.courseId}).catch(e => e)
           if (code !== '200') return this.$message('下单失败，' + msg)
           this.$message({type: 'success', message: '下单成功！请去完成支付！'})
-          this.queryClassList()
+          this.$router.push({path: '/home/class/order/pay', query: {courseId: courseInfo.courseId}})
+          // this.queryClassList()
         }).catch(() => {})
       },
       // 签到

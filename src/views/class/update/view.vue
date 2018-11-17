@@ -331,8 +331,8 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(async () => {
-          console.log('addName', this.addName)
-          console.log('rostersStudent', this.rostersStudent)
+          // console.log('addName', this.addName)
+          // console.log('rostersStudent', this.rostersStudent)
           this.rostersStudent.filter(item => {
             return item.user.name !== this.addName
           })
