@@ -1,40 +1,17 @@
 <template>
   <div class="login-container">
 
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
-
-      <div class="title-container">
-        <h3 class="title">登录</h3>
-      </div>
-
-      <el-form-item prop="username">
-        <span class="svg-container">
-          <icon-font icon="yonghu"></icon-font>
-        </span>
-        <el-input
-          v-model="loginForm.username"
-          placeholder="请输入用户名"
-          name="username"
-          type="text"
-          auto-complete="on"
-        />
-      </el-form-item>
-
-      <el-form-item prop="password">
-        <span class="svg-container">
-          <icon-font icon="mima"></icon-font>
-        </span>
-        <el-input
-          :type="passwordType"
-          v-model="loginForm.password"
-          placeholder="请输入密码"
-          name="password"
-          @keyup.enter.native="handleLogin" />
-      </el-form-item>
-
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">logIn</el-button>
-
-    </el-form>
+    <div>
+      <img class="logo-img" :src="logoUrl"/>
+    </div>
+    <div class="title-container">
+      <img class="title-img" :src="logoTitleUrl"/>
+    </div>
+    <div class="login-info">
+      <div><input v-model="loginForm.username" placeholder="请输入用户名" autocomplete="off"/></div>
+      <div><input type="password" v-model="loginForm.password" placeholder="请输入密码" autocomplete="off"/></div>
+      <div style="padding-top: 60px;"><span class="login-btn" @click="handleLogin">登录</span></div>
+    </div>
 
   </div>
 </template>
@@ -79,7 +56,9 @@ export default {
       passwordType: 'password',
       loading: false,
       showDialog: false,
-      redirect: undefined
+      redirect: undefined,
+      logoUrl: require('../../assets/logo.png'),
+      logoTitleUrl: require('../../assets/login-title.png')
     }
   },
   watch: {
@@ -132,6 +111,8 @@ export default {
       }
     },
     async handleLogin() {
+      if (!this.loginForm.username) return this.$message('请输入用户名')
+      if (!this.loginForm.password) return this.$message('请输入密码')
       this.loading = true
       const params = {
         userName: this.loginForm.username,
@@ -211,7 +192,53 @@ $light_gray:#eee;
   position: fixed;
   height: 100%;
   width: 100%;
-  background-color: $bg;
+  background: url('../../assets/login-background.png') no-repeat;
+  background-size:100% 100%;
+  .title-container {
+    text-align: center;
+    padding-top: 120px;
+    .title-img {
+      width: 240px;
+    }
+  }
+  .logo-img {
+    width: 360px;
+    padding-top: 30px;
+    padding-left: 30px;
+  }
+  .login-info {
+    text-align: center;
+    padding: 60px 35px 15px 35px;
+    input {
+      border: 0;
+      border-bottom: 1px solid #ffffff;
+      width: 360px;
+      height: 56px;
+      background: none !important;
+      color: #ffffff;
+      outline: none;
+      padding: 0 15px;
+      font-size: 18px;
+    }
+    input::-webkit-input-placeholder {
+      color: #ffffff;
+      opacity: 0.8;
+      font-size: 16px;
+    }
+    :-webkit-autofill {
+      -webkit-text-fill-color: #fff !important;
+      transition: background-color 5000s ease-in-out 0s;
+    }
+    .login-btn {
+      padding: 8px 40px;
+      color: #ffffff;
+      border: 1px solid #ffffff;
+      border-radius: 4px;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  }
   .login-form {
     position: absolute;
     left: 0;
@@ -230,43 +257,6 @@ $light_gray:#eee;
         margin-right: 16px;
       }
     }
-  }
-  .svg-container {
-    padding: 6px 5px 6px 15px;
-    color: $dark_gray;
-    vertical-align: middle;
-    width: 24px;
-    display: inline-block;
-  }
-  .title-container {
-    position: relative;
-    .title {
-      font-size: 26px;
-      color: $light_gray;
-      margin: 0px auto 40px auto;
-      text-align: center;
-      font-weight: bold;
-    }
-    .set-language {
-      color: #fff;
-      position: absolute;
-      top: 5px;
-      right: 0px;
-    }
-  }
-  .show-pwd {
-    position: absolute;
-    right: 10px;
-    top: 7px;
-    font-size: 16px;
-    color: $dark_gray;
-    cursor: pointer;
-    user-select: none;
-  }
-  .thirdparty-button {
-    position: absolute;
-    right: 35px;
-    bottom: 28px;
   }
 }
 </style>

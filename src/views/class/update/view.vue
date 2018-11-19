@@ -151,7 +151,7 @@
         }
         // 学生匹配座位
         this.rostersStudent.forEach(item => {
-          if (item.rosterSeatX < this.seatLayout.seatMid && item.rosterSeatX >= this.seatLayout.seatLeft) {
+          if (item.rosterSeatX < (this.seatLayout.seatMid + this.seatLayout.seatLeft) && item.rosterSeatX >= this.seatLayout.seatLeft) {
             const info = this.courseAttendanceList.find(value => value.accountId === item.accountId)
             const x = item.rosterSeatX - this.seatLayout.seatLeft
             if (list[x]) {

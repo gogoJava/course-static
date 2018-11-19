@@ -49,7 +49,7 @@
   // API
   import * as classApi from '../../../../apis/classApi'
   import * as courseApi from '../../../../apis/courseApi'
-  import * as courseOrderApi from '../../../../apis/courseOrderApi'
+  // import * as courseOrderApi from '../../../../apis/courseOrderApi'
   // store
   import {mapGetters} from 'vuex'
   import * as $account from '../../../../store/modules/account/types'
@@ -144,17 +144,18 @@
       },
       // 去购买
       async goPay(courseInfo) {
-        this.$confirm('是否确定购买该课程【' + courseInfo.courseName + '】?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(async () => {
-          const {code, msg} = await courseOrderApi.createCourseOrder({courseId: courseInfo.courseId}).catch(e => e)
-          if (code !== '200') return this.$message('下单失败，' + msg)
-          this.$message({type: 'success', message: '下单成功！请去完成支付！'})
-          this.$router.push({path: '/home/class/order/pay', query: {courseId: courseInfo.courseId}})
-          // this.queryClassList()
-        }).catch(() => {})
+        this.$router.push({path: '/home/class/order/pay', query: {courseId: courseInfo.courseId}})
+        // this.$confirm('是否确定购买该课程【' + courseInfo.courseName + '】?', '提示', {
+        //   confirmButtonText: '确定',
+        //   cancelButtonText: '取消',
+        //   type: 'warning'
+        // }).then(async () => {
+        //   // const {code, msg} = await courseOrderApi.createCourseOrder({courseId: courseInfo.courseId}).catch(e => e)
+        //   // if (code !== '200') return this.$message('下单失败，' + msg)
+        //   // this.$message({type: 'success', message: '下单成功！请去完成支付！'})
+        //   this.$router.push({path: '/home/class/order/pay', query: {courseId: courseInfo.courseId}})
+        //   // this.queryClassList()
+        // }).catch(() => {})
       },
       // 签到
       async courseSignOnclick(courseInfo) {
