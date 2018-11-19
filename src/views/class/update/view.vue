@@ -11,11 +11,11 @@
           <span>任课老师：{{courseTeacher ? courseTeacher.name : '无'}}</span>
           <span style="padding-bottom: 15px; padding-left: 100px;">课程进度：{{courseCurrent}} / {{courseTotal}}</span>
         </div>
-        <div style="padding: 15px;">
-          <el-input v-model="addName" placeholder="输入学号或姓名" style="width: 300px;"></el-input>
-          <el-button type="primary" style="margin-left: 30px;" size="small">新增</el-button>
-          <el-button style="margin-left: 15px;" type="danger" size="small" @click="deleteStudent">删除</el-button>
-        </div>
+        <!--<div style="padding: 15px;">-->
+          <!--<el-input v-model="addName" placeholder="输入学号或姓名" style="width: 300px;"></el-input>-->
+          <!--<el-button type="primary" style="margin-left: 30px;" size="small">新增</el-button>-->
+          <!--<el-button style="margin-left: 15px;" type="danger" size="small" @click="deleteStudent">删除</el-button>-->
+        <!--</div>-->
       </div>
       <el-col :span="18" style="min-width: 1080px;">
         <el-row :gutter="0" v-for="(item, i) of seatRowsList" :key="i">
@@ -23,34 +23,58 @@
           <el-checkbox-group v-model="checkboxGroup" disabled>
             <el-checkbox size="small" class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
           </el-checkbox-group>
-          <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, a) of seatLeftList" :key="a">
-            <img :src="(item && item[i]) ? checkedSeatImgUrl : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
+          <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, a) of seatLeftList" :key="a" @click.native="onClickSeat((item && item[i]), a, i)">
+            <el-tooltip class="item" effect="dark" :content="item && item[i] ? '' : '点击座位添加学生'" placement="top" :disabled="!!(item && item[i])">
+              <img :src="(item && item[i]) ? checkedSeatImgUrl : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
+            </el-tooltip>
           </el-col>
         </el-col>
         <el-col style="width: 360px;">
           <el-checkbox-group v-model="checkboxGroup" disabled>
             <el-checkbox size="small" class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
           </el-checkbox-group>
-          <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, b) of seatMidList" :key="b">
-            <img :src="(item && item[i]) ? checkedSeatImgUrl : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
+          <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, b) of seatMidList" :key="b" @click.native="onClickSeat((item && item[i]), (b + seatLayout.seatLeft), i)">
+            <el-tooltip class="item" effect="dark" :content="item && item[i] ? '' : '点击座位添加学生'" placement="top" :disabled="!!(item && item[i])">
+              <img :src="(item && item[i]) ? checkedSeatImgUrl : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
+            </el-tooltip>
           </el-col>
         </el-col>
         <el-col style="width: 360px;">
           <el-checkbox-group v-model="checkboxGroup" disabled>
             <el-checkbox size="small" class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
           </el-checkbox-group>
-          <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, c) of seatRightList" :key="c">
-            <img :src="(item && item[i]) ? checkedSeatImgUrl : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
+          <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, c) of seatRightList" :key="c" @click.native="onClickSeat((item && item[i]), (c + seatLayout.seatLeft + seatLayout.seatMid), i)">
+            <el-tooltip class="item" effect="dark" :content="item && item[i] ? '' : '点击座位添加学生'" placement="top" :disabled="!!(item && item[i])">
+              <img :src="(item && item[i]) ? checkedSeatImgUrl : seatImgUrl" style="width: 88px;" class="chenk-box-img" />
+            </el-tooltip>
           </el-col>
         </el-col>
       </el-row>
       </el-col>
-      <el-col>
-        <div style="text-align: center;padding: 15px 0 60px 0">
-          <el-button type="primary" style="width: 200px;line-height: 30px;">完成</el-button>
-        </div>
-      </el-col>
+      <!--<el-col>-->
+        <!--<div style="text-align: center;padding: 15px 0 60px 0">-->
+          <!--<el-button type="primary" style="width: 200px;line-height: 30px;">完成</el-button>-->
+        <!--</div>-->
+      <!--</el-col>-->
     </el-card>
+    <el-dialog title="添加学生" :visible.sync="dialogVisible" width="50%" v-loading="dialogLoading">
+      <el-form label-width="160px">
+        <el-form-item label="已购买该课程学生：">
+          <el-select v-model="selectedAccountId" placeholder="请选择">
+            <el-option
+                    v-for="item in chooseList"
+                    :key="item.accountId"
+                    :label="item.name"
+                    :value="item.accountId">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="confirmAdd">确定添加</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -59,6 +83,7 @@
   import * as courseApi from '../../../apis/courseApi'
   import * as userApi from '../../../apis/userApi'
   import * as classRosterApi from '../../../apis/classRosterApi'
+  import * as seatApi from '../../../apis/seatApi'
   // components
   import IconFont from '../../../components/icon-font/IconFont'
   // store
@@ -85,6 +110,7 @@
         seatLayout: null,
         checkboxGroup: [], // 选择的座位
         studentList: [], // 学生列表
+        chooseList: [], // 可选学生列表
         courseTotal: 0, // 总课时
         courseCurrent: 0,
         courseAttendanceList: [], // 考勤列表
@@ -98,6 +124,11 @@
         newValue: null,
         courseTeacher: null, // 老师
         addName: null,
+        selectedAccountId: null,
+        dialogVisible: false,
+        dialogLoading: false,
+        rosterSeatX: 0,
+        rosterSeatY: 0
       })
     },
     computed: {
@@ -271,6 +302,7 @@
       // 获取课程名单
       async queryClassRosters() {
         const {data} = await classRosterApi.getClassRosterList({courseId: this.selectedCourseId}).catch(e => e)
+        this.rostersStudent = []
         if (data && data.length) {
           data.forEach(value => {
             this.checkboxGroup.push((value.rosterSeatX + ',' + value.rosterSeatY))
@@ -286,6 +318,13 @@
           type: 1, // 用户类型:1学生2教师
         }).catch(e => e)
         this.studentList = data.list || []
+      },
+      // 获取可选学生列表
+      async queryChooseList() {
+        const {data} = await userApi.getChooseList({
+          courseId: this.selectedCourseId
+        }).catch(e => e)
+        this.chooseList = data || []
       },
       // 结束课程
       async endCourseOnclick() {
@@ -337,6 +376,32 @@
             return item.user.name !== this.addName
           })
         }).catch(() => {})
+      },
+      // 点击某个座位
+      async onClickSeat(info, x, y) {
+        if (info) return
+        this.chooseList = []
+        this.selectedAccountId = null
+        this.rosterSeatX = x
+        this.rosterSeatY = y
+        this.dialogVisible = true
+        this.dialogLoading = true
+        await this.queryChooseList()
+        this.dialogLoading = false
+      },
+      async confirmAdd() {
+        // 新增选择座位
+        const params = {
+          accountId: this.selectedAccountId,
+          courseId: this.selectedCourseId,
+          seatX: this.rosterSeatX,
+          seatY: this.rosterSeatY
+        }
+        const {code, msg} = await seatApi.choiceSeat(params).catch(e => e)
+        if (code !== '200') return this.$message('添加失败，', msg)
+        this.dialogVisible = false
+        this.queryClassRosters()
+        this.$message({type: 'success', message: '添加成功！'})
       }
     },
     mounted() {
@@ -370,6 +435,7 @@
 .class-update-page .chenk-box-img {
   width: 95px;
   padding: 12px;
+  cursor: pointer;
 }
 .class-update-page .chenk-box .el-checkbox__input {
   display: none;

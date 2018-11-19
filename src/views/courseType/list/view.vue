@@ -21,7 +21,7 @@
         <el-table-column label="更新时间" prop="updateTime"></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button type="text" @click="addType(scope.row)">新增子类型</el-button>
+            <!--<el-button type="text" @click="addType(scope.row)">新增子类型</el-button>-->
             <el-button type="text" @click="updateInfo(scope.row)">修改</el-button>
             <el-button type="text" @click="deleteType(scope.row.typeId)">删除</el-button>
           </template>
@@ -31,6 +31,16 @@
     <!--新增修改-->
     <el-dialog :title="isAdd ? '新增类型' : '修改类型'" :visible.sync="dialogVisible" width="50%">
       <el-form label-width="150px">
+        <el-form-item label="父级类型：">
+          <el-cascader
+                  expand-trigger="hover"
+                  :options="courseTypes"
+                  placeholder="无"
+                  :props="typeProps"
+                  :show-all-levels="false"
+                  v-model="selectedTypeId">
+          </el-cascader>
+        </el-form-item>
         <el-form-item label="课程类型名称：">
           <el-input v-model="updateCourseType.typeName" type="text"></el-input>
         </el-form-item>
@@ -66,6 +76,13 @@
           typeName: null,
           typeSeries: 0
         },
+        typeProps: {
+          value: 'typeId',
+          label: 'typeName',
+          children: 'courseTypeList'
+        },
+        selectedTypeId: [],
+        courseTypes: []
       })
     },
     methods: {
@@ -77,11 +94,41 @@
         this.tableData.loading = true
         const {data} = await courseTypeApi.getCourseTypeList({typeSeries: 0}).catch(e => e)
         this.tableData.list = data || []
+        const list = [...data] || []
+        this.courseTypes.push({
+          typeSeries: 0,
+          typeName: '无'
+        })
+        list.forEach((item) => {
+          this.courseTypes.push({
+            createTime: item.createTime,
+            deleted: item.deleted,
+            typeId: item.typeId,
+            typeName: item.typeName,
+            typeSeries: item.typeSeries,
+            updateTime: item.updateTime
+          })
+        })
         this.tableData.loading = false
       },
       // 修改
       async updateInfo(info) {
-        console.log(info)
+        const courseTypes = []
+        this.courseTypes.forEach(item => {
+          courseTypes.push({
+            ...item,
+            disabled: item.typeId === info.typeId
+          })
+        })
+        this.courseTypes = [...courseTypes]
+        this.selectedTypeId = []
+        this.tableData.list.forEach(element => {
+          // 父级id
+          if (element.typeId === info.typeSeries) {
+            this.selectedTypeId.push(element.typeId)
+            return
+          }
+        })
         this.isAdd = false
         this.updateCourseType = {...info}
         this.dialogVisible = true
@@ -96,10 +143,11 @@
       },
       async confirmUpdate() {
         if (!this.updateCourseType.typeName) return this.$message('请输入类型名称')
+        const typeSeries = this.selectedTypeId[this.selectedTypeId.length - 1] || 0
         if (this.isAdd) {
           const params  = {
             typeName: this.updateCourseType.typeName,
-            typeSeries: this.updateCourseType.typeSeries || 0,
+            typeSeries: typeSeries,
             deleted: false
           }
           const {code, msg} = await courseTypeApi.addCourseType(params).catch(e => e)
@@ -109,15 +157,23 @@
             type: 'success',
             message: '新增成功！'
           })
+          this.courseTypes = []
+          this.selectedTypeId = []
           this.queryClassList()
         } else {
-          const {code, msg} = await courseTypeApi.updateCourseType(this.updateCourseType).catch(e => e)
+          const params = {
+            ...this.updateCourseType,
+            typeSeries: typeSeries
+          }
+          const {code, msg} = await courseTypeApi.updateCourseType(params).catch(e => e)
           if(code !== '200') return this.$message('修改失败，' + msg)
           this.dialogVisible = false
           this.$message({
             type: 'success',
             message: '修改成功！'
           })
+          this.courseTypes = []
+          this.selectedTypeId = []
           this.queryClassList()
         }
       },

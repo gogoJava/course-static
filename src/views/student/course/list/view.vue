@@ -23,13 +23,14 @@
         </el-table-column>
         <el-table-column v-if="isStudent" prop="bought" label="购买状态">
           <template slot-scope="scope">
-            <span>{{scope.row.bought ? '已购买' : '未购买'}}</span>
+            <span v-if="!scope.row.orderStatus">{{scope.row.bought ? '已购买' : '未购买'}}</span>
+            <span v-if="scope.row.orderStatus">{{scope.row.orderStatus | orderStatusMsg}}</span>
           </template>
         </el-table-column>
         <el-table-column label="">
           <template slot-scope="scope">
-            <!--<el-button type="text" @click.native="$router.push('/home/class/edit/' + scope.row.courseId)">详情</el-button>-->
-            <el-button v-if="!scope.row.bought && (scope.row.courseStatus === '1' || scope.row.courseStatus === '2')" type="text" @click.native="goPay(scope.row)">去下单购买</el-button>
+            <el-button type="text" v-if="scope.row.orderStatus === '0'" @click.native="goPay(scope.row)">去支付</el-button>
+            <el-button v-if="!scope.row.orderStatus && !scope.row.bought && (scope.row.courseStatus === '1' || scope.row.courseStatus === '2')" type="text" @click.native="goPay(scope.row)">去下单购买</el-button>
             <!--<el-button type="text" @click.native="courseSignOnclick(scope.row)">签到</el-button>-->
           </template>
         </el-table-column>
@@ -116,6 +117,25 @@
             break
           case '3':
             msg = '已结束'
+            break
+        }
+        return msg
+      },
+      orderStatusMsg(status) {
+        // 状态(0未支付1成功2申请退款3退款)
+        let msg = ''
+        switch (status) {
+          case '0':
+            msg = '未支付'
+            break
+          case '1':
+            msg = '支付成功'
+            break
+          case '2':
+            msg = '申请退款'
+            break
+          case '3':
+            msg = '已退款'
             break
         }
         return msg

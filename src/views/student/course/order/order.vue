@@ -23,7 +23,7 @@
             <div style="font-size: 24px;font-weight: bold;">
               <span>订单状态：{{orderStatus | orderStatusMsg}}</span>
               <span style="position: relative;left: 45px;">
-              <el-tooltip v-if="orderStatus && orderStatus === '0'" class="item" effect="dark" content="微信扫码支付" placement="top">
+              <el-tooltip v-if="orderStatus && orderStatus === '0' && orderId" class="item" effect="dark" content="微信扫码支付" placement="top">
                 <icon-font icon="wxpay" class="icon" size="32px" style="color: #67C23A;cursor: pointer;position: relative;top: 3px;" @click.native="goPay()"></icon-font>
               </el-tooltip>
               <!--<el-tooltip v-if="orderStatus && orderStatus === '0'" class="item" effect="dark" content="支付宝扫码支付" placement="top">-->
@@ -288,7 +288,6 @@
         this.orderId = null
         this.tableData.list.forEach(element => {
           if (element.courseId === value) {
-            // console.log('element', element)
             this.seatLayout = element.seatLayout
             this.courseTotal = element.courseTotal
             this.courseCurrent = element.courseCurrent
@@ -351,6 +350,18 @@
         const {total, list} = data
         this.tableData.total = total || 0
         this.tableData.list = list || []
+        if (list && list.length && this.selectedCourseId) {
+          const index = list.findIndex(value => value.courseId === this.selectedCourseId)
+          if (index !== -1) {
+            const item = this.tableData.list[index]
+            this.orderId = item.orderId
+            this.orderStatus = item.orderStatus
+            if (this.orderStatus !== '0') {
+              this.bought = true
+              this.dialogVisible = false
+            }
+          }
+        }
         if (list && list.length && !this.selectedCourseId) {
           this.selectedCourseId = list[0].courseId
         }
@@ -359,6 +370,8 @@
       // 获取课程名单
       async queryClassRosters() {
         const {data} = await classRosterApi.getClassRosterList({courseId: this.selectedCourseId}).catch(e => e)
+        this.rostersStudent = []
+        this.checkboxGroup = []
         if (data && data.length) {
           data.forEach(value => {
             this.checkboxGroup.push((value.rosterSeatX + ',' + value.rosterSeatY))
@@ -384,7 +397,6 @@
             courseId: this.selectedCourseId,
             ids
           }
-          // console.log('data', data)
           const {code, msg, data} = await classRosterApi.updateClassRoster(params).catch(e => e)
           if (code !== '200') return this.$message('选座失败，', msg)
           this.rosterId = data.rosterId
@@ -415,34 +427,33 @@
           // this.bought = true
           this.orderStatus = '0'
           await this.queryClassList()
-          this.queryOrderList()
+          // this.queryOrderList()
         }).catch(() => {})
       },
       // 获取支付订单列表
-      async queryOrderList() {
-        const params = {accountId: this.currentUser.accountId}
-        const {data} = await courseOrderApi.courseOrderList(params).catch(e => e)
-        const {list} = data
-        if (list) {
-          list.forEach(item => {
-            const index = this.tableData.list.findIndex(value => value.courseId === item.courseId)
-            if (index !== -1) {
-              this.tableData.list[index] = {...this.tableData.list[index], ...item}
-              if (this.selectedCourseId === item.courseId) {
-                this.orderId = item.orderId
-                this.orderStatus = item.orderStatus
-                if (this.orderStatus !== '0') {
-                  this.bought = true
-                  this.dialogVisible = false
-                }
-              }
-            }
-          })
-        }
-      },
+      // async queryOrderList() {
+      //   const params = {accountId: this.currentUser.accountId, pageSize: 99999, page: 1}
+      //   const {data} = await courseOrderApi.courseOrderList(params).catch(e => e)
+      //   const {list} = data
+      //   if (list) {
+      //     list.forEach(item => {
+      //       const index = this.tableData.list.findIndex(value => value.courseId === item.courseId)
+      //       if (index !== -1) {
+      //         this.tableData.list[index] = {...this.tableData.list[index], ...item}
+      //         if (this.selectedCourseId === item.courseId) {
+      //           this.orderId = item.orderId
+      //           this.orderStatus = item.orderStatus
+      //           if (this.orderStatus !== '0') {
+      //             this.bought = true
+      //             this.dialogVisible = false
+      //           }
+      //         }
+      //       }
+      //     })
+      //   }
+      // },
       // 支付
       async goPay() {
-        // if (this.dialogVisible) return
         const params = {
           orderId: this.orderId
         }
@@ -454,7 +465,8 @@
       // 轮询查订单状态(5秒)
       async getOrderStatus() {
         setTimeout(async () => {
-          await this.queryOrderList().catch(e => e)
+          // await this.queryOrderList().catch(e => e)
+          await this.queryClassList().catch(e => e)
           this.queryNum++
           if (this.dialogVisible && this.queryNum < 10) {
             this.getOrderStatus()
@@ -469,13 +481,12 @@
           orderId: this.orderId
         }
         const res = await courseOrderApi.testCourseOrder(params).catch(e => e)
-        // console.log('res', res)
         if (res.code !== '200') return this.$message('支付失败，' + res.msg)
         this.$message({type: 'success', message: '支付成功！'})
         this.bought = true
         this.dialogVisible = false
         this.orderStatus = '1'
-        this.queryOrderList()
+        // this.queryOrderList()
       },
       // 申请退款
       async applyBack() {
@@ -489,13 +500,13 @@
           this.$message({type: 'success', message: '已申请退款，请耐心等候审核！'})
           this.orderStatus = '2'
           this.bought = false
-          this.queryOrderList()
+          // this.queryOrderList()
         }).catch(() => {})
       }
     },
     async mounted() {
       await this.queryClassList()
-      await this.queryOrderList()
+      // await this.queryOrderList()
       if (this.$route.query.courseId) {
         this.selectedCourseId = this.$route.query.courseId - 0
       }
