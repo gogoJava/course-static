@@ -278,7 +278,7 @@
         const {total, list} = data
         this.tableData.total = total || 0
         this.tableData.list = list || []
-        if (list && list.length) {
+        if (list && list.length && !this.selectedCourseId) {
           this.selectedCourseId = list[0].courseId
         }
         this.tableData.loading = false

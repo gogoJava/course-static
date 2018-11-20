@@ -301,7 +301,7 @@
       async queryStudentList() {
         const {data} = await userApi.getUserList({
           pageNum: 1,
-          pageSize: 10,
+          pageSize: 9999,
           type: 1, // 用户类型:1学生2教师
         }).catch(e => e)
         this.studentList = data.list || []
