@@ -271,21 +271,20 @@
           courseCurrent: this.courseCurrent,
           courseId: this.selectedCourseId, // 用户类型:1学生2教师
         }).catch(e => e)
+        this.courseAttendanceList = []
+        this.additionalStudentList = []
         if (data) {
-          this.courseAttendanceList = []
           data.forEach(item => {
             // 签到名单
             if (item.attendType === '1') {
               this.courseAttendanceList.push(item)
             }
             // 窜课名单
-            // if (item.attendType === '3') {
-            //   this.additionalStudentList.push(item)
-            // }
+            if (item.attendType === '3') {
+              this.additionalStudentList.push(item)
+            }
           })
         }
-        // this.courseAttendanceList = data || []
-        // console.log('courseAttendanceList', this.courseAttendanceList)
       },
       // 获取课程名单
       async queryClassRosters() {
@@ -329,6 +328,7 @@
             this.additionalStudent = null
             return this.$message('添加失败，' + msg)
           }
+          this.queryCourseAttendance()
           this.$message({
             type: 'success',
             message: '添加成功！'

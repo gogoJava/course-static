@@ -272,17 +272,18 @@
           courseCurrent: this.courseCurrent,
           courseId: this.selectedCourseId, // 用户类型:1学生2教师
         }).catch(e => e)
+        this.courseAttendanceList = []
+        this.additionalStudentList = []
         if (data) {
-          this.courseAttendanceList = []
           data.forEach(item => {
             // 签到名单（1已签到 4缺席）
             if (item.attendType === '1') {
               this.courseAttendanceList.push(item)
             }
             // 窜课名单
-            // if (item.attendType === '3') {
-            //   this.additionalStudentList.push(item)
-            // }
+            if (item.attendType === '3') {
+              this.additionalStudentList.push(item)
+            }
           })
         }
         // this.courseAttendanceList = data || []
@@ -330,6 +331,7 @@
             this.additionalStudent = null
             return this.$message('添加失败，' + msg)
           }
+          this.queryCourseAttendance()
           this.$message({
             type: 'success',
             message: '添加成功！'
