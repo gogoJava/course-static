@@ -148,7 +148,7 @@
         this.rostersStudent.forEach(item => {
           if (item.rosterSeatX < this.seatLayout.seatLeft) {
             const info = this.courseAttendanceList.find(value => value.accountId === item.accountId)
-            list[item.rosterSeatX][item.rosterSeatY] = {...item.user, accountId: item.accountId, attendType: info ? info.attendType : null}
+            list[item.rosterSeatX][item.rosterSeatY] = {...item.user, accountId: item.accountId, attendType: info && info.attendType === '1' ? info.attendType : null}
           }
         })
         return list
@@ -169,7 +169,7 @@
             const info = this.courseAttendanceList.find(value => value.accountId === item.accountId)
             const x = item.rosterSeatX - this.seatLayout.seatLeft
             if (list[x]) {
-              list[x][item.rosterSeatY] = {...item.user, accountId: item.accountId, attendType: info ? info.attendType : null}
+              list[x][item.rosterSeatY] = {...item.user, accountId: item.accountId, attendType: info && info.attendType === '1' ? info.attendType : null}
             }
           }
         })
@@ -191,7 +191,7 @@
             const info = this.courseAttendanceList.find(value => value.accountId === item.accountId)
             const x = item.rosterSeatX - this.seatLayout.seatMid - this.seatLayout.seatLeft
             if (list[x]) {
-              list[x][item.rosterSeatY] = {...item.user, accountId: item.accountId, attendType: info ? info.attendType : null}
+              list[x][item.rosterSeatY] = {...item.user, accountId: item.accountId, attendType: info && info.attendType === '1' ? info.attendType : null}
             }
           }
         })
