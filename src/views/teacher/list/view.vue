@@ -171,7 +171,7 @@
           name: '',
           username: '',
           sex: '0', // 性别：0、1
-          birthday: '', // 出生日期
+          birthday: null, // 出生日期
           type: 2, // 用户类型:1学生2教师
           password: '',
           confirmPassword: '',
@@ -190,9 +190,9 @@
           username: [
             { required: true, message: '请输入教师姓名', trigger: 'blur' }
           ],
-          birthday: [
-            { required: true, message: '请选择出生日期', trigger: 'blur' }
-          ],
+          // birthday: [
+          //   { required: true, message: '请选择出生日期', trigger: 'blur' }
+          // ],
           cardNum: [
             { required: true, message: '请输入身份证号码', trigger: 'blur' }
           ],
@@ -280,7 +280,7 @@
             name: '',
             username: '',
             sex: '0', // 性别：0、1
-            birthday: '',
+            birthday: null,
             type: 2, // 用户类型:1学生2教师
             password: '',
             phone: null,

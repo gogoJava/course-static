@@ -183,7 +183,6 @@
           name: '',
           username: '',
           sex: '0', // 性别：0、1
-          birthday: '', // 出生日期
           type: 1, // 用户类型:1学生2教师
           password: '',
           confirmPassword: '',
@@ -308,7 +307,6 @@
             name: '',
             username: '',
             sex: '0', // 性别：0、1
-            birthday: '',
             type: 1, // 用户类型:1学生2教师
             password: '',
             phone: null,

@@ -4,7 +4,7 @@
       <div slot="header" class="clearfix">
         <span>课程信息</span>
       </div>
-      <el-form ref="form" :model="courseInfo" label-width="120px" :disabled="isTeacher || isStudent">
+      <el-form :model="courseInfo" label-width="120px" :disabled="isTeacher || isStudent" ref="ruleForm" :rules="rules">
         <el-form-item label="课程状态">
           <div>-> {{courseInfo.courseStatus | courseStatusMsg}}</div>
         </el-form-item>
@@ -34,7 +34,7 @@
         </el-form-item>
         <el-form-item label="上课日期">
           <el-date-picker
-                  v-model="courseTime"
+                  v-model="courseInfo.courseTime"
                   type="daterange"
                   range-separator="至"
                   start-placeholder="开始日期"
@@ -42,10 +42,10 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item label="课程时间">
-          <el-time-picker v-model="startCourse" placeholder="上课时间">
+          <el-time-picker v-model="courseInfo.startCourse" placeholder="上课时间">
           </el-time-picker>
           <span> 至 </span>
-          <el-time-picker v-model="endCourse" placeholder="下课时间">
+          <el-time-picker v-model="courseInfo.endCourse" placeholder="下课时间">
           </el-time-picker>
         </el-form-item>
         <el-form-item label="课程座位图">
@@ -136,12 +136,15 @@
           percentage: null,
           exceedNum: null,
           percentageValue: null, //
+          startCourse: null, // 上课时间
+          endCourse: null, // 下课时间
+          courseTime: [],
           extraCharge: null
         },
-        startCourse: null, // 上课时间
-        endCourse: null, // 下课时间
+        // startCourse: null, // 上课时间
+        // endCourse: null, // 下课时间
         selectedTypeId: [],
-        courseTime: [],
+        // courseTime: [],
         seatList: [], // 座位列表
         courseTypes: [], // 课程类型列表
         teacherList: [], // 教师数据
@@ -149,7 +152,36 @@
           value: 'typeId',
           label: 'typeName',
           children: 'courseTypeList'
-        }
+        },
+        rules: {
+          courseName: [
+            { required: true, message: '请输入课程名称', trigger: 'blur' }
+          ],
+          // selectedTypeId: [
+          //   { required: true, message: '请选择课程类型', trigger: 'change' }
+          // ],
+          accountId: [
+            { required: true, message: '请选择任课教师', trigger: 'change' }
+          ],
+          courseTime: [
+            { required: true, message: '请选择上课日期', trigger: 'change' }
+          ],
+          startCourse: [
+            { required: true, message: '请选择上课时间', trigger: 'change' }
+          ],
+          endCourse: [
+            { required: true, message: '请选择下课时间', trigger: 'change' }
+          ],
+          seatId: [
+            { required: true, message: '请选择课程座位图', trigger: 'change' }
+          ],
+          courseTotal: [
+            { required: true, message: '请输入总课时', trigger: 'blur' }
+          ],
+          coursePerCost: [
+            { required: true, message: '请输入单节费用', trigger: 'blur' }
+          ]
+        },
       })
     },
     computed: {
@@ -214,11 +246,11 @@
       // 加载课程信息
        async queryCourseDetail() {
          const {data} = await courseApi.getCourseDetail({courseId: this.courseId}).catch(e => e)
-         this.courseInfo = {...data, percentageValue: data.percentage * 100, chargeType: data.chargeType || '1'}
-         this.courseTime.push(data.courseStartTime)
-         this.courseTime.push(data.courseEndTime)
-         this.startCourse = this.$moment(data.courseStartDateStr + ' ' + data.classStartTimeStr)
-         this.endCourse = this.$moment(data.courseEndDateStr + ' ' + data.classEndTimeStr)
+         this.courseInfo = {...this.courseInfo, ...data, percentageValue: data.percentage * 100, chargeType: data.chargeType || '1'}
+         this.courseInfo.courseTime.push(data.courseStartTime)
+         this.courseInfo.courseTime.push(data.courseEndTime)
+         this.courseInfo.startCourse = this.$moment(data.courseStartDateStr + ' ' + data.classStartTimeStr)
+         this.courseInfo.endCourse = this.$moment(data.courseEndDateStr + ' ' + data.classEndTimeStr)
          this.getCourseType(data.typeId)
       },
       // 加载座位结构数据
@@ -258,32 +290,51 @@
         this.teacherList = list || []
       },
       async onSubmit() {
-        const courseStartTime = this.$moment(this.courseTime[0]).format('YYYY/MM/DD') + ' ' + this.$moment(this.startCourse).format('HH:mm:ss')
-        const courseEndTime = this.$moment(this.courseTime[1]).format('YYYY/MM/DD') + ' ' + this.$moment(this.endCourse).format('HH:mm:ss')
-        const courseInfo = {
-          courseName: this.courseInfo.courseName,
-          courseStartTime,
-          courseEndTime,
-          courseTotal: this.courseInfo.courseTotal,
-          coursePerCost: this.courseInfo.coursePerCost,
-          courseCost: this.courseInfo.coursePerCost * this.courseInfo.courseTotal,
-          courseCurrent: this.courseInfo.courseCurrent,
-          seatId: this.courseInfo.seatId,
-          typeId: this.selectedTypeId[this.selectedTypeId.length - 1],
-          accountId: this.courseInfo.accountId,
-          courseId: this.courseInfo.courseId,
-          averageHourCost: this.courseInfo.averageHourCost,
-          exceedNum: this.courseInfo.exceedNum,
-          percentage: this.courseInfo.percentageValue / 100, // 小数
-          extraCharge: this.courseInfo.extraCharge
-        }
-        // if (this.courseInfo) return
-        await courseApi.updateCourse(courseInfo).catch(e => e)
-        this.$message({
-          type: 'success',
-          message: '修改成功！'
+        this.$refs['ruleForm'].validate(async (valid) => {
+          if (valid) {
+            if (!this.selectedTypeId) return this.$message('请选择课程类型')
+            if (this.courseInfo.chargeType === '1') {
+              if ((!this.courseInfo.averageHourCost && this.courseInfo.averageHourCost !== 0) || (!this.courseInfo.exceedNum && this.courseInfo.exceedNum !== 0) || (!this.courseInfo.extraCharge && this.courseInfo.extraCharge !== 0)) {
+                return this.$message('请填写单节基本工资、超出（人）、提成（元）')
+              }
+            }
+            if (this.courseInfo.chargeType === '2') {
+              if ((!this.courseInfo.percentageValue && this.courseInfo.percentageValue !== 0)) {
+                return this.$message('请填写出勤课时费')
+              }
+            }
+            const courseStartTime = this.$moment(this.courseInfo.courseTime[0]).format('YYYY/MM/DD') + ' ' + this.$moment(this.courseInfo.startCourse).format('HH:mm:ss')
+            const courseEndTime = this.$moment(this.courseInfo.courseTime[1]).format('YYYY/MM/DD') + ' ' + this.$moment(this.courseInfo.endCourse).format('HH:mm:ss')
+            const courseInfo = {
+              courseName: this.courseInfo.courseName,
+              courseStartTime,
+              courseEndTime,
+              courseTotal: this.courseInfo.courseTotal,
+              coursePerCost: this.courseInfo.coursePerCost,
+              courseCost: this.courseInfo.coursePerCost * this.courseInfo.courseTotal,
+              courseCurrent: this.courseInfo.courseCurrent,
+              seatId: this.courseInfo.seatId,
+              typeId: this.selectedTypeId[this.selectedTypeId.length - 1],
+              accountId: this.courseInfo.accountId,
+              courseId: this.courseInfo.courseId,
+              averageHourCost: this.courseInfo.averageHourCost,
+              exceedNum: this.courseInfo.exceedNum,
+              percentage: this.courseInfo.percentageValue / 100, // 小数
+              extraCharge: this.courseInfo.extraCharge,
+              chargeType: this.courseInfo.chargeType
+            }
+            // if (this.courseInfo) return
+            await courseApi.updateCourse(courseInfo).catch(e => e)
+            this.$message({
+              type: 'success',
+              message: '修改成功！'
+            })
+            this.$router.back()
+          } else {
+            this.$message('请填写必要信息！')
+            return false
+          }
         })
-        this.$router.back()
       },
       // 开始上课
       async handleStart() {
