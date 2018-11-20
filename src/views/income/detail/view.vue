@@ -35,7 +35,7 @@
       </div>
       <my-pagination
               :total="orderData.total"
-              :currentPage.sync="orderForm.page"
+              :currentPage.sync="orderForm.pageNum"
               :page-size.sync="orderForm.pageSize"
               @current-change="orderOnCurrentPageChange">
       </my-pagination>
@@ -74,7 +74,7 @@
       </div>
       <my-pagination
               :total="tableData.total"
-              :currentPage.sync="searchForm.page"
+              :currentPage.sync="searchForm.pageNum"
               :page-size.sync="searchForm.pageSize"
               @current-change="onCurrentPageChange">
       </my-pagination>
@@ -188,7 +188,7 @@
       },
       async queryIncomeList() {
         const params = {
-          ...this.seagreen,
+          ...this.searchForm,
           date: this.date
         }
         this.tableData.loading = true

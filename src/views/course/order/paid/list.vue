@@ -29,7 +29,7 @@
       </div>
       <my-pagination
               :total="tableData.total"
-              :currentPage.sync="searchForm.page"
+              :currentPage.sync="searchForm.pageNum"
               :page-size.sync="searchForm.pageSize"
               @current-change="onCurrentPageChange">
       </my-pagination>
@@ -55,7 +55,6 @@
           total: 0
         },
         searchForm: {
-          keyword: '',
           pageNum: 1,
           pageSize: 10,
         },

@@ -5,7 +5,7 @@
         <el-button type="primary" size="small" @click="editUser()">新建学生</el-button>
       </div>
       <el-table :data="tableData.list" v-loading="tableData.loading" style="width: 100%">
-        <el-table-column prop="name" label="学生姓名" width="180">
+        <el-table-column prop="name" label="学生姓名">
         </el-table-column>
          <el-table-column prop="username" label="用户名">
         </el-table-column>
@@ -19,7 +19,7 @@
             <span>{{scope.row.sex | sexMsg}}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="phone" label="联系电话">
+        <el-table-column prop="phone" label="家长联系电话">
         </el-table-column>
         <el-table-column prop="createTime" label="注册时间">
           <template slot-scope="scope">
@@ -41,21 +41,26 @@
       </el-table>
       <my-pagination
               :total="tableData.total"
-              :currentPage.sync="searchForm.page"
+              :currentPage.sync="searchForm.pageNum"
               :page-size.sync="searchForm.pageSize"
               @current-change="onCurrentPageChange">
       </my-pagination>
     </el-card>
     <el-dialog :title="isCreate ? '新建学生' : '学生详情'" :visible.sync="dialogFormVisible" width="70%">
-      <el-form :model="studentUserInfo" label-width="120px" :disabled="studentUserInfo.deleted">
+      <el-form :model="studentUserInfo" label-width="150px" ref="ruleForm" :disabled="studentUserInfo.deleted" :rules="rules">
         <el-col :span="12">
-          <el-form-item label="用户名：">
+          <el-form-item label="用户名：" prop="username">
             <el-input v-model="studentUserInfo.username" :disabled="!isCreate"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="学生姓名：">
+          <el-form-item label="学生姓名：" prop="name">
             <el-input v-model="studentUserInfo.name"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="学号：" prop="schoolNumber">
+            <el-input v-model="studentUserInfo.schoolNumber" type="text"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -67,43 +72,12 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="出生日期：">
-            <el-date-picker v-model="studentUserInfo.birthday" type="date" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd" placeholder="选择日期">
-            </el-date-picker>
+          <el-form-item label="家长联系电话：" prop="phone">
+            <el-input v-model="studentUserInfo.phone" :maxlength="20"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="学号：">
-            <el-input v-model="studentUserInfo.schoolNumber" type="text"></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="身份证号码：">
-            <el-input v-model="studentUserInfo.cardNum"></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="所在学校：">
-            <el-input v-model="studentUserInfo.schoolName" :maxlength="11"></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="所在年级：">
-            <el-input v-model="studentUserInfo.gradeName" :maxlength="11"></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="家长姓名：">
-            <el-input v-model="studentUserInfo.parentName" :maxlength="11"></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="联系电话：">
-            <el-input v-model="studentUserInfo.phone" :maxlength="11"></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="24">
-          <el-form-item v-if="isCreate" label="验证码：">
+          <el-form-item v-if="isCreate" label="验证码：" prop="verification">
             <el-input v-model="studentUserInfo.verification">
               <template slot="append">
                 <div style="cursor: pointer;" :class="{'can-send': countDown === null || countDown <= 0}" @click="getVerificationCode">{{codeMsg}}</div>
@@ -111,13 +85,23 @@
             </el-input>
           </el-form-item>
         </el-col>
+        <el-col :span="12">
+          <el-form-item label="所在学校：">
+            <el-input v-model="studentUserInfo.schoolName"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="所在年级：">
+            <el-input v-model="studentUserInfo.gradeName"></el-input>
+          </el-form-item>
+        </el-col>
         <el-col :span="24">
-          <el-form-item v-if="isCreate" label="密码：">
+          <el-form-item v-if="isCreate" label="密码：" prop="password">
             <el-input v-model="studentUserInfo.password" type="password"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="24">
-          <el-form-item v-if="isCreate" label="确认密码：">
+          <el-form-item v-if="isCreate" label="确认密码：" prop="confirmPassword">
             <el-input v-model="studentUserInfo.confirmPassword" type="password"></el-input>
           </el-form-item>
         </el-col>
@@ -189,7 +173,7 @@
         },
         searchForm: {
           pageNum: 1,
-          pageSize: 9999,
+          pageSize: 10,
         },
         dialogFormVisible: false,
         passwordDialogVisible: false,
@@ -213,7 +197,37 @@
         },
         isCreate: true, // 是否是创建
         countDown: null, // 倒计时
+        rules: {
+          name: [
+            { required: true, message: '请输入用户名', trigger: 'blur' }
+          ],
+          username: [
+            { required: true, message: '请输入学生姓名', trigger: 'blur' }
+          ],
+          schoolNumber: [
+            { required: true, message: '请输入学号', trigger: 'blur' }
+          ],
+          phone: [
+            { required: true, message: '请输入家长联系电话', trigger: 'blur' }
+          ],
+          password: [
+            { required: true, message: '请输入密码', trigger: 'blur' }
+          ],
+          confirmPassword: [
+            { required: true, message: '请输入确认密码', trigger: 'blur' }
+          ],
+          verification: [
+            { required: true, message: '请输入验证码', trigger: 'blur' }
+          ]
+        }
       })
+    },
+    watch: {
+      dialogFormVisible(value) {
+        if (!value) {
+          this.$refs.ruleForm.clearValidate()
+        }
+      }
     },
     filters: {
       sexMsg(sex) {
@@ -269,7 +283,7 @@
         }).catch(e => e)
         const {total, list} = data
         this.tableData.total = total || 0
-        this.tableData.list = list || []
+        this.tableData.list = [...list] || []
         this.tableData.loading = false
       },
       // 获取验证码
@@ -319,24 +333,31 @@
         this.courseData.loading = false
       },
       async createUser() {
-        if (this.studentUserInfo.password !== this.studentUserInfo.confirmPassword) return this.$message({type: 'info', message: '两次输入密码不一致！'})
-        let loadingInstance = Loading.service()
-        if (this.isCreate) {
-          const {code, msg} = await userApi.addUser(this.studentUserInfo).catch(e=>e)
-          loadingInstance.close()
-          if (code !== '200') return this.$message(msg)
-          this.$message({type: 'success', message: '创建成功！'})
-        } else {
-          delete this.studentUserInfo.teacherChargeType
-          delete this.studentUserInfo.createTime
-          delete this.studentUserInfo.updateTime
-          const {code, msg} = await userApi.updateUser(this.studentUserInfo).catch(e=>e)
-          loadingInstance.close()
-          if (code !== '200') return this.$message(msg)
-          this.$message({type: 'success', message: '修改学生资料成功！'})
-        }
-        this.dialogFormVisible = false
-        this.queryUserList()
+        this.$refs['ruleForm'].validate(async (valid) => {
+          if (valid) {
+            if (this.studentUserInfo.password !== this.studentUserInfo.confirmPassword) return this.$message({type: 'info', message: '两次输入密码不一致！'})
+            let loadingInstance = Loading.service()
+            if (this.isCreate) {
+              const {code, msg} = await userApi.addUser(this.studentUserInfo).catch(e=>e)
+              loadingInstance.close()
+              if (code !== '200') return this.$message(msg)
+              this.$message({type: 'success', message: '创建成功！'})
+            } else {
+              delete this.studentUserInfo.teacherChargeType
+              delete this.studentUserInfo.createTime
+              delete this.studentUserInfo.updateTime
+              const {code, msg} = await userApi.updateUser(this.studentUserInfo).catch(e=>e)
+              loadingInstance.close()
+              if (code !== '200') return this.$message(msg)
+              this.$message({type: 'success', message: '修改学生资料成功！'})
+            }
+            this.dialogFormVisible = false
+            this.queryUserList()
+          } else {
+            this.$message('请填写必要信息！')
+            return false
+          }
+        })
       },
       // 删除用户
       async deleteUser(user) {

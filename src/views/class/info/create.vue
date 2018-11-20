@@ -62,7 +62,7 @@
         </el-form-item>
         <el-form-item label="" v-if="courseInfo.chargeType === '1'">
           <el-row>
-            <el-col :span="6">半小时</el-col>
+            <el-col :span="6">单节基本工资</el-col>
             <el-col :span="6">超出（人）</el-col>
             <el-col :span="6">提成（元）</el-col>
           </el-row>

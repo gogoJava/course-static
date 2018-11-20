@@ -60,3 +60,8 @@ export const cancelCourse = (params) => request.post('/api/course/courseCancel',
  * 学生签到
  */
 // export const courseSign = (params) => request.post('/api/course/sign', qs.stringify(params))
+
+/**
+ * 获取可窜课用户名单
+ */
+export const getAdditionalUserList = (params) => request.post('/api/course/additionalUserList', qs.stringify(params))

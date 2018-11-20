@@ -51,7 +51,7 @@
         <el-card>
           <div slot="header">
             <span>串课名单</span>
-            <el-select v-if="isTeacher" style="float: right;position: relative;top: -6px;width: 160px;" @change="additionalStudents" clearable v-model="additionalStudent" filterable placeholder="添加串课学生">
+            <el-select v-if="isTeacher" style="float: right;position: relative;top: -6px;width: 160px;" @change="additionalStudents" no-data-text="无可窜课学生" clearable v-model="additionalStudent" filterable placeholder="添加串课学生">
               <el-option
                       v-for="item in studentList"
                       :key="item.accountId"
@@ -60,7 +60,7 @@
               </el-option>
             </el-select>
           </div>
-          <div style="height: 240px;">
+          <div style="height: 360px;overflow-y: auto;">
             <div v-for="(item, index) in additionalStudentList" :key="index">
               {{item.name}}
             </div>
@@ -74,7 +74,7 @@
 // API
   import * as classApi from '../../../apis/classApi'
   import * as courseApi from '../../../apis/courseApi'
-  import * as userApi from '../../../apis/userApi'
+  // import * as userApi from '../../../apis/userApi'
   import * as classRosterApi from '../../../apis/classRosterApi'
   // components
   import IconFont from '../../../components/icon-font/IconFont'
@@ -219,7 +219,8 @@
         })
         Promise.all([
           this.queryCourseAttendance(),
-          this.queryClassRosters()
+          this.queryClassRosters(),
+          this.queryStudentList()
         ])
       },
       checkboxGroup() {
@@ -261,6 +262,24 @@
         const {total, list} = data
         this.tableData.total = total || 0
         this.tableData.list = list || []
+        if (this.selectedCourseId) {
+          this.checkboxGroup = []
+          this.rostersStudent = []
+          this.tableData.list.forEach(element => {
+            if (element.courseId === this.selectedCourseId) {
+              this.seatLayout = element.seatLayout
+              this.courseTotal = element.courseTotal
+              this.courseCurrent = element.courseCurrent
+              this.classStatus = element.classStatus
+              this.courseStatus = element.courseStatus
+            }
+          })
+          Promise.all([
+            this.queryCourseAttendance(),
+            this.queryClassRosters(),
+            this.queryStudentList()
+          ])
+        }
         if (list && list.length && !this.selectedCourseId) {
           this.selectedCourseId = list[0].courseId
         }
@@ -286,8 +305,6 @@
             }
           })
         }
-        // this.courseAttendanceList = data || []
-        // console.log('courseAttendanceList', this.courseAttendanceList)
       },
       // 获取课程名单
       async queryClassRosters() {
@@ -301,18 +318,14 @@
       },
       // 获取学生列表
       async queryStudentList() {
-        const {data} = await userApi.getUserList({
+        this.studentList = []
+        const {data} = await courseApi.getAdditionalUserList({
           pageNum: 1,
           pageSize: 9999,
-          type: 1, // 用户类型:1学生2教师
+          courseId: this.selectedCourseId
         }).catch(e => e)
         this.studentList = data.list || []
       },
-      // 加载窜课名单
-      // async queryCourseAdditional() {
-      //   const res = await courseApi.courseAdditional(params).catch(e => e)
-      //   console.log('sssss', res)
-      // },
       // 添加串课学生
       async additionalStudents() {
         const params = {
@@ -341,7 +354,7 @@
       },
       // 结束课程
       async endCourseOnclick() {
-        this.$confirm('确定要结束该课程?', '提示', {
+        this.$confirm('确定要结束该节课程?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -359,7 +372,7 @@
         }).catch(() => {})
       },
       async startCourseOnclick() {
-        this.$confirm('确定要开始该课程?', '提示', {
+        this.$confirm('确定要开始该节课程?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -403,7 +416,7 @@
     },
     mounted() {
       this.queryClassList()
-      this.queryStudentList()
+      // this.queryStudentList()
       // this.queryCourseAdditional()
     }
   }

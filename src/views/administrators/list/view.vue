@@ -38,27 +38,27 @@
       </my-pagination>
     </el-card>
     <el-dialog :title="isCreate ? '新建管理员' : '管理员详情'" :visible.sync="dialogFormVisible" width="70%">
-      <el-form :model="userInfo" label-width="120px" :disabled="userInfo.deleted">
-        <el-form-item label="管理员账号：">
+      <el-form :model="userInfo" label-width="150px" :disabled="userInfo.deleted" ref="ruleForm" :rules="rules">
+        <el-form-item label="管理员账号：" prop="username">
           <el-input v-model="userInfo.username" :disabled="!isCreate"></el-input>
         </el-form-item>
-        <el-form-item label="联系电话：">
-          <el-input v-model="userInfo.phone" :maxlength="11"></el-input>
+        <el-form-item label="联系电话：" prop="phone">
+          <el-input v-model="userInfo.phone" :maxlength="20"></el-input>
         </el-form-item>
-        <el-form-item label="身份证号码：">
+        <el-form-item label="身份证号码：" prop="cardNum">
           <el-input v-model="userInfo.cardNum"></el-input>
         </el-form-item>
-        <el-form-item v-if="isCreate" label="验证码：">
+        <el-form-item v-if="isCreate" label="验证码：" prop="verification">
           <el-input v-model="userInfo.verification">
             <template slot="append">
               <div style="cursor: pointer;" :class="{'can-send': countDown === null || countDown <= 0}" @click="getVerificationCode">{{codeMsg}}</div>
             </template>
           </el-input>
         </el-form-item>
-        <el-form-item v-if="isCreate" label="密码：">
+        <el-form-item v-if="isCreate" label="密码：" prop="password">
           <el-input v-model="userInfo.password" type="password"></el-input>
         </el-form-item>
-        <el-form-item v-if="isCreate" label="确认密码：">
+        <el-form-item v-if="isCreate" label="确认密码：" prop="confirmPassword">
           <el-input v-model="userInfo.confirmPassword" type="password"></el-input>
         </el-form-item>
       </el-form>
@@ -110,7 +110,6 @@
         newPassword: null,
         passwordName: null, // 修改用户名
         userInfo: {
-          name: '',
           username: '',
           password: '',
           confirmPassword: '',
@@ -120,7 +119,34 @@
         },
         isCreate: true, // 是否是创建
         countDown: null, // 倒计时
+        rules: {
+          username: [
+            { required: true, message: '请输入管理员账号', trigger: 'blur' }
+          ],
+          cardNum: [
+            { required: true, message: '请输入身份证号码', trigger: 'blur' }
+          ],
+          phone: [
+            { required: true, message: '请输入联系电话', trigger: 'blur' }
+          ],
+          password: [
+            { required: true, message: '请输入密码', trigger: 'blur' }
+          ],
+          confirmPassword: [
+            { required: true, message: '请输入确认密码', trigger: 'blur' }
+          ],
+          verification: [
+            { required: true, message: '请输入验证码', trigger: 'blur' }
+          ]
+        },
       })
+    },
+    watch: {
+      dialogFormVisible(value) {
+        if (!value) {
+          this.$refs.ruleForm.clearValidate()
+        }
+      }
     },
     filters: {
       sexMsg(sex) {
@@ -189,29 +215,36 @@
         this.dialogFormVisible = true
       },
       async createUser() {
-        if (this.userInfo.password !== this.userInfo.confirmPassword) return this.$message({type: 'info', message: '两次输入密码不一致！'})
-        let loadingInstance = Loading.service()
-        if (this.isCreate) {
-          const {code, msg} = await userApi.addAdmin(this.userInfo).catch(e=>e)
-          loadingInstance.close()
-          if (code !== '200') return this.$message(msg)
-          this.$message({type: 'success', message: '创建成功！'})
-        } else {
-          const params = {
-            accountId: this.userInfo.accountId,
-            cardNum: this.userInfo.cardNum,
-            name: this.userInfo.name,
-            phone: this.userInfo.phone,
-            username: this.userInfo.username,
-            type: '0'
+        this.$refs['ruleForm'].validate(async (valid) => {
+          if (valid) {
+            if (this.userInfo.password !== this.userInfo.confirmPassword) return this.$message({type: 'info', message: '两次输入密码不一致！'})
+            let loadingInstance = Loading.service()
+            if (this.isCreate) {
+              const {code, msg} = await userApi.addAdmin(this.userInfo).catch(e=>e)
+              loadingInstance.close()
+              if (code !== '200') return this.$message(msg)
+              this.$message({type: 'success', message: '创建成功！'})
+            } else {
+              const params = {
+                accountId: this.userInfo.accountId,
+                cardNum: this.userInfo.cardNum,
+                name: this.userInfo.name,
+                phone: this.userInfo.phone,
+                username: this.userInfo.username,
+                type: '0'
+              }
+              const {code, msg} = await userApi.updateUser(params).catch(e=>e)
+              loadingInstance.close()
+              if (code !== '200') return this.$message(msg)
+              this.$message({type: 'success', message: '修改管理员资料成功！'})
+            }
+            this.dialogFormVisible = false
+            this.queryUserList()
+          } else {
+            this.$message('请填写必要信息！')
+            return false
           }
-          const {code, msg} = await userApi.updateUser(params).catch(e=>e)
-          loadingInstance.close()
-          if (code !== '200') return this.$message(msg)
-          this.$message({type: 'success', message: '修改管理员资料成功！'})
-        }
-        this.dialogFormVisible = false
-        this.queryUserList()
+        })
       },
       // 删除用户
       async deleteUser(user) {

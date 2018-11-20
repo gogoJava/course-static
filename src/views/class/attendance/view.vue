@@ -8,6 +8,10 @@
           </el-option>
         </el-select>
         <span style="padding-bottom: 15px; padding-left: 30px;font-weight: bold;">课程进度：{{courseCurrent}} / {{courseTotal}}</span>
+        <span style="padding-left: 15px;">
+          <el-button v-if="classStatus === '1' || classStatus === '-1'" style="position: relative;left: 30px;" type="primary" @click.native="startCourseOnclick">开始上课</el-button>
+          <el-button v-if="classStatus === '0'" style="position: relative;left: 30px;" type="primary" @click.native="endCourseOnclick">下课</el-button>
+        </span>
       </div>
       <el-col :span="16">
         <el-row :gutter="0" v-for="(item, i) of seatRowsList" :key="i" style="width: 720px;">
@@ -48,7 +52,7 @@
         <el-card>
           <div slot="header">
             <span>添加串课名单</span>
-            <el-select style="float: right;position: relative;top: -6px;width: 160px;" @change="additionalStudents" clearable v-model="additionalStudent" filterable placeholder="添加串课学生">
+            <el-select style="float: right;position: relative;top: -6px;width: 160px;" no-data-text="无可窜课学生" @change="additionalStudents" clearable v-model="additionalStudent" filterable placeholder="添加串课学生">
               <el-option
                       v-for="item in studentList"
                       :key="item.accountId"
@@ -57,14 +61,14 @@
               </el-option>
             </el-select>
           </div>
-          <div style="height: 300px;overflow-y: auto;">
+          <div style="height: 360px;overflow-y: auto;">
             <div v-for="(item, index) in additionalStudentList" :key="index">
               {{item.name}}
             </div>
           </div>
         </el-card>
         <div style="padding-top: 30px;text-align: center;">
-          <el-button type="primary" style="width: 120px;" @click.native="endCourseOnclick">完成</el-button>
+          <el-button type="primary" style="width: 120px;" @click.native="finishedCourseOnclick">完成</el-button>
         </div>
       </el-col>
     </el-card>
@@ -74,7 +78,7 @@
   // API
   import * as classApi from '../../../apis/classApi'
   import * as courseApi from '../../../apis/courseApi'
-  import * as userApi from '../../../apis/userApi'
+  // import * as userApi from '../../../apis/userApi'
   import * as classRosterApi from '../../../apis/classRosterApi'
   // components
   import IconFont from '../../../components/icon-font/IconFont'
@@ -219,7 +223,8 @@
         })
         Promise.all([
           this.queryCourseAttendance(),
-          this.queryClassRosters()
+          this.queryClassRosters(),
+          this.queryStudentList()
         ])
       },
       checkboxGroup() {
@@ -260,6 +265,24 @@
         const {total, list} = data
         this.tableData.total = total || 0
         this.tableData.list = list || []
+        if (this.selectedCourseId) {
+          this.checkboxGroup = []
+          this.rostersStudent = []
+          this.tableData.list.forEach(element => {
+            if (element.courseId === this.selectedCourseId) {
+              this.seatLayout = element.seatLayout
+              this.courseTotal = element.courseTotal
+              this.courseCurrent = element.courseCurrent
+              this.classStatus = element.classStatus
+              this.courseStatus = element.courseStatus
+            }
+          })
+          Promise.all([
+            this.queryCourseAttendance(),
+            this.queryClassRosters(),
+            this.queryStudentList()
+          ])
+        }
         if (list && list.length && !this.selectedCourseId) {
           this.selectedCourseId = list[0].courseId
         }
@@ -298,18 +321,14 @@
       },
       // 获取学生列表
       async queryStudentList() {
-        const {data} = await userApi.getUserList({
+        this.studentList = []
+        const {data} = await courseApi.getAdditionalUserList({
           pageNum: 1,
           pageSize: 9999,
-          type: 1, // 用户类型:1学生2教师
+          courseId: this.selectedCourseId
         }).catch(e => e)
         this.studentList = data.list || []
       },
-      // 加载窜课名单
-      // async queryCourseAdditional() {
-      //   const res = await courseApi.courseAdditional(params).catch(e => e)
-      //   console.log('sssss', res)
-      // },
       // 添加串课学生
       async additionalStudents() {
         const params = {
@@ -337,7 +356,7 @@
         }).catch(() => {})
       },
       // 结束课程
-      async endCourseOnclick() {
+      async finishedCourseOnclick() {
         this.$confirm('确定要完成该课程?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -378,11 +397,48 @@
             this.queryCourseAttendance()
           }).catch(() => {})
         }
-      }
+      },
+      // 结束课程
+      async endCourseOnclick() {
+        this.$confirm('确定要结束该节课程?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(async () => {
+          const {code, msg} = await courseApi.endCourse(this.selectedCourseId).catch(e => e)
+          if (code !== '200') {
+            return this.$message('结束课程失败，' + msg)
+          }
+          this.classStatus = '-1'
+          this.$message({
+            type: 'success',
+            message: '结束课程成功！'
+          })
+          this.queryClassList()
+        }).catch(() => {})
+      },
+      async startCourseOnclick() {
+        this.$confirm('确定要开始该节课程?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(async () => {
+          const {code, msg} = await courseApi.startCourse(this.selectedCourseId).catch(e => e)
+          if (code !== '200') {
+            return this.$message('课程开始失败，' + msg)
+          }
+          this.classStatus = '0'
+          this.$message({
+            type: 'success',
+            message: '课程开始！'
+          })
+          this.queryClassList()
+        }).catch(() => {})
+      },
     },
     mounted() {
       this.queryClassList()
-      this.queryStudentList()
+      // this.queryStudentList()
       // this.queryCourseAdditional()
     }
   }

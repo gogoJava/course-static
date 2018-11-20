@@ -49,6 +49,8 @@ export default {
         username: '',
         password: ''
       },
+      inputName: null,
+      name: null,
       loginRules: {
         username: [{ required: true, trigger: 'change', validator: validateUsername }],
         password: [{ required: true, trigger: 'change', validator: validatePassword }]
@@ -94,6 +96,12 @@ export default {
       },
     },
   created() {
+    document.onkeydown = async () =>{
+      const key = window.event.keyCode
+      if(key === 13){
+        this.handleLogin()
+      }
+    }
     // window.addEventListener('hashchange', this.afterQRScan)
   },
   destroyed() {
