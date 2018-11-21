@@ -354,13 +354,25 @@
           const index = list.findIndex(value => value.courseId === this.selectedCourseId)
           if (index !== -1) {
             const item = this.tableData.list[index]
-            this.orderId = item.orderId
+            this.seatLayout = item.seatLayout
+            this.courseTotal = item.courseTotal
+            this.courseCurrent = item.courseCurrent
+            this.courseTeacher = item.user
+            this.courseStartDateStr = item.courseStartDateStr
+            this.courseEndDateStr = item.courseEndDateStr
+            this.classStartTimeStr = item.classStartTimeStr
+            this.classEndTimeStr = item.classEndTimeStr
+            this.courseName = item.courseName
+            this.classStatus = item.classStatus
+            this.bought = item.bought
             this.orderStatus = item.orderStatus
+            this.orderId = item.orderId
             if (this.orderStatus !== '0') {
-              this.bought = true
+              // this.bought = true
               this.dialogVisible = false
             }
           }
+          this.queryClassRosters()
         }
         if (list && list.length && !this.selectedCourseId) {
           this.selectedCourseId = list[0].courseId
@@ -505,11 +517,11 @@
       }
     },
     async mounted() {
-      await this.queryClassList()
-      // await this.queryOrderList()
       if (this.$route.query.courseId) {
         this.selectedCourseId = this.$route.query.courseId - 0
       }
+      this.queryClassList()
+      // await this.queryOrderList()
     }
   }
 </script>
