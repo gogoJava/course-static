@@ -3,7 +3,7 @@ module.exports = {
   online: false,
   // 接口url
   // apiUrl: null,
-  apiUrl: '//lolcainiao.club/basics/',
-  // apiUrl: '//ccjkjy.com/',
+  // apiUrl: '//lolcainiao.club/basics/',
+  apiUrl: '//ccjkjy.com/',
   
 }

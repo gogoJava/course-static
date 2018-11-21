@@ -188,8 +188,6 @@
           confirmPassword: '',
           phone: null,
           verification: '', // 验证码
-          cardNum: null, // 身份证号码
-          parentName: '', // 家长名字
           gradeName: '', // 年级
           schoolName: '', // 学校
           schoolNumber: '' , // 学号
@@ -311,8 +309,6 @@
             password: '',
             phone: null,
             verification: '', // 验证码
-            cardNum: null, // 身份证号码
-            parentName: '', // 家长名字
             gradeName: '', // 年级
             schoolName: '', // 学校
             schoolNumber: '', // 学号

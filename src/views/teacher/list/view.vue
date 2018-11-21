@@ -178,10 +178,6 @@
           phone: null,
           verification: '', // 验证码
           cardNum: null, // 身份证号码
-          // teacherChargeType: '1', // 教师收费类型:1按时(按课时出席人数)2按提成(分成)
-          averageHour: null, // 按【averageHour】小时收费
-          averageHourCost: null, // 按【averageHour】小时收费【averageHourCost】
-          percentage: null, //
         },
         rules: {
           name: [
@@ -286,10 +282,6 @@
             phone: null,
             verification: '', // 验证码
             cardNum: null, // 身份证号码
-            // teacherChargeType: '1', // 教师收费类型:1按时(按课时出席人数)2按提成(分成)
-            averageHour: null, // 按【averageHour】小时收费
-            averageHourCost: null, // 按【averageHour】小时收费【averageHourCost】
-            percentage: null, //
           }
         }
         this.dialogFormVisible = true
