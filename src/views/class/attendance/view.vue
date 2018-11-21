@@ -8,10 +8,11 @@
           </el-option>
         </el-select>
         <span style="padding-bottom: 15px; padding-left: 30px;font-weight: bold;">课程进度：{{courseCurrent}} / {{courseTotal}}</span>
-        <span style="padding-left: 15px;">
+        <span v-if="courseStatus !== '3'" style="padding-left: 15px;">
           <el-button v-if="classStatus === '1' || classStatus === '-1'" style="position: relative;left: 30px;" type="primary" @click.native="startCourseOnclick">开始上课</el-button>
           <el-button v-if="classStatus === '0'" style="position: relative;left: 30px;" type="primary" @click.native="endCourseOnclick">下课</el-button>
         </span>
+        <span v-if="courseStatus === '3'" style="font-weight: bold;">课程已结束</span>
       </div>
       <el-col :span="16">
         <el-row :gutter="0" v-for="(item, i) of seatRowsList" :key="i" style="width: 720px;">
@@ -67,7 +68,7 @@
             </div>
           </div>
         </el-card>
-        <div style="padding-top: 30px;text-align: center;">
+        <div style="padding-top: 30px;text-align: center;" v-if="courseStatus !== '3'">
           <el-button type="primary" style="width: 120px;" @click.native="finishedCourseOnclick">完成</el-button>
         </div>
       </el-col>
