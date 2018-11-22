@@ -222,6 +222,7 @@
       selectedCourseId(value) {
         this.checkboxGroup = []
         this.rostersStudent = []
+        this.courseClassList = []
         this.tableData.list.forEach(element => {
           if (element.courseId === value) {
             this.seatLayout = element.seatLayout
@@ -285,6 +286,7 @@
         if (this.selectedCourseId) {
           this.checkboxGroup = []
           this.rostersStudent = []
+          this.courseClassList = []
           this.tableData.list.forEach(element => {
             if (element.courseId === this.selectedCourseId) {
               this.seatLayout = element.seatLayout
