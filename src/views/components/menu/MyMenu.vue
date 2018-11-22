@@ -76,7 +76,7 @@
         </el-menu>
       </el-aside>
       <el-container>
-        <el-header>
+        <el-header style="line-height: 50px;height: 50px;">
           <span class="nav-toggle" style="float: left;">
             <el-dropdown trigger="click">
               <span class="el-dropdown-link"><i class="el-icon-arrow-down el-icon-more"></i></span>
@@ -99,8 +99,8 @@
                 <el-dropdown-item v-if="isTeacher" @click.native="$router.push('/home/teacher/class/attendance')">出勤签到</el-dropdown-item>
                 <el-dropdown-item v-if="isTeacher" @click.native="$router.push('/home/income/teacher/detail')">个人信息</el-dropdown-item>
                 <!--学生-->
-                <el-dropdown-item v-if="isStudent" @click.native="$router.push('/home/student/class/all')">全部课程</el-dropdown-item>
                 <el-dropdown-item v-if="isStudent" @click.native="$router.push('/home/student/class/my')">我的课程</el-dropdown-item>
+                <el-dropdown-item v-if="isStudent" @click.native="$router.push('/home/student/class/all')">全部课程</el-dropdown-item>
                 <el-dropdown-item v-if="isStudent" @click.native="$router.push('/home/class/order/pay')">课程支付管理</el-dropdown-item>
                 <!--<el-dropdown-item v-if="isStudent" @click.native="$router.push('/home/student/class/my')">座位表</el-dropdown-item>-->
               </el-dropdown-menu>
@@ -118,7 +118,10 @@
             </el-dropdown>
           </div>
         </el-header>
-        <el-main>
+        <el-main v-if="isMobile" style="padding: 0">
+          <router-view></router-view>
+        </el-main>
+        <el-main v-if="!isMobile">
           <router-view></router-view>
         </el-main>
       </el-container>
@@ -185,6 +188,9 @@
       isStudent() {
         return this.currentUser && this.currentUser.type === '1'
       },
+      isMobile() {
+        return /Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)
+      }
     },
     methods: {
       ...mapActions($account.namespace, {
@@ -265,7 +271,7 @@
     background-color: #B3C0D1;
     color: #333;
     text-align: center;
-    line-height: 60px;
+    line-height: 50px;
   }
   .el-menu-item.is-active {
     background: #1f2d3d !important;
