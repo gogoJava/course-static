@@ -19,7 +19,7 @@
         </el-select>
         </span>
         <span style="padding-bottom: 15px; padding-left: 30px;font-weight: bold;">课程进度：{{courseCurrent}} / {{courseTotal}}</span>
-        <span v-if="courseStatus !== '3'" style="padding-left: 15px;">
+        <span v-if="courseStatus !== '3' && (courseRecord === courseCurrent)" style="padding-left: 15px;">
           <el-button v-if="classStatus === '1' || classStatus === '-1'" style="position: relative;left: 30px;" type="primary" @click.native="startCourseOnclick">开始上课</el-button>
           <el-button v-if="classStatus === '0'" style="position: relative;left: 30px;" type="primary" @click.native="endCourseOnclick">下课</el-button>
         </span>
