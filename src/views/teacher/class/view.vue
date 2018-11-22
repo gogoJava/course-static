@@ -11,7 +11,7 @@
           <span style="padding-bottom: 15px; padding-left: 15px;">课程进度：{{courseCurrent}} / {{courseTotal}}</span>
           <span>
             <span v-if="courseStatus === '3'" style="font-weight: bold;">课程已结束</span>
-            <el-button v-if="courseStatus === '1' || courseStatus === '2'" style="position: relative;left: 30px;" type="danger" @click.native="endCourseOnclick">结束课程</el-button>
+            <!--<el-button v-if="courseStatus === '1' || courseStatus === '2'" style="position: relative;left: 30px;" type="danger" @click.native="endCourseOnclick">结束课程</el-button>-->
           </span>
         </div>
         <div style="font-size: 24px;font-weight: bold;padding: 15px;">

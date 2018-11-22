@@ -7,6 +7,17 @@
           <el-option v-for="(item, index) in tableData.list" :key="index" :label="item.courseName" :value="item.courseId">
           </el-option>
         </el-select>
+        <span style="padding-left: 15px;font-weight: bold;">
+          <span>历史考勤：</span>
+          <el-select v-model="courseRecord" placeholder="请选择" @change="queryCourseAttendance">
+          <el-option
+                  v-for="item in courseClassList"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+          </el-option>
+        </el-select>
+        </span>
         <span style="padding-bottom: 15px; padding-left: 30px;font-weight: bold;">课程进度：{{courseCurrent}} / {{courseTotal}}</span>
         <span v-if="courseStatus !== '3'" style="padding-left: 15px;">
           <el-button v-if="classStatus === '1' || classStatus === '-1'" style="position: relative;left: 30px;" type="primary" @click.native="startCourseOnclick">开始上课</el-button>
@@ -21,8 +32,8 @@
               <el-checkbox size="small" class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
             <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, a) of seatLeftList" :key="a" @click.native="attendanceCourse(item[i])">
-              <el-tooltip class="item" effect="dark" :content="item && item[i] ? (item[i].name + '已签到') : ''" placement="top" :disabled="!(item && item[i] && item[i].attendType)">
-                <img :src="(item && item[i] && item[i].attendType) ? checkedSeatImgUrl : seatImgUrl" class="chenk-box-img" />
+              <el-tooltip class="item" effect="dark" :content="item && item[i] && item[i].attendType === '1' ? (item[i].name + '已签到') : (courseCurrent === courseRecord ? '' : '缺席')" placement="top" :disabled="!(item && item[i] && item[i].attendType && courseCurrent !== courseRecord)">
+                <img :src="(item && item[i] && item[i].attendType && item[i].attendType === '1') ? checkedSeatImgUrl : seatImgUrl" class="chenk-box-img" />
               </el-tooltip>
             </el-col>
           </el-col>
@@ -31,8 +42,8 @@
               <el-checkbox size="small" class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
             <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, b) of seatMidList" :key="b" @click.native="attendanceCourse(item[i])">
-              <el-tooltip class="item" effect="dark" :content="item && item[i] ? (item[i].name + '已签到') : ''" placement="top" :disabled="!(item && item[i] && item[i].attendType)">
-                <img :src="(item && item[i] && item[i].attendType) ? checkedSeatImgUrl : seatImgUrl" class="chenk-box-img" />
+              <el-tooltip class="item" effect="dark" :content="item && item[i] && item[i].attendType === '1' ? (item[i].name + '已签到') : (courseCurrent === courseRecord ? '' : '缺席')" placement="top" :disabled="!(item && item[i] && item[i].attendType && courseCurrent !== courseRecord)">
+                <img :src="(item && item[i] && item[i].attendType && item[i].attendType === '1') ? checkedSeatImgUrl : seatImgUrl" class="chenk-box-img" />
               </el-tooltip>
             </el-col>
           </el-col>
@@ -41,8 +52,8 @@
               <el-checkbox size="small" class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
             <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, c) of seatRightList" :key="c" @click.native="attendanceCourse(item[i])">
-              <el-tooltip class="item" effect="dark" :content="item && item[i] ? (item[i].name + '已签到') : ''" placement="top" :disabled="!(item && item[i] && item[i].attendType)">
-                <img :src="(item && item[i] && item[i].attendType) ? checkedSeatImgUrl : seatImgUrl" class="chenk-box-img" />
+              <el-tooltip class="item" effect="dark" :content="item && item[i] && item[i].attendType === '1' ? (item[i].name + '已签到') : (courseCurrent === courseRecord ? '' : '缺席')" placement="top" :disabled="!(item && item[i] && item[i].attendType && courseCurrent !== courseRecord)">
+                <img :src="(item && item[i] && item[i].attendType && item[i].attendType === '1') ? checkedSeatImgUrl : seatImgUrl" class="chenk-box-img" />
               </el-tooltip>
             </el-col>
           </el-col>
@@ -105,10 +116,12 @@
         },
         selectedCourseId: null,
         seatLayout: null,
+        courseClassList: [], // 历史考勤
         checkboxGroup: [], // 选择的座位
         studentList: [], // 学生列表
         courseTotal: 0, // 总课时
         courseCurrent: 0,
+        courseRecord: 0,
         courseAttendanceList: [], // 考勤列表
         additionalStudentList: [], // 考勤列表
         additionalStudent: null,
@@ -153,7 +166,7 @@
         this.rostersStudent.forEach(item => {
           if (item.rosterSeatX < this.seatLayout.seatLeft) {
             const info = this.courseAttendanceList.find(value => value.accountId === item.accountId)
-            list[item.rosterSeatX][item.rosterSeatY] = {...item.user, accountId: item.accountId, attendType: info && info.attendType === '1' ? info.attendType : null}
+            list[item.rosterSeatX][item.rosterSeatY] = {...item.user, accountId: item.accountId, attendType: info && (info.attendType === '1' || info.attendType === '4') ? info.attendType : null}
           }
         })
         return list
@@ -174,7 +187,7 @@
             const info = this.courseAttendanceList.find(value => value.accountId === item.accountId)
             const x = item.rosterSeatX - this.seatLayout.seatLeft
             if (list[x]) {
-              list[x][item.rosterSeatY] = {...item.user, accountId: item.accountId, attendType: info && info.attendType === '1' ? info.attendType : null}
+              list[x][item.rosterSeatY] = {...item.user, accountId: item.accountId, attendType: info && (info.attendType === '1' || info.attendType === '4') ? info.attendType : null}
             }
           }
         })
@@ -196,7 +209,7 @@
             const info = this.courseAttendanceList.find(value => value.accountId === item.accountId)
             const x = item.rosterSeatX - this.seatLayout.seatMid - this.seatLayout.seatLeft
             if (list[x]) {
-              list[x][item.rosterSeatY] = {...item.user, accountId: item.accountId, attendType: info && info.attendType === '1' ? info.attendType : null}
+              list[x][item.rosterSeatY] = {...item.user, accountId: item.accountId, attendType: info && (info.attendType === '1' || info.attendType === '4') ? info.attendType : null}
             }
           }
         })
@@ -213,6 +226,7 @@
       selectedCourseId(value) {
         this.checkboxGroup = []
         this.rostersStudent = []
+        this.courseClassList = []
         this.tableData.list.forEach(element => {
           if (element.courseId === value) {
             this.seatLayout = element.seatLayout
@@ -220,6 +234,12 @@
             this.courseCurrent = element.courseCurrent
             this.classStatus = element.classStatus
             this.courseStatus = element.courseStatus
+            this.courseRecord = element.courseCurrent
+            this.courseClassList.push({value: this.courseCurrent, label: '当前'})
+            const courseCurrent = this.courseCurrent
+            for (let i = 1; i < courseCurrent; i++) {
+              this.courseClassList.push({value: courseCurrent - i, label: courseCurrent - i})
+            }
           }
         })
         Promise.all([
@@ -269,6 +289,7 @@
         if (this.selectedCourseId) {
           this.checkboxGroup = []
           this.rostersStudent = []
+          this.courseClassList = []
           this.tableData.list.forEach(element => {
             if (element.courseId === this.selectedCourseId) {
               this.seatLayout = element.seatLayout
@@ -276,10 +297,16 @@
               this.courseCurrent = element.courseCurrent
               this.classStatus = element.classStatus
               this.courseStatus = element.courseStatus
+              this.courseRecord = element.courseCurrent
+              this.courseClassList.push({value: this.courseCurrent, label: '当前'})
+              const courseCurrent = this.courseCurrent
+              for (let i = 1; i < courseCurrent; i++) {
+                this.courseClassList.push({value: courseCurrent - i, label: courseCurrent - i})
+              }
             }
           })
           Promise.all([
-            this.queryCourseAttendance(),
+            // this.queryCourseAttendance(),
             this.queryClassRosters(),
             this.queryStudentList()
           ])
@@ -292,7 +319,7 @@
       // 获取考勤列表
       async queryCourseAttendance() {
         const {data} = await courseApi.getCourseAttendance({
-          courseCurrent: this.courseCurrent,
+          courseCurrent: this.courseRecord,
           courseId: this.selectedCourseId, // 用户类型:1学生2教师
         }).catch(e => e)
         this.courseAttendanceList = []
@@ -306,6 +333,10 @@
             // 窜课名单
             if (item.attendType === '3') {
               this.additionalStudentList.push(item)
+            }
+            // 缺席名单
+            if (item.attendType === '4') {
+              this.courseAttendanceList.push(item)
             }
           })
         }
@@ -376,8 +407,7 @@
       },
       // 修改签到
       async attendanceCourse(info) {
-        console.log('info', info)
-        if (info && info.attendType !== '1') {
+        if (info && info.attendType !== '1' && this.courseCurrent === this.courseRecord) {
           this.$confirm('确定【' + info.name + '】签到?', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
