@@ -1,5 +1,5 @@
 <template>
-  <div class="class-attendance-page">
+  <div class="teacher-class-attendance-page">
     <el-card class="content">
       <div slot="header" class="clearfix">
         <span style="padding-right: 15px;">课程:</span>
@@ -15,8 +15,8 @@
         <span v-if="courseStatus === '3'" style="font-weight: bold;">课程已结束</span>
       </div>
       <el-col :span="16">
-        <el-row :gutter="0" v-for="(item, i) of seatRowsList" :key="i" style="width: 720px;">
-        <el-col style="width: 240px;">
+        <el-row :gutter="0" v-for="(item, i) of seatRowsList" :key="i" style="width: 780px;">
+        <el-col style="width: 250px;">
           <el-checkbox-group v-model="checkboxGroup" disabled>
             <el-checkbox size="small" class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
           </el-checkbox-group>
@@ -26,7 +26,7 @@
             </el-tooltip>
           </el-col>
         </el-col>
-        <el-col style="width: 240px;">
+        <el-col style="width: 250px;">
           <el-checkbox-group v-model="checkboxGroup" disabled>
             <el-checkbox size="small" class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
           </el-checkbox-group>
@@ -36,7 +36,7 @@
             </el-tooltip>
           </el-col>
         </el-col>
-        <el-col style="width: 240px;">
+        <el-col style="width: 250px;">
           <el-checkbox-group v-model="checkboxGroup" disabled>
             <el-checkbox size="small" class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
           </el-checkbox-group>
@@ -84,7 +84,7 @@
   import * as $account from '../../../store/modules/account/types'
   export default {
     title: '出勤签到',
-    name: 'class-attendance-pagee',
+    name: 'teacher-class-attendance-pagee',
     components: {
       IconFont
     },
@@ -423,46 +423,46 @@
   }
 </script>
 <style>
-.class-attendance-page .content {
+.teacher-class-attendance-page .content {
   min-width: 1100px;
   overflow-x: auto;
   min-height: 900px;
 }
-.class-attendance-page .content .el-row {
+.teacher-class-attendance-page .content .el-row {
     margin-bottom: 20px;
     &:last-child {
       margin-bottom: 0;
     }
 }
-.class-attendance-page .chenk-box-col {
+.teacher-class-attendance-page .chenk-box-col {
   width: 70px;
   text-align: center;
 }
-.class-attendance-page .chenk-box {
-  width: 70px;
+.teacher-class-attendance-page .chenk-box {
+  width: 65px;
   text-align: center;
 
 }
-.class-attendance-page .chenk-box-img {
+.teacher-class-attendance-page .chenk-box-img {
   width: 65px;
   padding: 10px;
   cursor: pointer;
 }
-.class-attendance-page .chenk-box .el-checkbox__input {
+.teacher-class-attendance-page .chenk-box .el-checkbox__input {
   display: none;
 }
-.class-attendance-page .seat-icon {
+.teacher-class-attendance-page .seat-icon {
   width: 70px;
   text-align: center;
   padding-top: 15px;
 }
-.class-attendance-page .seat-icon .icon {
+.teacher-class-attendance-page .seat-icon .icon {
   color: #606266;
 }
-.class-attendance-page .seat-icon .icon-selected {
+.teacher-class-attendance-page .seat-icon .icon-selected {
    /*color: #409EFF;*/
 }
-.class-attendance-page .el-checkbox__label {
-  padding-left: 0;
+.teacher-class-attendance-page .el-checkbox__label {
+  padding: 0;
 }
 </style>
