@@ -302,11 +302,11 @@
               }
             }
           })
-          Promise.all([
-            // this.queryCourseAttendance(),
-            this.queryClassRosters(),
-            this.queryStudentList()
-          ])
+          // Promise.all([
+          //   // this.queryCourseAttendance(),
+          //   this.queryClassRosters(),
+          //   this.queryStudentList()
+          // ])
         }
         if (list && list.length && !this.selectedCourseId) {
           this.selectedCourseId = list[0].courseId
@@ -340,6 +340,8 @@
       },
       // 获取课程名单
       async queryClassRosters() {
+        this.rostersStudent = []
+        this.checkboxGroup = []
         const {data} = await classRosterApi.getClassRosterList({courseId: this.selectedCourseId}).catch(e => e)
         if (data && data.length) {
           data.forEach(value => {
@@ -400,7 +402,11 @@
             type: 'success',
             message: '结束课程成功！'
           })
-          this.queryClassList()
+          await this.queryClassList()
+          Promise.all([
+            this.queryClassRosters(),
+            this.queryStudentList()
+          ])
         }).catch(() => {})
       },
       async startCourseOnclick() {
@@ -418,7 +424,11 @@
             type: 'success',
             message: '课程开始！'
           })
-          this.queryClassList()
+          await this.queryClassList()
+          Promise.all([
+            this.queryClassRosters(),
+            this.queryStudentList()
+          ])
         }).catch(() => {})
       },
       // 签到
