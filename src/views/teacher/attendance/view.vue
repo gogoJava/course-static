@@ -404,6 +404,7 @@
           })
           await this.queryClassList()
           Promise.all([
+            this.queryCourseAttendance(),
             this.queryClassRosters(),
             this.queryStudentList()
           ])
@@ -426,6 +427,7 @@
           })
           await this.queryClassList()
           Promise.all([
+            this.queryCourseAttendance(),
             this.queryClassRosters(),
             this.queryStudentList()
           ])
@@ -458,8 +460,6 @@
     },
     mounted() {
       this.queryClassList()
-      // this.queryStudentList()
-      // this.queryCourseAdditional()
     }
   }
 </script>
