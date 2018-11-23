@@ -72,20 +72,20 @@
             <el-input v-model="userInfo.cardNum"></el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="24">
           <el-form-item label="联系电话：" prop="phone">
             <el-input v-model="userInfo.phone" :maxlength="20"></el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="12">
-          <el-form-item v-if="isCreate" label="验证码：" prop="verification">
-            <el-input v-model="userInfo.verification">
-              <template slot="append">
-                <div style="cursor: pointer;" :class="{'can-send': countDown === null || countDown <= 0}" @click="getVerificationCode">{{codeMsg}}</div>
-              </template>
-            </el-input>
-          </el-form-item>
-        </el-col>
+        <!--<el-col :span="12">-->
+          <!--<el-form-item v-if="isCreate" label="验证码：" prop="verification">-->
+            <!--<el-input v-model="userInfo.verification">-->
+              <!--<template slot="append">-->
+                <!--<div style="cursor: pointer;" :class="{'can-send': countDown === null || countDown <= 0}" @click="getVerificationCode">{{codeMsg}}</div>-->
+              <!--</template>-->
+            <!--</el-input>-->
+          <!--</el-form-item>-->
+        <!--</el-col>-->
         <el-col :span="24">
           <el-form-item v-if="isCreate" label="密码：" prop="password">
             <el-input v-model="userInfo.password" type="password"></el-input>
@@ -176,7 +176,7 @@
           password: '',
           confirmPassword: '',
           phone: null,
-          verification: '', // 验证码
+          // verification: '', // 验证码
           cardNum: null, // 身份证号码
         },
         rules: {
@@ -201,9 +201,9 @@
           confirmPassword: [
             { required: true, message: '请输入确认密码', trigger: 'blur' }
           ],
-          verification: [
-            { required: true, message: '请输入验证码', trigger: 'blur' }
-          ]
+          // verification: [
+          //   { required: true, message: '请输入验证码', trigger: 'blur' }
+          // ]
         },
         isCreate: true, // 是否是创建
         countDown: null, // 倒计时
@@ -280,7 +280,7 @@
             type: 2, // 用户类型:1学生2教师
             password: '',
             phone: null,
-            verification: '', // 验证码
+            // verification: '', // 验证码
             cardNum: null, // 身份证号码
           }
         }

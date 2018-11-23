@@ -3,6 +3,9 @@
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span>支付成功订单</span>
+        <el-input v-model="searchForm.keyword" style="width: 300px;float: right;position: relative;top: -6px;" placeholder="学生姓名、订单号">
+          <i slot="prefix" class="el-input__icon el-icon-search"></i>
+        </el-input>
       </div>
       <el-table :data="tableData.list" v-loading="tableData.loading" style="width: 100%" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55">
@@ -57,9 +60,15 @@
         searchForm: {
           pageNum: 1,
           pageSize: 10,
+          keyword: ''
         },
         totalIncomeAmount: 0
       })
+    },
+    watch: {
+      'searchForm.keyword'() {
+        this.queryCourseOrderList()
+      }
     },
     methods: {
       handleSelectionChange(val) {

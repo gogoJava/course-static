@@ -1,6 +1,9 @@
 <template>
   <div class="student-list-page">
     <el-card class="box-card">
+      <el-input v-model="searchForm.keyword" style="width: 300px;" placeholder="学生姓名、学号、用户名、联系电话">
+        <i slot="prefix" class="el-input__icon el-icon-search"></i>
+      </el-input>
       <div style="float: right">
         <el-button type="primary" size="small" @click="editUser()">新建学生</el-button>
       </div>
@@ -76,23 +79,23 @@
             <el-input v-model="studentUserInfo.phone" :maxlength="20"></el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="12">
-          <el-form-item v-if="isCreate" label="验证码：" prop="verification">
-            <el-input v-model="studentUserInfo.verification">
-              <template slot="append">
-                <div style="cursor: pointer;" :class="{'can-send': countDown === null || countDown <= 0}" @click="getVerificationCode">{{codeMsg}}</div>
-              </template>
-            </el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="所在学校：">
-            <el-input v-model="studentUserInfo.schoolName"></el-input>
-          </el-form-item>
-        </el-col>
+        <!--<el-col :span="12">-->
+          <!--<el-form-item v-if="isCreate" label="验证码：" prop="verification">-->
+            <!--<el-input v-model="studentUserInfo.verification">-->
+              <!--<template slot="append">-->
+                <!--<div style="cursor: pointer;" :class="{'can-send': countDown === null || countDown <= 0}" @click="getVerificationCode">{{codeMsg}}</div>-->
+              <!--</template>-->
+            <!--</el-input>-->
+          <!--</el-form-item>-->
+        <!--</el-col>-->
         <el-col :span="12">
           <el-form-item label="所在年级：">
             <el-input v-model="studentUserInfo.gradeName"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="所在学校：">
+            <el-input v-model="studentUserInfo.schoolName"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="24">
@@ -174,6 +177,7 @@
         searchForm: {
           pageNum: 1,
           pageSize: 10,
+          keyword: ''
         },
         dialogFormVisible: false,
         passwordDialogVisible: false,
@@ -187,7 +191,7 @@
           password: '',
           confirmPassword: '',
           phone: null,
-          verification: '', // 验证码
+          // verification: '', // 验证码
           gradeName: '', // 年级
           schoolName: '', // 学校
           schoolNumber: '' , // 学号
@@ -213,9 +217,9 @@
           confirmPassword: [
             { required: true, message: '请输入确认密码', trigger: 'blur' }
           ],
-          verification: [
-            { required: true, message: '请输入验证码', trigger: 'blur' }
-          ]
+          // verification: [
+          //   { required: true, message: '请输入验证码', trigger: 'blur' }
+          // ]
         }
       })
     },
@@ -224,6 +228,9 @@
         if (!value) {
           this.$refs.ruleForm.clearValidate()
         }
+      },
+      'searchForm.keyword'() {
+        this.queryUserList()
       }
     },
     filters: {
@@ -308,7 +315,7 @@
             type: 1, // 用户类型:1学生2教师
             password: '',
             phone: null,
-            verification: '', // 验证码
+            // verification: '', // 验证码
             gradeName: '', // 年级
             schoolName: '', // 学校
             schoolNumber: '', // 学号

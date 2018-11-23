@@ -37,6 +37,11 @@ export const addAdmin = (params) => request.post('/api/user/addManager', qs.stri
 export const updatePasswor = (params) => request.post('/api/user/updPassword', qs.stringify(params))
 
 /**
+ * 修改密码(通过验证码)
+ */
+export const updatePassworByCode = (params) => request.post('/api/user/updOwnPwd', qs.stringify(params))
+
+/**
  * 没有选座位的学生列表
  */
 export const getChooseList = (params) => request.get('/api/course/noSeatList', {params})

@@ -44,10 +44,13 @@
       <!--<div slot="header" class="clearfix">-->
         <!--<span>收入详情</span>-->
       <!--</div>-->
+      <el-input v-model="searchForm.keyword" style="width: 300px;" placeholder="课程名称、教师姓名">
+        <i slot="prefix" class="el-input__icon el-icon-search"></i>
+      </el-input>
       <el-table :data="tableData.list" v-loading="tableData.loading" style="width: 100%" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55">
         </el-table-column>
-        <el-table-column prop="courseName" label="班级名称">
+        <el-table-column prop="courseName" label="课程名称">
         </el-table-column>
         <el-table-column prop="user.name" label="教师姓名">
         </el-table-column>
@@ -111,6 +114,7 @@
         searchForm: {
           pageNum: 1,
           pageSize: 10,
+          keyword: ''
         },
         orderForm: {
           pageNum: 1,
@@ -162,6 +166,9 @@
           this.queryIncomeList(),
           this.orderQueryIncomeList()
         ])
+      },
+      'searchForm.keyword'() {
+        this.queryIncomeList()
       }
     },
     methods: {

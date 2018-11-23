@@ -129,8 +129,19 @@
     <!--修改密码-->
     <el-dialog title="修改密码" :visible.sync="dialogVisible" width="50%">
       <el-form :model="password" label-width="120px">
-        <el-form-item label="旧密码：">
+        <el-form-item v-if="isSuperAdmin" label="旧密码：">
           <el-input v-model="password.old" type="password"></el-input>
+        </el-form-item>
+        <el-form-item v-if="!isSuperAdmin" label="联系电话：">
+          <span v-if="!currentUser.phone">请确保用户有联系电话</span>
+          <el-input v-model="currentUser.phone" disabled></el-input>
+        </el-form-item>
+        <el-form-item v-if="!isSuperAdmin" label="验证码：" prop="verification">
+          <el-input v-model="verification">
+            <template slot="append">
+              <div style="cursor: pointer;" :class="{'can-send': countDown === null || countDown <= 0}" @click="getVerificationCode">{{codeMsg}}</div>
+            </template>
+          </el-input>
         </el-form-item>
         <el-form-item label="新密码：">
           <el-input v-model="password.new" type="password"></el-input>
@@ -162,7 +173,9 @@
         password: {
           old: null, // 旧密码
           new: null // 新密码
-        }
+        },
+        verification: null, // 验证码
+        countDown: null, // 倒计时
       }
     },
     computed: {
@@ -190,6 +203,12 @@
       },
       isMobile() {
         return /Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)
+      },
+      codeMsg() {
+        if (this.countDown === null) return '获取验证码'
+        if (this.countDown > 0) return '在' + this.countDown + '秒后可重发验证码'
+        if (this.countDown <= 0) return '重新获取验证码'
+        return '获取验证码'
       }
     },
     methods: {
@@ -210,22 +229,63 @@
       },
       // 修改密码
       async updatePassword() {
-        if (!this.password.old) return this.$message('请填入旧密码')
-        if (!this.password.new) return this.$message('请填入新密码')
-        const params = {
-          accountId: this.currentUser.accountId,
-          newPassword: this.password.new,
-          oldPassword: this.password.old
-        }
-        const {code, msg} = await userApi.updatePasswor(params).catch(e => e)
-        if (code !== '200') return this.$message('修改密码失败,' + msg)
-        this.$alert('修改密码成功，请重新登录', '提示', {
-          confirmButtonText: '确定',
-          callback: () => {
-            this.$router.push('/login')
+        if (this.isSuperAdmin) {
+          // 超级管理员
+          if (!this.password.old) return this.$message('请填入旧密码')
+          if (!this.password.new) return this.$message('请填入新密码')
+          const params = {
+            accountId: this.currentUser.accountId,
+            newPassword: this.password.new,
+            oldPassword: this.password.old
           }
-        })
-      }
+          const {code, msg} = await userApi.updatePasswor(params).catch(e => e)
+          if (code !== '200') return this.$message('修改密码失败,' + msg)
+          this.$alert('修改密码成功，请重新登录', '提示', {
+            confirmButtonText: '确定',
+            callback: () => {
+              this.$router.push('/login')
+            }
+          })
+        } else {
+          // 其它用户
+          if (!this.verification) return this.$message('请填入验证码')
+          if (!this.password.new) return this.$message('请填入新密码')
+          const params = {
+            newPassword: this.password.new,
+            verification: this.verification
+          }
+          const {code, msg} = await userApi.updatePassworByCode(params).catch(e => e)
+          if (code !== '200') return this.$message('修改密码失败,' + msg)
+          this.$alert('修改密码成功，请重新登录', '提示', {
+            confirmButtonText: '确定',
+            callback: () => {
+              this.$router.push('/login')
+            }
+          })
+        }
+      },
+      // 获取验证码
+      async getVerificationCode() {
+        if (this.countDown !== null && this.countDown > 0) return
+        if (!this.currentUser.phone) return this.$message({type: 'info', message: '请确保用户有联系电话！'})
+        const {code, msg} = await userApi.getCode({phone: this.currentUser.phone}).catch(e => e)
+        if (code !== '200') return this.$message({type: 'info', message: msg})
+        this.$message({type: 'success', message: '验证码已发送！'})
+        this.countDown = 60
+        this.startCountDown()
+      },
+      // 倒计时
+      startCountDown() {
+        setTimeout(() => {
+          if (this.countDown > 0) {
+            this.countDown--
+            this.startCountDown()
+          }
+        }, 1000)
+      },
+    },
+    mounted() {
+      // console.log(this.currentUser)
     }
   }
 </script>

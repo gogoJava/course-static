@@ -48,13 +48,13 @@
         <el-form-item label="身份证号码：" prop="cardNum">
           <el-input v-model="userInfo.cardNum"></el-input>
         </el-form-item>
-        <el-form-item v-if="isCreate" label="验证码：" prop="verification">
-          <el-input v-model="userInfo.verification">
-            <template slot="append">
-              <div style="cursor: pointer;" :class="{'can-send': countDown === null || countDown <= 0}" @click="getVerificationCode">{{codeMsg}}</div>
-            </template>
-          </el-input>
-        </el-form-item>
+        <!--<el-form-item v-if="isCreate" label="验证码：" prop="verification">-->
+          <!--<el-input v-model="userInfo.verification">-->
+            <!--<template slot="append">-->
+              <!--<div style="cursor: pointer;" :class="{'can-send': countDown === null || countDown <= 0}" @click="getVerificationCode">{{codeMsg}}</div>-->
+            <!--</template>-->
+          <!--</el-input>-->
+        <!--</el-form-item>-->
         <el-form-item v-if="isCreate" label="密码：" prop="password">
           <el-input v-model="userInfo.password" type="password"></el-input>
         </el-form-item>
@@ -114,7 +114,7 @@
           password: '',
           confirmPassword: '',
           phone: null,
-          verification: '', // 验证码
+          // verification: '', // 验证码
           cardNum: null, // 身份证号码
         },
         isCreate: true, // 是否是创建
@@ -135,9 +135,9 @@
           confirmPassword: [
             { required: true, message: '请输入确认密码', trigger: 'blur' }
           ],
-          verification: [
-            { required: true, message: '请输入验证码', trigger: 'blur' }
-          ]
+          // verification: [
+          //   { required: true, message: '请输入验证码', trigger: 'blur' }
+          // ]
         },
       })
     },
@@ -208,7 +208,7 @@
             username: '',
             password: '',
             phone: null,
-            verification: '', // 验证码
+            // verification: '', // 验证码
             cardNum: null, // 身份证号码
           }
         }
