@@ -264,11 +264,11 @@
           })
         }
       },
-      // 获取验证码
+      // 获取修改密码验证码
       async getVerificationCode() {
         if (this.countDown !== null && this.countDown > 0) return
         if (!this.currentUser.phone) return this.$message({type: 'info', message: '请确保用户有联系电话！'})
-        const {code, msg} = await userApi.getCode({phone: this.currentUser.phone}).catch(e => e)
+        const {code, msg} = await userApi.getChangePwdCode().catch(e => e)
         if (code !== '200') return this.$message({type: 'info', message: msg})
         this.$message({type: 'success', message: '验证码已发送！'})
         this.countDown = 60

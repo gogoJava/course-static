@@ -31,6 +31,12 @@ export const deleteUser = (params) => request.post('/api/user/delete', qs.string
  */
 export const addAdmin = (params) => request.post('/api/user/addManager', qs.stringify(params))
 
+
+/**
+ * 获取修改密码验证码
+ */
+export const getChangePwdCode = (params) => request.post('/api/user/sendChangePwdCode', qs.stringify(params))
+
 /**
  * 修改密码
  */
