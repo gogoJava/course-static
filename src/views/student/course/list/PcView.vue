@@ -98,6 +98,11 @@
         return this.currentUser && this.currentUser.type === '1'
       },
     },
+    watch: {
+      'searchForm.pageSize'() {
+        this.queryClassList()
+      }
+    },
     filters: {
       courseStatusMsg(status) {
         // 状态（-1取消0新建未发布1已发布2进行中3结束）

@@ -71,9 +71,10 @@
       </el-col>
     </el-card>
     <el-dialog :visible.sync="dialogVisible" :show-close="false" custom-class="qrcode-img">
-      <qr-code :value="payUrl" :size="240" v-loading="qrCodeLoading"></qr-code>
-      <div style="text-align: center;padding-top: 15px;">微信扫码支付</div>
-      <div style="text-align: center;padding-top: 15px;color: #999999;">支付成功后请耐心等待，若太久请尝试刷新页面</div>
+      <div v-if="!payUrl" style="color: #999999;">系统繁忙，请联系管理员！</div>
+      <qr-code v-if="payUrl" :value="payUrl" :size="240" v-loading="qrCodeLoading"></qr-code>
+      <div v-if="payUrl" style="text-align: center;padding-top: 15px;">微信扫码支付</div>
+      <div v-if="payUrl" style="text-align: center;padding-top: 15px;color: #999999;">支付成功后请耐心等待，若太久请尝试刷新页面</div>
       <!--<div>-->
         <!--<el-button type="primary" @click.native="testPay">Test Pay</el-button>-->
       <!--</div>-->

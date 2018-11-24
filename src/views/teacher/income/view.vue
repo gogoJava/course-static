@@ -111,6 +111,9 @@
     watch: {
       date() {
         this.queryIncomeList()
+      },
+      'searchForm.pageSize'() {
+        this.queryIncomeList()
       }
     },
     methods: {

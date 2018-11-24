@@ -68,6 +68,9 @@
     watch: {
       'searchForm.keyword'() {
         this.queryCourseOrderList()
+      },
+      'searchForm.pageSize'() {
+        this.queryCourseOrderList()
       }
     },
     methods: {

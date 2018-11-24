@@ -79,6 +79,11 @@
         totalIncomeAmount: 0
       })
     },
+    watch: {
+      'searchForm.pageSize'() {
+        this.queryCourseOrderList()
+      }
+    },
     methods: {
       handleSelectionChange(val) {
         this.totalIncomeAmount = 0

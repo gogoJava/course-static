@@ -64,6 +64,11 @@
         },
       })
     },
+    watch: {
+      'searchForm.pageSize'() {
+        this.queryClassList()
+      }
+    },
     computed: {
       ...mapGetters($account.namespace, {
         currentUser: $account.getters.currentUser

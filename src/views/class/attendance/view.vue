@@ -305,11 +305,11 @@
               }
             }
           })
-          // Promise.all([
-          //   // this.queryCourseAttendance(),
-          //   this.queryClassRosters(),
-          //   this.queryStudentList()
-          // ])
+          Promise.all([
+            this.queryCourseAttendance(),
+            this.queryClassRosters(),
+            this.queryStudentList()
+          ])
         }
         if (list && list.length && !this.selectedCourseId) {
           this.selectedCourseId = list[0].courseId
@@ -485,6 +485,9 @@
       },
     },
     mounted() {
+      if (this.$route.query.courseId) {
+        this.selectedCourseId = this.$route.query.courseId - 0
+      }
       this.queryClassList()
     }
   }

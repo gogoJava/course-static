@@ -169,6 +169,12 @@
       },
       'searchForm.keyword'() {
         this.queryIncomeList()
+      },
+      'searchForm.pageSize'() {
+        this.queryIncomeList()
+      },
+      'orderForm.pageSize'() {
+        this.orderQueryIncomeList()
       }
     },
     methods: {

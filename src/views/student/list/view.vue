@@ -231,6 +231,9 @@
       },
       'searchForm.keyword'() {
         this.queryUserList()
+      },
+      'searchForm.pageSize'() {
+        this.queryUserList()
       }
     },
     filters: {
@@ -387,7 +390,8 @@
       },
       // 跳转到课程详情
       goCourseDetail(info) {
-        this.$router.push({path: '/home/class/list', query: {courseId: info.courseId}})
+        // this.$router.push({path: '/home/class/list', query: {courseId: info.courseId}})
+        this.$router.push({path: '/home/class/attendance', query: {courseId: info.courseId}})
       },
       // 修改密码
       async updatePassword (info) {

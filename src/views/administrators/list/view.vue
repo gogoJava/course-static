@@ -146,6 +146,9 @@
         if (!value) {
           this.$refs.ruleForm.clearValidate()
         }
+      },
+      'searchForm.pageSize'() {
+        this.queryUserList()
       }
     },
     filters: {
