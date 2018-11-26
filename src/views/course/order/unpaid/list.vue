@@ -87,7 +87,7 @@
         this.tableData.loading = true
         const {data} = await courseApi.getCourseOrderList({
           ...this.searchForm,
-          orderStatus: 3, //
+          orderStatus: 0, //
         }).catch(e => e)
         const {total, list} = data
         this.tableData.total = total || 0
