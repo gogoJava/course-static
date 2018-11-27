@@ -332,6 +332,7 @@
     color: #333;
     text-align: center;
     line-height: 50px;
+    z-index: 99;
   }
   .el-menu-item.is-active {
     background: #1f2d3d !important;

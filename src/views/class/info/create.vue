@@ -34,10 +34,10 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item label="课程时间" prop="startCourse">
-          <el-time-picker v-model="courseInfo.startCourse" placeholder="上课时间">
+          <el-time-picker v-model="courseInfo.startCourse" placeholder="上课时间" format="HH:mm">
           </el-time-picker>
           <span> 至 </span>
-          <el-time-picker v-model="courseInfo.endCourse" placeholder="下课时间">
+          <el-time-picker v-model="courseInfo.endCourse" placeholder="下课时间" format="HH:mm">
           </el-time-picker>
         </el-form-item>
         <el-form-item label="课程座位图" prop="seatId">

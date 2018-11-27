@@ -2,6 +2,16 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router/index";
 import store from "./store/index";
+import VueScroller from 'vue-scroller'
+// 通过这样来部分引入
+// import Picker from 'vc-popup/packages/popup-picker'
+
+// 或者yarn add vc-popup-[子包名]之后
+// import Picker from 'vc-popup-picker'
+
+// Vue.use(Picker)
+
+Vue.use(VueScroller)
 
 Vue.config.productionTip = false;
 // config

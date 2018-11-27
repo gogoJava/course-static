@@ -37,7 +37,7 @@
               </el-tooltip>
             </el-col>
           </el-col>
-          <el-col style="width: 245px;">
+          <el-col style="width: 250px;">
             <el-checkbox-group v-model="checkboxGroup" disabled>
               <el-checkbox size="small" class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
@@ -47,7 +47,7 @@
               </el-tooltip>
             </el-col>
           </el-col>
-          <el-col style="width: 245px;">
+          <el-col style="width: 250px;">
             <el-checkbox-group v-model="checkboxGroup" disabled>
               <el-checkbox size="small" class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border>{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
@@ -505,16 +505,16 @@
     }
   }
   .admin-class-attendance-page .chenk-box-col {
-    width: 70px;
+    width: 75px;
     text-align: center;
   }
   .admin-class-attendance-page .chenk-box {
-    width: 65px;
+    width: 75px;
     text-align: center;
 
   }
   .admin-class-attendance-page .chenk-box-img {
-    width: 65px;
+    width: 75px;
     padding: 10px;
     cursor: pointer;
   }
@@ -522,7 +522,7 @@
     display: none;
   }
   .admin-class-attendance-page .seat-icon {
-    width: 70px;
+    width: 75px;
     text-align: center;
     padding-top: 15px;
   }
@@ -534,5 +534,7 @@
   }
   .admin-class-attendance-page .el-checkbox__label {
     padding: 0;
+    font-size: 14px !important;
+    color: #000000 !important;
   }
 </style>

@@ -20,7 +20,7 @@
         </el-table-column>
         <el-table-column prop="courseCost" label="金额">
           <template slot-scope="scope">
-            <span>¥ {{scope.row.courseCost}}</span>
+            <span>¥ {{scope.row.orderCost}}</span>
           </template>
         </el-table-column>
         <!--<el-table-column label="操作">-->
@@ -76,7 +76,7 @@
       handleSelectionChange(val) {
         this.totalIncomeAmount = 0
         val.forEach(item => {
-          this.totalIncomeAmount = this.totalIncomeAmount + item.courseCost
+          this.totalIncomeAmount = this.totalIncomeAmount + item.orderCost
         })
       },
       onCurrentPageChange(page) {

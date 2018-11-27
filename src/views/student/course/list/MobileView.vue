@@ -1,25 +1,27 @@
 <template>
-  <div class="mobile-class-list-page" v-loading="tableData.loading">
-    <div v-for="item of tableData.list" class="list-item">
-      <div>
-        <span>课程：{{item.courseName}}</span>
-        <span style="float: right">{{item.courseStatus | courseStatusMsg}}</span>
-      </div>
-      <div>
-        <span>任课老师：{{item.user.name}}</span>
-        <span v-if="!item.orderStatus" class="tip-right-info">{{item.bought ? '已购买' : '未购买'}}</span>
-        <span v-if="item.orderStatus" class="tip-right-info">{{item.orderStatus | orderStatusMsg}}</span>
-      </div>
-      <div style="font-size: 12px;color: #999999;">
-        <span>上课时间：{{$moment(item.courseStartTime).format('YYYY-MM-DD')}} 至 {{$moment(item.courseEndTime).format('YYYY-MM-DD')}}</span>
-        <span style="float: right;color: #409EFF;">
+  <scroller>
+    <div class="mobile-class-list-page" v-loading="tableData.loading">
+      <div v-for="item of tableData.list" class="list-item">
+        <div>
+          <span>课程：{{item.courseName}}</span>
+          <span style="float: right">{{item.courseStatus | courseStatusMsg}}</span>
+        </div>
+        <div>
+          <span>任课老师：{{item.user.name}}</span>
+          <span v-if="!item.orderStatus" class="tip-right-info">{{item.bought ? '已购买' : '未购买'}}</span>
+          <span v-if="item.orderStatus" class="tip-right-info">{{item.orderStatus | orderStatusMsg}}</span>
+        </div>
+        <div style="font-size: 12px;color: #999999;">
+          <span>上课时间：{{$moment(item.courseStartTime).format('YYYY-MM-DD')}} 至 {{$moment(item.courseEndTime).format('YYYY-MM-DD')}}</span>
+          <span style="float: right;color: #409EFF;">
           <span v-if="item.orderStatus === '0'" @click="goPay(item)"></span>
           <span v-if="!item.orderStatus && !item.bought && (item.courseStatus === '1' || item.courseStatus === '2')" @click="goPay(item)">去下单购买</span>
         </span>
+        </div>
       </div>
+      <div style="text-align: center;padding-top: 15px;padding-bottom: 30px;" :class="{'more': moreData, 'no-more': !moreData}" @click="loadMore">{{moreData ? '加载更多' : '无更多数据'}}</div>
     </div>
-    <div style="text-align: center;padding-top: 15px;" :class="{'more': moreData, 'no-more': !moreData}" @click="loadMore">{{moreData ? '加载更多' : '无更多数据'}}</div>
-  </div>
+  </scroller>
 </template>
 <script>
   // components
@@ -130,7 +132,8 @@
   .mobile-class-list-page {
     font-size: 14px;
     padding: 0;
-    margin-bottom: 60px;
+    /*margin-bottom: 100px;*/
+    padding-top: 50px;
   }
   .mobile-class-list-page .list-item {
     border-bottom: 1px solid #cdcdcd;

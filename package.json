@@ -15,13 +15,14 @@
     "md5": "^2.2.1",
     "moment": "^2.22.2",
     "node-sass": "^4.9.3",
+    "qr.js": "^0.0.0",
     "sass-loader": "^7.1.0",
     "screenfull": "^3.3.3",
     "sha1": "^1.1.1",
     "vue": "^2.5.17",
     "vue-router": "^3.0.1",
-    "vuex": "^3.0.1",
-    "qr.js": "^0.0.0"
+    "vue-scroller": "^2.2.4",
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.1",

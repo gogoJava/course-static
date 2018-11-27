@@ -476,16 +476,16 @@
     }
 }
 .teacher-class-attendance-page .chenk-box-col {
-  width: 70px;
+  width: 75px;
   text-align: center;
 }
 .teacher-class-attendance-page .chenk-box {
-  width: 65px;
+  width: 75px;
   text-align: center;
 
 }
 .teacher-class-attendance-page .chenk-box-img {
-  width: 65px;
+  width: 75px;
   padding: 10px;
   cursor: pointer;
 }
@@ -493,7 +493,7 @@
   display: none;
 }
 .teacher-class-attendance-page .seat-icon {
-  width: 70px;
+  width: 75px;
   text-align: center;
   padding-top: 15px;
 }
@@ -504,6 +504,8 @@
    /*color: #409EFF;*/
 }
 .teacher-class-attendance-page .el-checkbox__label {
-  padding: 0;
+  padding-left: 0;
+  font-size: 14px !important;
+  color: #000000 !important;
 }
 </style>

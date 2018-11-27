@@ -413,5 +413,7 @@
   }
   .class-list-info-page .el-checkbox__label {
     padding-left: 0;
+    font-size: 14px !important;
+    color: #000000 !important;
   }
 </style>

@@ -33,10 +33,11 @@
             <span>¥ {{scope.row.courseAmount}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column label="操作" min-width="120px">
           <template slot-scope="scope">
             <div v-if="scope.row.refundStatus === '3'">已退款</div>
             <el-button v-if="scope.row.refundStatus === '2'" type="text" @click.native="refundOrderConfirm(scope.row)">确认退款</el-button>
+            <el-button v-if="scope.row.refundStatus === '2'" type="text" @click.native="refundOrderCancel(scope.row)">取消退款</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -115,6 +116,18 @@
           const {code, msg} = await refuntOrderApi.refundOrderConfirm({refundId: order.refundId}).catch(e => e)
           if (code !== '200') return this.$message('退款失败！' + msg)
           this.$message({type: 'success', message: '退款成功！'})
+          this.queryCourseOrderList()
+        }).catch(() => {})
+      },
+      async refundOrderCancel(order) {
+        this.$confirm('确认取消退款该课程?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(async () => {
+          const {code, msg} = await refuntOrderApi.refundOrderCancel({refundId: order.refundId}).catch(e => e)
+          if (code !== '200') return this.$message('取消退款失败！' + msg)
+          this.$message({type: 'success', message: '取消退款成功！'})
           this.queryCourseOrderList()
         }).catch(() => {})
       }

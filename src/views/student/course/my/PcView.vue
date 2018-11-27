@@ -1,5 +1,5 @@
 <template>
-  <div class="class-attendance-page">
+  <div class="home-student-class-my">
     <el-card class="content">
       <div slot="header" class="clearfix" v-if="tableData.list.length">
         <div>
@@ -9,30 +9,17 @@
             </el-option>
           </el-select>
           <span style="padding-left: 30px;">
-            <el-button v-if="!rosterId && !loading && bought" type="primary" @click.native="confirmSeat" size="small">确定座位</el-button>
-            <el-button v-if="!bought && !orderStatus" type="primary" @click.native="goPayCourse" size="small">购买课程</el-button>
+            <el-button v-if="!rosterId && !loading" type="primary" @click.native="confirmSeat" size="small">确定座位</el-button>
           </span>
         </div>
-        <div style="font-size: 24px;font-weight: bold;padding: 15px 15px 0 15px;">
-          <div>任课教师：{{courseTeacher ? courseTeacher.name : '无'}}</div>
-          <div style="height: 42px;">
-            <el-col :span="12"><div>上课日期：{{courseStartDateStr + ' 至 ' + courseEndDateStr}}</div></el-col>
-            <el-col :span="12"><div>上课时间：{{classStartTimeStr + ' 至 ' + classEndTimeStr}}</div></el-col>
+        <div style="font-size: 24px;font-weight: bold;padding: 15px;">
+          <div>
+            <el-col :span="8"><div>任课教师：{{courseTeacher.name}}</div></el-col>
+            <el-col :span="8"><div>课程进度：{{courseCurrent}} / {{courseTotal}}</div></el-col>
+            <el-col :span="8"><div>我的未上课时：{{rosterCourseCountRest === null ? courseTotal : rosterCourseCountRest}}</div></el-col>
           </div>
-          <div v-if="orderStatus">
-            <div style="font-size: 24px;font-weight: bold;">
-              <span>订单状态：{{orderStatus | orderStatusMsg}}</span>
-              <span style="position: relative;left: 45px;">
-              <el-tooltip v-if="orderStatus && orderStatus === '0' && orderId" class="item" effect="dark" content="微信扫码支付" placement="top">
-                <icon-font icon="wxpay" class="icon" size="32px" style="color: #67C23A;cursor: pointer;position: relative;top: 3px;" @click.native="goPay()"></icon-font>
-              </el-tooltip>
-              <!--<el-tooltip v-if="orderStatus && orderStatus === '0'" class="item" effect="dark" content="支付宝扫码支付" placement="top">-->
-                <!--<icon-font icon="zhifubao" class="icon" size="32px" style="color: #409EFF" @click.native="goPay('alipay')"></icon-font>-->
-              <!--</el-tooltip>-->
-              <el-button v-if="orderStatus && orderStatus === '1'" type="text" @click.native="applyBack()">申请退款</el-button>
-            </span>
-            </div>
-          </div>
+          <div>上课日期：{{courseStartDateStr + ' 至 ' + courseEndDateStr}}</div>
+          <div>上课时间：{{classStartTimeStr + ' 至 ' + classEndTimeStr}}</div>
         </div>
       </div>
       <div v-if="!tableData.list.length" style="text-align: center;">
@@ -41,9 +28,9 @@
         </div>
         <div style="padding-top: 30px;color: #999999;">您暂时还没有购买课程，请去购买课程哦</div>
       </div>
-      <el-col :span="24" v-if="tableData.list.length">
-        <el-row :gutter="0" v-for="(item, i) of seatRowsList" :key="i" style="min-width: 900px;">
-          <el-col :span="8" style="width: 280px;">
+      <el-col :span="16" v-if="tableData.list.length">
+        <el-row :gutter="0" v-for="(item, i) of seatRowsList" :key="i" style="min-width: 750px;">
+          <el-col :span="8" style="width: 250px;">
             <el-checkbox-group v-model="checkboxGroup" size="small" text-color="#F56C6C" fill="#F56C6C">
               <el-checkbox class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border :disabled="(item && item[i] && item[i].accountId !== currentUser.accountId) || !bought || (isChecked && !isMy(item ? item[i] : null))">{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
@@ -51,7 +38,7 @@
               <img :src="(item && item[i]) ? (item[i].accountId === currentUser.accountId ? mySeatImgUrl : checkedSeatImgUrl) : seatImgUrl" class="chenk-box-img" />
             </el-col>
           </el-col>
-          <el-col :span="8" style="width: 280px;">
+          <el-col :span="8" style="width: 250px;">
             <el-checkbox-group v-model="checkboxGroup" size="small" text-color="#F56C6C" fill="#F56C6C">
               <el-checkbox class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border :disabled="(item && item[i] && item[i].accountId !== currentUser.accountId) || !bought || (isChecked && !isMy(item ? item[i] : null))">{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
@@ -59,7 +46,7 @@
               <img :src="(item && item[i]) ? (item[i].accountId === currentUser.accountId ? mySeatImgUrl : checkedSeatImgUrl) : seatImgUrl" class="chenk-box-img" />
             </el-col>
           </el-col>
-          <el-col :span="8" style="width: 280px;">
+          <el-col :span="8" style="width: 250px;">
             <el-checkbox-group v-model="checkboxGroup" size="small" text-color="#F56C6C" fill="#F56C6C">
               <el-checkbox class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border :disabled="(item && item[i] && item[i].accountId !== currentUser.accountId) || !bought || (isChecked && !isMy(item ? item[i] : null))">{{item && item[i] ? item[i].name : ''}}</el-checkbox>
             </el-checkbox-group>
@@ -69,16 +56,26 @@
           </el-col>
         </el-row>
       </el-col>
+      <el-col :span="8" v-if="tableData.list.length">
+        <div style="font-weight: bold;text-align: center;padding-bottom: 15px;border-bottom: 0.1px solid #ebeef5;">出勤表</div>
+        <el-table :data="tableData2.list" v-loading="tableData2.loading" border>
+          <el-table-column prop="" label="课程名称">
+            <template slot-scope="scope">{{courseName}}</template>
+          </el-table-column>
+          <el-table-column prop="attendType" label="上课时间">
+            <template slot-scope="scope">
+              <div style="">{{$moment(scope.row.createTime).format('HH:mm') + ' - ' +  (scope.row.endTime ? $moment(scope.row.endTime).format('HH:mm') : '至今')}}</div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="" label="上课日期">
+            <template slot-scope="scope">{{$moment(scope.row.createTime).format('YYYY-MM-DD')}}</template>
+          </el-table-column>
+          <el-table-column prop="attendType" label="出勤情况">
+            <template slot-scope="scope">{{scope.row.attendType | attendTypeMsg}}</template>
+          </el-table-column>
+        </el-table>
+      </el-col>
     </el-card>
-    <el-dialog :visible.sync="dialogVisible" :show-close="false" custom-class="qrcode-img">
-      <div v-if="!payUrl" style="color: #999999;">系统繁忙，请联系管理员！</div>
-      <qr-code v-if="payUrl" :value="payUrl" :size="240" v-loading="qrCodeLoading"></qr-code>
-      <div v-if="payUrl" style="text-align: center;padding-top: 15px;">微信扫码支付</div>
-      <div v-if="payUrl" style="text-align: center;padding-top: 15px;color: #999999;">支付成功后请耐心等待，若太久请尝试刷新页面</div>
-      <!--<div>-->
-        <!--<el-button type="primary" @click.native="testPay">Test Pay</el-button>-->
-      <!--</div>-->
-    </el-dialog>
   </div>
 </template>
 <script>
@@ -86,19 +83,19 @@
   import * as classApi from '../../../../apis/classApi'
   import * as seatApi from '../../../../apis/seatApi'
   import * as classRosterApi from '../../../../apis/classRosterApi'
+  import * as rosterAttendanceApi from '../../../../apis/rosterAttendanceApi'
+  import * as courseApi from '../../../../apis/courseApi'
   import * as courseOrderApi from '../../../../apis/courseOrderApi'
   // components
   import IconFont from '../../../../components/icon-font/IconFont'
-  import QrCode from "../../../components/qrcode/QrCode"
   // store
   import {mapGetters} from 'vuex'
   import * as $account from '../../../../store/modules/account/types'
   export default {
-    title: '课程支付管理',
+    title: '我的课程',
     name: 'class-my',
     components: {
-      IconFont,
-      QrCode
+      IconFont
     },
     data() {
       return ({
@@ -129,20 +126,16 @@
         courseEndDateStr: null, // 结束日期
         classStartTimeStr: null, // 上课时间
         classEndTimeStr: null, // 下课时间
+        bought: true, // 是否已购买课程
+        orderStatus: null, // 状态(0未支付1成功2申请退款3退款)(字符串)
         courseName: null,
         classStatus: null, // // 0上课1下课-1未开始(字符串)
         loading: false,
-        bought: true, // 是否已购买课程
-        orderStatus: null, // 状态(0未支付1成功2申请退款3退款)(字符串)
-        orderId: null,
-        dialogVisible: false,
-        qrCodeLoading: false,
-        payUrl: null, // 支付地址
+        rosterCourseCountRest: null, // 未上课时
         tableData2: { // 签到情况
           loading: true,
           list: [],
         },
-        queryNum: 0, // 轮询次数
       })
     },
     filters: {
@@ -161,25 +154,6 @@
             break
           case '4':
             msg = '缺席'
-            break
-        }
-        return msg
-      },
-      orderStatusMsg(status) {
-        // 状态(0未支付1成功2申请退款3退款)
-        let msg = ''
-        switch (status) {
-          case '0':
-            msg = '未支付'
-            break
-          case '1':
-            msg = '支付成功'
-            break
-          case '2':
-            msg = '申请退款'
-            break
-          case '3':
-            msg = '已退款'
             break
         }
         return msg
@@ -281,13 +255,13 @@
     },
     watch: {
       async selectedCourseId(value) {
+        this.rosterCourseCountRest = null
         this.loading = true
         this.checkboxGroup = []
         this.rostersStudent = []
         this.rosterId = null
-        this.orderStatus = null
-        this.orderId = null
         this.tableData.list.forEach(element => {
+          // console.log(element)
           if (element.courseId === value) {
             this.seatLayout = element.seatLayout
             this.courseTotal = element.courseTotal
@@ -301,11 +275,11 @@
             this.classStatus = element.classStatus
             this.bought = element.bought
             this.orderStatus = element.orderStatus
-            this.orderId = element.orderId
           }
         })
         await Promise.all([
           this.queryClassRosters(),
+          this.rosterAttendance()
         ])
         this.loading = false
       },
@@ -339,42 +313,19 @@
       },
       async queryClassList() {
         this.tableData.loading = true
+        // bought:我的课程
         let params = null
         if (this.isSuperAdmin || this.isAdmin) {
           params = {...this.searchForm}
         } else if (this.isTeacher) {
           params = {...this.searchForm, accountId: this.currentUser.accountId}
         } else if (this.isStudent) {
-          params = {...this.searchForm}
+          params = {...this.searchForm, bought: true}
         }
         const {data} = await classApi.getClassList(params).catch(e => e)
         const {total, list} = data
         this.tableData.total = total || 0
         this.tableData.list = list || []
-        if (list && list.length && this.selectedCourseId) {
-          const index = list.findIndex(value => value.courseId === this.selectedCourseId)
-          if (index !== -1) {
-            const item = this.tableData.list[index]
-            this.seatLayout = item.seatLayout
-            this.courseTotal = item.courseTotal
-            this.courseCurrent = item.courseCurrent
-            this.courseTeacher = item.user
-            this.courseStartDateStr = item.courseStartDateStr
-            this.courseEndDateStr = item.courseEndDateStr
-            this.classStartTimeStr = item.classStartTimeStr
-            this.classEndTimeStr = item.classEndTimeStr
-            this.courseName = item.courseName
-            this.classStatus = item.classStatus
-            this.bought = item.bought
-            this.orderStatus = item.orderStatus
-            this.orderId = item.orderId
-            if (this.orderStatus !== '0') {
-              // this.bought = true
-              this.dialogVisible = false
-            }
-          }
-          this.queryClassRosters()
-        }
         if (list && list.length && !this.selectedCourseId) {
           this.selectedCourseId = list[0].courseId
         }
@@ -383,13 +334,12 @@
       // 获取课程名单
       async queryClassRosters() {
         const {data} = await classRosterApi.getClassRosterList({courseId: this.selectedCourseId}).catch(e => e)
-        this.rostersStudent = []
-        this.checkboxGroup = []
         if (data && data.length) {
           data.forEach(value => {
             this.checkboxGroup.push((value.rosterSeatX + ',' + value.rosterSeatY))
             if (value.accountId === this.currentUser.accountId) {
               this.rosterId = value.rosterId
+              this.rosterCourseCountRest = value.rosterCourseCountRest
             }
           })
           this.rostersStudent = data
@@ -397,7 +347,6 @@
       },
       // 确定座位
       async confirmSeat() {
-        if ((this.orderStatus && this.orderStatus === '0')) return this.$message('请先完成支付，再选座位！')
         const info = this.rostersStudent.find(indexItem => indexItem.accountId === this.currentUser.accountId)
         if (!info) return this.$message('请选择座位')
         if (this.rosterId) {
@@ -410,9 +359,8 @@
             courseId: this.selectedCourseId,
             ids
           }
-          const {code, msg, data} = await classRosterApi.updateClassRoster(params).catch(e => e)
+          const {code, msg} = await classRosterApi.updateClassRoster(params).catch(e => e)
           if (code !== '200') return this.$message('选座失败，', msg)
-          this.rosterId = data.rosterId
           this.$message({type: 'success', message: '选座成功！'})
         } else {
           // 新增选择座位
@@ -427,152 +375,98 @@
           this.$message({type: 'success', message: '选座成功！'})
         }
       },
-      // 购买课程
-      async goPayCourse() {
-        this.$confirm('是否确定购买该课程?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(async () => {
-          const {code, msg} = await courseOrderApi.createCourseOrder({courseId: this.selectedCourseId}).catch(e => e)
-          if (code !== '200') return this.$message('购买失败，' + msg)
-          this.$message({type: 'success', message: '购买成功！请去完成支付！'})
-          // this.bought = true
-          this.orderStatus = '0'
-          await this.queryClassList()
-          // this.queryOrderList()
-        }).catch(() => {})
+      // 获取出勤情况
+      async rosterAttendance() {
+        const params = {
+          accountId: this.currentUser.accountId,
+          courseId: this.selectedCourseId
+        }
+        this.tableData2.loading = true
+        const {data} = await rosterAttendanceApi.rosterAttendanceList(params).catch(e => e)
+        const {list} = data
+        this.tableData2.list = list || []
+        this.tableData2.loading = false
+      },
+      // 签到
+      async courseSignOnclick() {
+        const {code, msg} = await courseApi.courseSign({courseId: this.selectedCourseId}).catch(e => e)
+        if (code !== '200') return this.$message('签到失败，' + msg)
+        this.rosterAttendance()
+        this.$message({type: 'success', message: '签到成功！'})
       },
       // 获取支付订单列表
-      // async queryOrderList() {
-      //   const params = {accountId: this.currentUser.accountId, pageSize: 99999, page: 1}
-      //   const {data} = await courseOrderApi.courseOrderList(params).catch(e => e)
-      //   const {list} = data
-      //   if (list) {
-      //     list.forEach(item => {
-      //       const index = this.tableData.list.findIndex(value => value.courseId === item.courseId)
-      //       if (index !== -1) {
-      //         this.tableData.list[index] = {...this.tableData.list[index], ...item}
-      //         if (this.selectedCourseId === item.courseId) {
-      //           this.orderId = item.orderId
-      //           this.orderStatus = item.orderStatus
-      //           if (this.orderStatus !== '0') {
-      //             this.bought = true
-      //             this.dialogVisible = false
-      //           }
-      //         }
-      //       }
-      //     })
-      //   }
-      // },
-      // 支付
-      async goPay() {
-        const params = {
-          orderId: this.orderId
+      async queryOrderList() {
+        const params = {accountId: this.currentUser.accountId}
+        const {data} = await courseOrderApi.courseOrderList(params).catch(e => e)
+        const {list} = data
+        if (list) {
+          list.forEach(item => {
+            const index = this.tableData.list.findIndex(value => value.courseId === item.courseId)
+            if (index !== -1) {
+              this.tableData.list[index] = {...this.tableData.list[index], orderId: item.orderId, orderStatus: item.orderStatus}
+              if (this.selectedCourseId === item.courseId) {
+                this.orderId = item.orderId
+                this.orderStatus = item.orderStatus
+                if (this.orderStatus !== '0') {
+                  this.bought = true
+                }
+              }
+            }
+          })
         }
-        const {data} = await courseOrderApi.payCourseOrder(params).catch(e => e)
-        this.payUrl = data || ''
-        this.dialogVisible = true
-        this.getOrderStatus()
       },
-      // 轮询查订单状态(5秒)
-      async getOrderStatus() {
-        setTimeout(async () => {
-          // await this.queryOrderList().catch(e => e)
-          await this.queryClassList().catch(e => e)
-          this.queryNum++
-          if (this.dialogVisible && this.queryNum < 10) {
-            this.getOrderStatus()
-          } else {
-            this.queryNum = 0
-          }
-        }, 6000)
-      },
-      // test pay 模拟支付
-      async testPay() {
-        const params = {
-          orderId: this.orderId
-        }
-        const res = await courseOrderApi.testCourseOrder(params).catch(e => e)
-        if (res.code !== '200') return this.$message('支付失败，' + res.msg)
-        this.$message({type: 'success', message: '支付成功！'})
-        this.bought = true
-        this.dialogVisible = false
-        this.orderStatus = '1'
-        // this.queryOrderList()
-      },
-      // 申请退款
-      async applyBack() {
-        this.$confirm('是否确定申请退款该课程?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(async () => {
-          const {code, msg} = await courseOrderApi.courseOrderApplyBack({orderId: this.orderId}).catch(e => e)
-          if (code !== '200') return this.$message('申请退款失败，请联系管理员！' + msg)
-          this.$message({type: 'success', message: '已申请退款，请耐心等候审核！'})
-          this.orderStatus = '2'
-          this.bought = false
-          // this.queryOrderList()
-        }).catch(() => {})
-      }
     },
     async mounted() {
-      if (this.$route.query.courseId) {
-        this.selectedCourseId = this.$route.query.courseId - 0
-      }
-      this.queryClassList()
-      // await this.queryOrderList()
+      await this.queryClassList()
+      this.queryOrderList()
     }
   }
 </script>
 <style>
-  .class-attendance-page .content {
+  .home-student-class-my .content {
     min-width: 1100px;
     overflow-x: auto;
     min-height: 900px;
   }
-  .class-attendance-page .content .el-row {
+  .home-student-class-my .content .el-row {
     margin-bottom: 20px;
     &:last-child {
       margin-bottom: 0;
     }
   }
-  .class-attendance-page .chenk-box-col {
-    width: 80px;
+  .home-student-class-my .chenk-box-col {
+    width: 75px;
     text-align: center;
   }
-  .class-attendance-page .chenk-box {
-    width: 80px;
+  .home-student-class-my .chenk-box {
+    width: 75px;
     text-align: center;
 
   }
-  .class-attendance-page .el-checkbox__label {
+  .home-student-class-my .el-checkbox__label {
     padding: 0;
-    color: #000000 !important;
   }
-
-  .class-attendance-page .chenk-box-img {
-    width: 80px;
-    padding: 10px;
+  .home-student-class-my .chenk-box-img {
+    width: 75px;
+    padding: 8px;
   }
-  .class-attendance-page .chenk-box .el-checkbox__input {
+  .home-student-class-my .chenk-box .el-checkbox__input {
     display: none;
   }
-  .class-attendance-page .seat-icon {
+  .home-student-class-my .seat-icon {
     width: 90px;
     text-align: center;
     padding-top: 15px;
   }
-  .class-attendance-page .seat-icon .icon {
+  .home-student-class-my .seat-icon .icon {
     color: #606266;
   }
-  .class-attendance-page .seat-icon .icon-selected {
+  .home-student-class-my .seat-icon .icon-selected {
     /*color: #409EFF;*/
   }
-  .qrcode-img {
-    text-align: center;
-    width: 300px;
-    /*height: 360px;*/
+  .home-student-class-my .el-checkbox__label {
+    padding-left: 0;
+    font-size: 14px !important;
+    color: #000000 !important;
   }
 </style>

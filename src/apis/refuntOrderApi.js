@@ -13,3 +13,8 @@ export const refundOrderConfirm = (params) => request.post('/api/refundOrder/con
  */
 export const refundOrderList = (params) => request.post('/api/refundOrder/list', qs.stringify(params))
 
+
+/**
+ * 取消退款
+ */
+export const refundOrderCancel = (params) => request.post('/api/refundOrder/cancel', qs.stringify(params))
