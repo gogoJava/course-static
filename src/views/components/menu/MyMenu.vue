@@ -75,7 +75,7 @@
           </el-menu-item>
         </el-menu>
       </el-aside>
-      <el-container>
+      <el-container class="mobile-page">
         <el-header style="line-height: 50px;height: 50px;">
           <span class="nav-toggle" style="float: left;">
             <el-dropdown trigger="click">
@@ -126,8 +126,17 @@
         </el-main>
       </el-container>
     </el-container>
+    <el-dialog :visible.sync="lgoutShow" title="提示" :show-close="false" width="80%" top="120px" class="buy-show">
+      <div>是否退出登录?</div>
+      <span slot="footer">
+        <div style="text-align: center;">
+          <el-button @click="lgoutShow = false" size="small">取消</el-button>
+        <el-button @click="logoutAccount" size="small" type="primary">确定</el-button>
+        </div>
+      </span>
+    </el-dialog>
     <!--修改密码-->
-    <el-dialog title="修改密码" :visible.sync="dialogVisible" width="50%">
+    <el-dialog title="修改密码" :visible.sync="dialogVisible" :width="isMobile ? '95%' : '50%'">
       <el-form :model="password" label-width="120px">
         <el-form-item v-if="isSuperAdmin" label="旧密码：">
           <el-input v-model="password.old" type="password"></el-input>
@@ -176,6 +185,7 @@
         },
         verification: null, // 验证码
         countDown: null, // 倒计时
+        lgoutShow: false
       }
     },
     computed: {
@@ -216,16 +226,23 @@
         logout: $account.actions.logout,
       }),
       logoutOnClick() {
-        this.$confirm('是否退出登录?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(async () => {
-          const {code} = await this.logout().catch(e => e)
-          if (code === '200') {
-            this.$router.push('/login')
-          }
-        }).catch(() => {})
+        if (this.isMobile) {
+          this.lgoutShow = true
+        } else {
+          this.$confirm('是否退出登录?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(async () => {
+            this.logoutAccount()
+          }).catch(() => {})
+        }
+      },
+      async logoutAccount() {
+        const {code} = await this.logout().catch(e => e)
+        if (code === '200') {
+          this.$router.push('/login')
+        }
       },
       // 修改密码
       async updatePassword() {
@@ -336,5 +353,12 @@
   }
   .el-menu-item.is-active {
     background: #1f2d3d !important;
+  }
+  .mobile-page .el-header {
+    background: #303133;
+    color: #ffffff !important;
+  }
+  .mobile-page .el-dropdown {
+    color: #ffffff !important;
   }
 </style>

@@ -5,26 +5,26 @@
         <div class="content">
           <div slot="header" class="clearfix" v-if="tableData.list.length">
             <div>
-              <span style="padding-right: 15px;font-size: 14px;">课程:</span>
+              <span style="padding-right: 5px;font-size: 14px;">课程:</span>
               <el-select v-model="selectedCourseId" size="mini" filterable placeholder="请选择">
                 <el-option v-for="(item, index) in tableData.list" :key="index" :label="item.courseName" :value="item.courseId">
                 </el-option>
               </el-select>
-              <span style="padding-left: 15px;color: #409EFF;" @click="centerDialogVisible = true">课程详情</span>
-              <span style="padding-left: 15px;color: #409EFF;" v-if="!rosterId && !loading" @click="confirmSeat">确定座位</span>
+              <span style="padding-left: 10px;color: #409EFF;font-size: 12px;" @click="centerDialogVisible = true">课程详情</span>
+              <span style="padding-left: 10px;color: #409EFF;font-size: 12px;" v-if="!rosterId && !loading" @click="confirmSeat">确定座位</span>
             </div>
           </div>
-          <div v-if="!tableData.list.length" style="text-align: center;">
+          <div v-if="!tableData.list.length" style="text-align: center;padding-top: 30px;">
             <div style="padding-top: 30px;">
               <icon-font icon="ico_meiyoushuju" class="icon" size="120px"></icon-font>
             </div>
             <div style="padding-top: 30px;color: #999999;">您暂时还没有购买课程，请去购买课程哦</div>
           </div>
-          <div style="padding-top: 30px;">
+          <div style="padding-top: 30px;overflow-x: auto;padding-bottom: 15px;">
             <div v-if="tableData.list.length">
-              <div :gutter="0" v-for="(item, i) of seatRowsList" :key="i" style="display: flex;">
+              <div v-for="(item, i) of seatRowsList" :key="i" style="display: flex;">
                 <div class="item-div">
-                  <el-checkbox-group v-model="checkboxGroup" size="small" text-color="#F56C6C" fill="#F56C6C">
+                  <el-checkbox-group v-model="checkboxGroup" size="mini" text-color="#F56C6C" fill="#F56C6C">
                     <el-checkbox class="chenk-box" v-for="(item, a) of seatLeftList" :key="a" :label="(a + ',' + i)" border :disabled="(item && item[i] && item[i].accountId !== currentUser.accountId) || !bought || (isChecked && !isMy(item ? item[i] : null))">{{item && item[i] ? item[i].name : ''}}</el-checkbox>
                   </el-checkbox-group>
                   <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, a) of seatLeftList" :key="a">
@@ -32,7 +32,7 @@
                   </el-col>
                 </div>
                 <div class="item-div">
-                  <el-checkbox-group v-model="checkboxGroup" size="small" text-color="#F56C6C" fill="#F56C6C">
+                  <el-checkbox-group v-model="checkboxGroup" size="mini" text-color="#F56C6C" fill="#F56C6C">
                     <el-checkbox class="chenk-box" v-for="(item, b) of seatMidList" :key="b" :label="(b + seatLayout.seatLeft) + ',' + i" border :disabled="(item && item[i] && item[i].accountId !== currentUser.accountId) || !bought || (isChecked && !isMy(item ? item[i] : null))">{{item && item[i] ? item[i].name : ''}}</el-checkbox>
                   </el-checkbox-group>
                   <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, b) of seatMidList" :key="b">
@@ -40,7 +40,7 @@
                   </el-col>
                 </div>
                 <div class="item-div">
-                  <el-checkbox-group v-model="checkboxGroup" size="small" text-color="#F56C6C" fill="#F56C6C">
+                  <el-checkbox-group v-model="checkboxGroup" size="mini" text-color="#F56C6C" fill="#F56C6C">
                     <el-checkbox class="chenk-box" v-for="(item, c) of seatRightList" :key="c" :label="(c + seatLayout.seatLeft + seatLayout.seatMid) + ',' + i" border :disabled="(item && item[i] && item[i].accountId !== currentUser.accountId) || !bought || (isChecked && !isMy(item ? item[i] : null))">{{item && item[i] ? item[i].name : ''}}</el-checkbox>
                   </el-checkbox-group>
                   <el-col class="chenk-box-col" :gutter="0" :span="8" v-for="(item, c) of seatRightList" :key="c">
@@ -51,11 +51,12 @@
             </div>
           </div>
           <!--出勤表-->
-          <div style="padding-bottom: 15px;font-weight: bold;font-size: 16px;">出勤表<span style="color: #999999;" v-if="!tableData2.list.length">：无出勤记录</span></div>
+          <div style="padding-bottom: 15px;font-weight: bold;font-size: 16px;">出勤表<span style="color: #999999;font-weight: normal;font-size: 14px;" v-if="!tableData2.list.length">：无出勤记录</span></div>
           <div v-for="item of tableData2.list" class="list-item">
             <div>
               <span>课程：{{courseName}}</span>
-              <span style="float: right">{{item.attendType | attendTypeMsg}}</span>
+              <span v-if="item.attendType === '4'" style="float: right;color: #F56C6C;">{{item.attendType | attendTypeMsg}}</span>
+              <span v-else style="float: right;color: #67C23A;">{{item.attendType | attendTypeMsg}}</span>
             </div>
             <div style="font-size: 12px;color: #999999;">
               <span>上课日期：{{$moment(item.createTime).format('YYYY-MM-DD')}}</span>
@@ -64,39 +65,14 @@
               <span>上课时间：{{$moment(item.createTime).format('HH:mm') + ' - ' +  (item.endTime ? $moment(item.endTime).format('HH:mm') : '至今')}}</span>
             </div>
           </div>
-          <!--<el-col :span="24" v-if="tableData.list.length">-->
-            <!--<div style="font-weight: bold;text-align: center;padding-bottom: 15px;border-bottom: 0.1px solid #ebeef5;">出勤表</div>-->
-            <!--<el-table :data="tableData2.list" v-loading="tableData2.loading" border>-->
-              <!--<el-table-column prop="" label="课程名称">-->
-                <!--<template slot-scope="scope">{{courseName}}</template>-->
-              <!--</el-table-column>-->
-              <!--<el-table-column prop="attendType" label="上课时间">-->
-                <!--<template slot-scope="scope">-->
-                  <!--<div style="">{{$moment(scope.row.createTime).format('HH:mm') + ' - ' +  (scope.row.endTime ? $moment(scope.row.endTime).format('HH:mm') : '至今')}}</div>-->
-                <!--</template>-->
-              <!--</el-table-column>-->
-              <!--<el-table-column prop="" label="上课日期">-->
-                <!--<template slot-scope="scope">{{$moment(scope.row.createTime).format('YYYY-MM-DD')}}</template>-->
-              <!--</el-table-column>-->
-              <!--<el-table-column prop="attendType" label="出勤情况">-->
-                <!--<template slot-scope="scope">{{scope.row.attendType | attendTypeMsg}}</template>-->
-              <!--</el-table-column>-->
-            <!--</el-table>-->
-          <!--</el-col>-->
         </div>
       </div>
     </scroller>
     <el-dialog title="课程详情" :visible.sync="centerDialogVisible" width="80%" center>
-      <!--<span>需要注意的是内容是默认不居中的</span>-->
       <div style="font-size: 14px;font-weight: bold;">
         <div v-if="courseTeacher">任课教师：{{courseTeacher.name}}</div>
         <div>课程进度：{{courseCurrent}} / {{courseTotal}}</div>
         <div>我的未上课时：{{rosterCourseCountRest === null ? courseTotal : rosterCourseCountRest}}</div>
-        <!--<div>-->
-          <!--<el-col :span="8"><div>任课教师：{{courseTeacher.name}}</div></el-col>-->
-          <!--<el-col :span="8"><div>课程进度：{{courseCurrent}} / {{courseTotal}}</div></el-col>-->
-          <!--<el-col :span="8"><div>我的未上课时：{{rosterCourseCountRest === null ? courseTotal : rosterCourseCountRest}}</div></el-col>-->
-        <!--</div>-->
         <div>上课日期：{{courseStartDateStr + ' 至 ' + courseEndDateStr}}</div>
         <div>上课时间：{{classStartTimeStr + ' 至 ' + classEndTimeStr}}</div>
       </div>
@@ -169,7 +145,6 @@
     },
     filters: {
       attendTypeMsg(status) {
-        console.log(status)
         // 1学生签到2老师签到3学生串课签到4缺席
         let msg = ''
         switch (status) {
@@ -454,7 +429,6 @@
 </script>
 <style>
   .mobile-home-student-class-my {
-    /*padding-top: 50px;*/
     font-size: 14px;
     padding: 65px 15px 15px 15px;
   }
@@ -476,21 +450,32 @@
     display: flex;
     padding: 0;
   }
+  .mobile-home-student-class-my .el-checkbox-group .el-checkbox.is-bordered.el-checkbox--mini {
+    padding: 3px 0;
+    height: 24px;
+  }
+  .mobile-home-student-class-my .el-checkbox-group .el-checkbox.is-bordered+.el-checkbox.is-bordered {
+    margin-left: 2px;
+  }
   .mobile-home-student-class-my .chenk-box-col {
-    width: 60px;
+    width: 50px;
     text-align: center;
   }
   .mobile-home-student-class-my .chenk-box {
-    width: 60px;
+    width: 50px;
     text-align: center;
     flex: 1;
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
   }
   .mobile-home-student-class-my .el-checkbox__label {
     padding: 0;
   }
   .mobile-home-student-class-my .chenk-box-img {
-    width: 60px;
-    padding: 8px;
+    width: 45px;
+    padding: 5px;
   }
   .mobile-home-student-class-my .chenk-box .el-checkbox__input {
     display: none;
@@ -508,5 +493,6 @@
   }
   .mobile-home-student-class-my .el-checkbox__label {
     padding-left: 0;
+    color: #000000 !important;
   }
 </style>

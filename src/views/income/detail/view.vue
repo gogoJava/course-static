@@ -26,7 +26,7 @@
         </el-table-column>
         <el-table-column prop="courseCost" label="金额">
           <template slot-scope="scope">
-            <span>¥ {{scope.row.courseCost}}</span>
+            <span>¥ {{scope.row.orderCost}}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -181,7 +181,7 @@
       orderSelectionChange(val) {
         this.totalOrderAmount  = 0
         val.forEach(item => {
-          this.totalOrderAmount = this.totalOrderAmount + item.courseCost
+          this.totalOrderAmount = this.totalOrderAmount + item.orderCost
         })
       },
       handleSelectionChange(val) {

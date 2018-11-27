@@ -1,7 +1,6 @@
 <template>
-  <div class="login-container">
-
-    <div>
+  <div class="login-container" :class="{'mobile-login': isMobile}">
+    <div class="img-content">
       <img class="logo-img" :src="logoUrl"/>
     </div>
     <div class="title-container">
@@ -17,11 +16,7 @@
 </template>
 
 <script>
-// import { isvalidUsername } from '@/utils/validate'
-// import LangSelect from '@/components/LangSelect'
 import IconFont from '../../components/icon-font/IconFont'
-// api
-// import * as accountApi from '../../apis/accountApi'
 // store
 import {mapActions,mapGetters} from 'vuex'
 import * as $accountStore from '../../store/modules/account/types'
@@ -31,17 +26,9 @@ export default {
   components: { IconFont },
   data() {
     const validateUsername = (rule, value, callback) => {
-      // if (value && value.length !== 11) {
-      //   return callback(new Error('必须是11位手机号码'))
-      // }
       callback()
     }
     const validatePassword = (rule, value, callback) => {
-      // if (value.length < 6) {
-      //   callback(new Error('The password can not be less than 6 digits'))
-      // } else {
-      //   callback()
-      // }
       callback()
     }
     return {
@@ -70,30 +57,30 @@ export default {
       },
       immediate: true
     },
-    // 'loginForm.username'(value) {
-    //   this.loginForm.password = ''
-    // }
   },
   computed: {
-      ...mapGetters($accountStore.namespace, {
-        currentUser: $accountStore.getters.currentUser
-      }),
-      // 超级管理员
-      isSuperAdmin() {
-        return this.currentUser.type === '-1'
-      },
-      // 管理员
-      isAdmin() {
-        return this.currentUser.type === '0'
-      },
-      // 教师
-      isTeacher() {
-        return this.currentUser.type === '2'
-      },
-      // 学生
-      isStudent() {
-        return this.currentUser.type === '1'
-      },
+    ...mapGetters($accountStore.namespace, {
+      currentUser: $accountStore.getters.currentUser
+    }),
+    // 超级管理员
+    isSuperAdmin() {
+      return this.currentUser.type === '-1'
+    },
+    // 管理员
+    isAdmin() {
+      return this.currentUser.type === '0'
+    },
+    // 教师
+    isTeacher() {
+      return this.currentUser.type === '2'
+    },
+    // 学生
+    isStudent() {
+      return this.currentUser.type === '1'
+    },
+    isMobile() {
+      return /Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)
+    }
     },
   created() {
     document.onkeydown = async () =>{
@@ -102,10 +89,8 @@ export default {
         this.handleLogin()
       }
     }
-    // window.addEventListener('hashchange', this.afterQRScan)
   },
   destroyed() {
-    // window.removeEventListener('hashchange', this.afterQRScan)
   },
   methods: {
     ...mapActions($accountStore.namespace, {
@@ -267,4 +252,39 @@ $light_gray:#eee;
     }
   }
 }
+  .mobile-login {
+    .img-content {
+      padding: 15px;
+      .logo-img {
+        width: 100%;
+        padding: 0;
+      }
+    }
+    .title-container {
+      text-align: center;
+      padding-top: 20px;
+    }
+    .login-info {
+      font-size: 14px;
+      input {
+        border: 0;
+        border-bottom: 1px solid #ffffff;
+        width: 180px;
+        height: 48px;
+        background: none !important;
+        color: #ffffff;
+        outline: none;
+        padding: 0 15px;
+        font-size: 14px;
+      }
+      input::-webkit-input-placeholder {
+        color: #ffffff;
+        opacity: 0.8;
+        font-size: 14px;
+      }
+      .login-btn {
+        font-size: 16px;
+      }
+    }
+  }
 </style>
