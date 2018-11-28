@@ -17,7 +17,7 @@
       },
       pageSizes: {
         type: Array,
-        default: () => [10, 20, 30, 40, 50]
+        default: () => [10, 20, 30, 40, 50, 100]
       },
     },
     data () {

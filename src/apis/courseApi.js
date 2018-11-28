@@ -47,6 +47,11 @@ export const startCourse = (courseId) => request.get('/api/course/courseStart?co
 export const endCourse = (courseId) => request.get('/api/course/courseEnd?courseId=' + courseId)
 
 /**
+ * 删除课程
+ */
+export const deleteCourse = (courseId) => request.get('/api/course/delete?courseId=' + courseId)
+
+/**
  * 课程签到
  */
 export const courseSign = (params) => request.post('/api/course/sign', qs.stringify(params))

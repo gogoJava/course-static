@@ -23,7 +23,7 @@
         <el-table-column label="">
           <template slot-scope="scope">
             <el-button v-if="scope.row.courseStatus === '0'" type="text" @click.native="publishCourseOnclick(scope.row)">发布</el-button>
-            <!--<el-button v-if="scope.row.courseStatus === '2'" type="text" @click.native="endCourseOnclick(scope.row)">结束课程</el-button>-->
+            <el-button v-if="scope.row.courseStatus === '1'" type="text" @click.native="deleteCourseOnclick(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -143,16 +143,16 @@
           this.queryClassList()
         }).catch(() => {})
       },
-      // 结束课程
-      async endCourseOnclick() {
-        this.$confirm('确定要结束该课程?', '提示', {
+      // 删除课程
+      async deleteCourseOnclick(courseInfo) {
+        this.$confirm('确定要删除【' + courseInfo.courseName + '】课程?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(async () => {
-          // const {code, msg} = await courseApi.publishCourse({courseId: ''}).catch(e => e)
-          // if (code !== '200') return this.$message('发布课程失败，' + msg)
-          // this.$message({type: 'success', message: '发布课程成功！'})
+          const {code, msg} = await courseApi.deleteCourse(courseInfo.courseId).catch(e => e)
+          if (code !== '200') return this.$message('发布课程失败，' + msg)
+          this.$message({type: 'success', message: '删除课程成功！'})
           this.queryClassList()
         }).catch(() => {})
       }

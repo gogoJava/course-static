@@ -29,7 +29,7 @@ request.interceptors.response.use((response) => {
   return response
 }, (error) => {
   if (error.code === '100') { // 登录信息已过期
-    alert('请先登录')
+    // alert('请先登录')
     window.location.href = `/login?redirect=${window.encodeURIComponent(window.location.pathname)}`
   }
   return Promise.reject(error)
