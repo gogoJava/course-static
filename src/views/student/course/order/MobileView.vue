@@ -1,6 +1,6 @@
 <template>
   <div>
-    <scroller>
+    <div>
       <div class="mobile-class-attendance-page">
         <div class="clearfix" v-if="tableData.list.length">
           <div>
@@ -61,7 +61,7 @@
           </div>
         </div>
       </div>
-    </scroller>
+    </div>
     <el-dialog :visible.sync="buyCourseShow" title="提示" :show-close="false" width="80%" top="120px" class="buy-show">
       <div>是否确定购买该课程?</div>
       <span slot="footer">
@@ -515,7 +515,8 @@
 <style>
   .mobile-class-attendance-page {
     font-size: 14px;
-    padding: 65px 15px 15px 15px;
+    padding: 15px 15px 15px 15px;
+    overflow-y: auto;
   }
   .mobile-class-attendance-page .content .el-row {
     margin-bottom: 20px;

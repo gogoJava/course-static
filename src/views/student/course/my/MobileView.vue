@@ -1,6 +1,6 @@
 <template>
   <div>
-    <scroller>
+    <div>
       <div class="mobile-home-student-class-my">
         <div class="content">
           <div slot="header" class="clearfix" v-if="tableData.list.length">
@@ -67,7 +67,7 @@
           </div>
         </div>
       </div>
-    </scroller>
+    </div>
     <el-dialog title="课程详情" :visible.sync="centerDialogVisible" width="80%" center>
       <div style="font-size: 14px;font-weight: bold;">
         <div v-if="courseTeacher">任课教师：{{courseTeacher.name}}</div>
@@ -430,7 +430,8 @@
 <style>
   .mobile-home-student-class-my {
     font-size: 14px;
-    padding: 65px 15px 15px 15px;
+    padding: 15px 15px 15px 15px;
+    overflow-y: auto;
   }
   .mobile-home-student-class-my .list-item {
     border-top: 1px solid #cdcdcd;
