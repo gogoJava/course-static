@@ -51,7 +51,8 @@
     </el-card>
     <el-dialog :title="isCreate ? '新建学生' : '学生详情'" :visible.sync="dialogFormVisible" width="70%">
       <el-form :model="studentUserInfo" label-width="150px" ref="ruleForm" :disabled="studentUserInfo.deleted" :rules="rules">
-        <el-col :span="12">
+        <el-row>
+          <el-col :span="12">
           <el-form-item label="用户名：" prop="username">
             <el-input v-model="studentUserInfo.username" :disabled="!isCreate"></el-input>
           </el-form-item>
@@ -61,7 +62,9 @@
             <el-input v-model="studentUserInfo.name"></el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="12">
+        </el-row>
+        <el-row>
+          <el-col :span="12">
           <el-form-item label="学号：" prop="schoolNumber">
             <el-input v-model="studentUserInfo.schoolNumber" type="text"></el-input>
           </el-form-item>
@@ -74,40 +77,40 @@
             </el-radio-group>
           </el-form-item>
         </el-col>
-        <el-col :span="12">
+        </el-row>
+        <el-row>
+          <el-col :span="12">
           <el-form-item label="家长联系电话：" prop="phone">
             <el-input v-model="studentUserInfo.phone" :maxlength="20"></el-input>
           </el-form-item>
         </el-col>
-        <!--<el-col :span="12">-->
-          <!--<el-form-item v-if="isCreate" label="验证码：" prop="verification">-->
-            <!--<el-input v-model="studentUserInfo.verification">-->
-              <!--<template slot="append">-->
-                <!--<div style="cursor: pointer;" :class="{'can-send': countDown === null || countDown <= 0}" @click="getVerificationCode">{{codeMsg}}</div>-->
-              <!--</template>-->
-            <!--</el-input>-->
-          <!--</el-form-item>-->
-        <!--</el-col>-->
         <el-col :span="12">
           <el-form-item label="所在年级：">
             <el-input v-model="studentUserInfo.gradeName"></el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="24">
+        </el-row>
+        <el-row>
+          <el-col :span="24">
           <el-form-item label="所在学校：">
             <el-input v-model="studentUserInfo.schoolName"></el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="24">
-          <el-form-item v-if="isCreate" label="密码：" prop="password">
+        </el-row>
+       <el-row v-if="isCreate">
+          <el-col :span="24">
+          <el-form-item label="密码：" prop="password">
             <el-input v-model="studentUserInfo.password" type="password"></el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="24">
-          <el-form-item v-if="isCreate" label="确认密码：" prop="confirmPassword">
+       </el-row>
+       <el-row v-if="isCreate">
+          <el-col :span="24">
+          <el-form-item label="确认密码：" prop="confirmPassword">
             <el-input v-model="studentUserInfo.confirmPassword" type="password"></el-input>
           </el-form-item>
         </el-col>
+       </el-row>
       </el-form>
       <el-card v-if="!isCreate" header="课程列表">
         <el-table :data="courseData.list" v-loading="courseData.loading">
