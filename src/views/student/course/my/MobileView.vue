@@ -52,7 +52,7 @@
           </div>
           <!--出勤表-->
           <div style="padding-bottom: 15px;font-weight: bold;font-size: 16px;">出勤表<span style="color: #999999;font-weight: normal;font-size: 14px;" v-if="!tableData2.list.length">：无出勤记录</span></div>
-          <div v-for="item of tableData2.list" class="list-item">
+          <div v-for="(item, index) of tableData2.list" :key="index" class="list-item">
             <div>
               <span>课程：{{courseName}}</span>
               <span v-if="item.attendType === '4'" style="float: right;color: #F56C6C;">{{item.attendType | attendTypeMsg}}</span>

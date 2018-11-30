@@ -4,7 +4,6 @@ import router from "./router/index";
 import store from "./store/index";
 import VueScroller from 'vue-scroller'
 
-
 Vue.use(VueScroller)
 
 Vue.config.productionTip = false;

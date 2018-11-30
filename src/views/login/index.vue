@@ -185,7 +185,7 @@ $light_gray:#eee;
   position: fixed;
   height: 100%;
   width: 100%;
-  background: url('../../assets/login-background.png') no-repeat;
+  background: url('../../assets/login-background.jpeg') no-repeat;
   background-size:100% 100%;
   .title-container {
     text-align: center;
