@@ -123,6 +123,11 @@
               <div>{{scope.row.courseStartDateStr}} 至 {{scope.row.courseEndDateStr}}</div>
             </template>
           </el-table-column>
+          <el-table-column prop="" label="未上课时" min-width="180px;">
+            <template slot-scope="scope">
+              <div>{{scope.row.rosterCourseCountRest === null ? scope.row.courseTotal : scope.row.rosterCourseCountRest}} / {{scope.row.courseTotal}}</div>
+            </template>
+          </el-table-column>
           <el-table-column label="">
             <template slot-scope="scope">
               <el-button type="text" @click.native="goCourseDetail(scope.row)">详情</el-button>

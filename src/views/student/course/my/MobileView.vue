@@ -6,8 +6,9 @@
           <div slot="header" class="clearfix" v-if="tableData.list.length">
             <div>
               <span style="padding-right: 5px;font-size: 14px;">课程:</span>
-              <el-select v-model="selectedCourseId" size="mini" filterable placeholder="请选择">
+              <el-select style="width: 180px;" v-model="selectedCourseId" size="mini" filterable placeholder="请选择">
                 <el-option v-for="(item, index) in tableData.list" :key="index" :label="item.courseName" :value="item.courseId">
+                  <div style="width:240px;white-space:normal; ">{{ item.courseName }}</div>
                 </el-option>
               </el-select>
               <span style="padding-left: 10px;color: #409EFF;font-size: 12px;" @click="centerDialogVisible = true">课程详情</span>
@@ -445,6 +446,7 @@
   }
   .mobile-home-student-class-my .item-div {
     flex: 1;
+    padding-right: 17px;
   }
   .mobile-home-student-class-my .el-checkbox-group {
     font-size: 12px;
@@ -496,4 +498,7 @@
     padding-left: 0;
     color: #000000 !important;
   }
+  .el-select-dropdown__item {
+    height: auto !important;
+   }
 </style>

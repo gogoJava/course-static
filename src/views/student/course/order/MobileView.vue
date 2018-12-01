@@ -9,6 +9,7 @@
           <div>
             <span style="padding-right: 5px;">课程:</span>
             <el-select
+              style="width: 180px;"
               v-model="selectedCourseId"
               size="mini"
               filterable
@@ -20,6 +21,7 @@
                 :label="item.courseName"
                 :value="item.courseId"
               >
+               <div style="width:240px;white-space:normal; ">{{ item.courseName }}</div>
               </el-option>
             </el-select>
             <span
@@ -775,6 +777,7 @@ export default {
 }
 .mobile-class-attendance-page .item-div {
   flex: 1;
+  padding-right: 17px
 }
 .mobile-class-attendance-page .el-checkbox-group {
   font-size: 12px;
@@ -811,6 +814,9 @@ export default {
   .el-checkbox.is-bordered.el-checkbox--mini {
   padding: 3px 0;
   height: 24px;
+}
+.el-select-dropdown__item {
+  height: auto !important;
 }
 .qrcode-img {
   text-align: center;
