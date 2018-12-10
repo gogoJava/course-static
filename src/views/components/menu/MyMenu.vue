@@ -137,7 +137,7 @@
     </el-dialog>
     <!--修改密码-->
     <el-dialog title="修改密码" :visible.sync="dialogVisible" :width="isMobile ? '95%' : '50%'">
-      <el-form :model="password" label-width="120px">
+      <el-form :model="password" label-width="90px">
         <el-form-item v-if="isSuperAdmin" label="旧密码：">
           <el-input v-model="password.old" type="password"></el-input>
         </el-form-item>
@@ -147,10 +147,11 @@
         </el-form-item>
         <el-form-item v-if="!isSuperAdmin" label="验证码：" prop="verification">
           <el-input v-model="verification">
-            <template slot="append">
-              <div style="cursor: pointer;" :class="{'can-send': countDown === null || countDown <= 0}" @click="getVerificationCode">{{codeMsg}}</div>
+            <template slot="append" v-if="countDown === null || countDown <= 0">
+              <div style="cursor: pointer;font-size:12px;" :class="{'can-send': countDown === null || countDown <= 0}" @click="getVerificationCode">{{codeMsg}}</div>
             </template>
           </el-input>
+          <span v-if="!(countDown === null || countDown <= 0)" style="color: #999999;">{{codeMsg}}</span>
         </el-form-item>
         <el-form-item label="新密码：">
           <el-input v-model="password.new" type="password"></el-input>

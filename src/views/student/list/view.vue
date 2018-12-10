@@ -142,7 +142,7 @@
     </el-dialog>
     <!--修改密码-->
     <el-dialog :title="'修改【' + passwordName + '】的密码'" :visible.sync="passwordDialogVisible" width="50%">
-      <el-form label-width="120px">
+      <el-form label-width="90px">
         <el-form-item label="新密码：">
           <el-input v-model="newPassword" type="password"></el-input>
         </el-form-item>

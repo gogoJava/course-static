@@ -410,8 +410,8 @@
             courseId: this.selectedCourseId,
             ids
           }
-          const {code, msg, data} = await classRosterApi.updateClassRoster(params).catch(e => e)
-          if (code !== '200') return this.$message('选座失败，', msg)
+          const {code, data} = await classRosterApi.updateClassRoster(params).catch(e => e)
+          if (code !== '200') return this.$message('该座位已被别人选走')
           this.rosterId = data.rosterId
           this.$message({type: 'success', message: '选座成功！'})
         } else {
@@ -421,8 +421,8 @@
             seatX: info.rosterSeatX,
             seatY: info.rosterSeatY
           }
-          const {code, msg, data} = await seatApi.choiceSeat(params).catch(e => e)
-          if (code !== '200') return this.$message('选座失败，', msg)
+          const {code, data} = await seatApi.choiceSeat(params).catch(e => e)
+          if (code !== '200') return this.$message('该座位已被别人选走')
           this.rosterId = data.rosterId
           this.$message({type: 'success', message: '选座成功！'})
         }
