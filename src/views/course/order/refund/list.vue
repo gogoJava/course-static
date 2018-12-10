@@ -7,9 +7,11 @@
       <el-table :data="tableData.list" v-loading="tableData.loading" style="width: 100%" @selection-change="handleSelectionChange">
         <!--<el-table-column type="selection" width="55">-->
         <!--</el-table-column>-->
-        <el-table-column prop="orderId" label="订单Id">
+        <el-table-column prop="orderId" label="订单ID">
         </el-table-column>
-        <el-table-column prop="user.name" label="学生姓名">
+         <el-table-column prop="orderNo" label="支付订单号">
+        </el-table-column>
+        <el-table-column prop="user.name" label="学生姓名" width="100">
         </el-table-column>
         <el-table-column prop="courseName" label="退费课程">
         </el-table-column>
