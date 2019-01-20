@@ -11,6 +11,7 @@
           <span style="padding-left: 30px;">
             <el-button v-if="!rosterId && !loading && bought" type="primary" @click.native="confirmSeat" size="small">确定座位</el-button>
             <el-button v-if="!bought && !orderStatus" type="primary" @click.native="goPayCourse" size="small">购买课程</el-button>
+            <el-button v-if="orderStatus && orderStatus === '0'" type="primary" @click.native="cancelCourse" size="small">取消订单</el-button>
           </span>
         </div>
         <div style="font-size: 24px;font-weight: bold;padding: 15px 15px 0 15px;">
@@ -443,28 +444,20 @@
           // this.queryOrderList()
         }).catch(() => {})
       },
-      // 获取支付订单列表
-      // async queryOrderList() {
-      //   const params = {accountId: this.currentUser.accountId, pageSize: 99999, page: 1}
-      //   const {data} = await courseOrderApi.courseOrderList(params).catch(e => e)
-      //   const {list} = data
-      //   if (list) {
-      //     list.forEach(item => {
-      //       const index = this.tableData.list.findIndex(value => value.courseId === item.courseId)
-      //       if (index !== -1) {
-      //         this.tableData.list[index] = {...this.tableData.list[index], ...item}
-      //         if (this.selectedCourseId === item.courseId) {
-      //           this.orderId = item.orderId
-      //           this.orderStatus = item.orderStatus
-      //           if (this.orderStatus !== '0') {
-      //             this.bought = true
-      //             this.dialogVisible = false
-      //           }
-      //         }
-      //       }
-      //     })
-      //   }
-      // },
+      // 取消订单
+      async cancelCourse() {
+        this.$confirm('是否确定取消该订单?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(async () => {
+          const {code, msg} = await courseOrderApi.cancelCourseOrder({orderId: this.orderId}).catch(e => e)
+          if (code !== '200') return this.$message('取消订单失败，' + msg)
+          this.$message({type: 'success', message: '取消订单成功！'})
+          this.orderStatus = null
+          await this.queryClassList()
+        }).catch(() => {})
+      },
       // 支付
       async goPay() {
         const params = {

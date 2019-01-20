@@ -25,3 +25,8 @@ export const payCourseOrder = (params) => request.get('/api/courseOrder/wechatPa
  * 模拟下单支付
  */
 export const testCourseOrder = (params) => request.post('/api/courseOrder/orderId', qs.stringify(params))
+
+/**
+ * 取消订单
+ */
+export const cancelCourseOrder = (params) => request.get('/api/courseOrder/cancel', {params})

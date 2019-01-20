@@ -38,6 +38,11 @@
               v-if="!bought && !orderStatus"
               @click="buyCourseShow = true"
             >购买课程</span>
+            <span
+              style="padding-left: 10px;color: #409EFF;font-size: 12px;"
+              v-if="orderStatus && orderStatus === '0'"
+              @click="cancelCourseShow = true"
+            >取消课程</span>
           </div>
           <!-- <a target="_blank" :href="payUrl" id="wechatPay" ref="wechatPay">test</a> -->
           <div v-if="orderStatus">
@@ -203,6 +208,29 @@
       </span>
     </el-dialog>
     <el-dialog
+      :visible.sync="cancelCourseShow"
+      title="提示"
+      :show-close="false"
+      width="80%"
+      top="120px"
+      class="buy-show"
+    >
+      <div>是否确定取消该订单?</div>
+      <span slot="footer">
+        <div style="text-align: center;">
+          <el-button
+            @click="cancelCourseShow = false"
+            size="small"
+          >取消</el-button>
+          <el-button
+            @click="cancelCourse"
+            size="small"
+            type="primary"
+          >确定</el-button>
+        </div>
+      </span>
+    </el-dialog>
+    <el-dialog
       :visible.sync="dialogVisible"
       :show-close="false"
       custom-class="qrcode-img"
@@ -312,7 +340,8 @@ export default {
       },
       queryNum: 0, // 轮询次数
       centerDialogVisible: false,
-      buyCourseShow: false
+      buyCourseShow: false,
+      cancelCourseShow: false
     };
   },
   filters: {
@@ -660,6 +689,17 @@ export default {
       this.$message({ type: "success", message: "购买成功！请去完成支付！" });
       this.orderStatus = "0";
       this.buyCourseShow = false;
+      await this.queryClassList();
+    },
+    // 取消订单
+    async cancelCourse() {
+      const { code, msg } = await courseOrderApi
+        .cancelCourseOrder({ orderId: this.orderId })
+        .catch(e => e);
+      if (code !== "200") return this.$message("取消订单失败，" + msg);
+      this.$message({ type: "success", message: "取消订单成功！" });
+      this.orderStatus = "0";
+      this.cancelCourseShow = false;
       await this.queryClassList();
     },
     // 支付
