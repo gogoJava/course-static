@@ -6,7 +6,8 @@ import merge from 'lodash/merge'
 const defaultConfig = {
   online: false,
   // apiUrl: '//lolcainiao.club/basics/',
-  apiUrl: '//ccjkjy.com/basics/'
+  // apiUrl: '//ccjkjy.com/basics/',
+  apiUrl: '//wumingnv.vip:8080/basics/',
 }
 
 export default merge({}, defaultConfig)

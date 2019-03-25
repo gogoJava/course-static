@@ -44,9 +44,20 @@
       <!--<div slot="header" class="clearfix">-->
         <!--<span>收入详情</span>-->
       <!--</div>-->
-      <el-input v-model="searchForm.keyword" style="width: 300px;" placeholder="课程名称、教师姓名">
+      <el-input v-model="searchForm.courseName" style="width: 240px;" placeholder="课程名称">
         <i slot="prefix" class="el-input__icon el-icon-search"></i>
       </el-input>
+       <el-input v-model="searchForm.userName" style="width: 240px;left: 30px;position: relative;" placeholder="搜索教师姓名">
+        <i slot="prefix" class="el-input__icon el-icon-search"></i>
+      </el-input>
+      <span style="position: relative;float: right;">
+        <span>筛选：</span>
+        <el-select size="small" v-model="handled" placeholder="请选择">
+          <el-option label="全部" value="全部"></el-option>
+          <el-option label="已清算" value="已清算"></el-option>
+          <el-option label="未清算" value="未清算"></el-option>
+        </el-select>
+      </span>
       <el-table :data="tableData.list" v-loading="tableData.loading" style="width: 100%" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55">
         </el-table-column>
@@ -71,9 +82,15 @@
             <span>{{scope.row.incomeAmount}}元</span>
           </template>
         </el-table-column>
+        <el-table-column prop="handled" label="状态">
+          <template slot-scope="scope">
+            <span>{{scope.row.handled ? '已清算' : '未清算'}}</span>
+          </template>
+        </el-table-column>
       </el-table>
       <div style="text-align: right;padding-top: 15px;padding-right: 120px;">
-        <div>当月总工资：{{totalIncomeAmount}}元</div>
+        <el-button size="small" type="primary" style="float: left;" @click="clear">清算</el-button>
+        <div>总计：{{totalIncomeAmount}}元</div>
       </div>
       <my-pagination
               :total="tableData.total"
@@ -114,7 +131,9 @@
         searchForm: {
           pageNum: 1,
           pageSize: 10,
-          keyword: ''
+          keyword: '',
+          courseName: '',
+          userName: ''
         },
         orderForm: {
           pageNum: 1,
@@ -123,7 +142,8 @@
         multipleSelection: [],
         totalIncomeAmount: 0,
         totalOrderAmount: 0,
-        date: []
+        date: [],
+        handled: '全部', // 是否清算
       })
     },
     computed: {
@@ -167,10 +187,16 @@
           this.orderQueryIncomeList()
         ])
       },
-      'searchForm.keyword'() {
+      'searchForm.courseName'() {
+        this.queryIncomeList()
+      },
+      'searchForm.userName'() {
         this.queryIncomeList()
       },
       'searchForm.pageSize'() {
+        this.queryIncomeList()
+      },
+      'handled'() {
         this.queryIncomeList()
       },
       'orderForm.pageSize'() {
@@ -202,7 +228,13 @@
       async queryIncomeList() {
         const params = {
           ...this.searchForm,
-          date: this.date
+          courseName: this.searchForm.courseName,
+          'user.name': this.searchForm.userName,
+          date: this.date,
+          handled: this.handled === '已清算' ? true : false
+        }
+        if (this.handled === '全部') {
+          delete params.handled
         }
         this.tableData.loading = true
         const {data: {total, list}} = await incomeApi.getIncomeList(params).catch(e => e)
@@ -222,6 +254,25 @@
         this.orderData.total = total || 0
         this.orderData.list = list || []
         this.orderData.loading = false
+      },
+      // clear清算
+      clear() {
+        this.$confirm('此操作将清算选中的记录, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          console.log('multipleSelection', this.multipleSelection)
+          this.$message({
+            type: 'success',
+            message: '清算成功!'
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消清算'
+          })        
+        })
       }
     },
     mounted() {

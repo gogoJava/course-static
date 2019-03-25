@@ -385,7 +385,9 @@
       async rosterAttendance() {
         const params = {
           accountId: this.currentUser.accountId,
-          courseId: this.selectedCourseId
+          courseId: this.selectedCourseId,
+          pageNum: 1,
+          pageSize: 9999,
         }
         this.tableData2.loading = true
         const {data} = await rosterAttendanceApi.rosterAttendanceList(params).catch(e => e)

@@ -4,7 +4,7 @@
   "author": "XinGui <ascarecrow@126.com>",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "dev": "vue-cli-service serve",
     "inspect": "vue-cli-service inspect",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"

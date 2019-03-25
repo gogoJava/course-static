@@ -352,6 +352,12 @@
         const {total, list} = data
         this.tableData.total = total || 0
         this.tableData.list = list || []
+        // 学生端只显示购买的
+        if (list && list.length && this.isStudent) {
+          this.tableData.list = list.filter(item => {
+            return item.orderStatus !== null
+          })
+        }
         if (list && list.length && this.selectedCourseId) {
           const index = list.findIndex(value => value.courseId === this.selectedCourseId)
           if (index !== -1) {
@@ -377,7 +383,16 @@
           this.queryClassRosters()
         }
         if (list && list.length && !this.selectedCourseId) {
-          this.selectedCourseId = list[0].courseId
+          // 学生端只显示购买的
+          if (this.isStudent) {
+            list.forEach(element => {
+              if (element.orderStatus !== null && !this.selectedCourseId) {
+                this.selectedCourseId = element.courseId
+              }
+            })
+          } else {
+            this.selectedCourseId = list[0].courseId
+          }
         }
         this.tableData.loading = false
       },
