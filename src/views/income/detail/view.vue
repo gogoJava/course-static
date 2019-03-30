@@ -52,7 +52,7 @@
       </el-input>
       <span style="position: relative;float: right;">
         <span>筛选：</span>
-        <el-select size="small" v-model="handled" placeholder="请选择">
+        <el-select v-model="handled" placeholder="请选择">
           <el-option label="全部" value="全部"></el-option>
           <el-option label="已清算" value="已清算"></el-option>
           <el-option label="未清算" value="未清算"></el-option>
@@ -197,6 +197,7 @@
         this.queryIncomeList()
       },
       'handled'() {
+        this.searchForm.pageNum = 1
         this.queryIncomeList()
       },
       'orderForm.pageSize'() {
@@ -207,14 +208,14 @@
       orderSelectionChange(val) {
         this.totalOrderAmount  = 0
         val.forEach(item => {
-          this.totalOrderAmount = this.totalOrderAmount + item.orderCost
+          this.totalOrderAmount = (this.totalOrderAmount * 100 + item.orderCost * 100) / 100
         })
       },
       handleSelectionChange(val) {
         this.totalIncomeAmount = 0
         this.multipleSelection = val
         this.multipleSelection.forEach(item => {
-          this.totalIncomeAmount = this.totalIncomeAmount + item.incomeAmount
+          this.totalIncomeAmount = (this.totalIncomeAmount * 100 + item.incomeAmount * 100) / 100
         })
       },
       onCurrentPageChange(page) {
@@ -229,7 +230,7 @@
         const params = {
           ...this.searchForm,
           courseName: this.searchForm.courseName,
-          'user.name': this.searchForm.userName,
+          'name': this.searchForm.userName,
           date: this.date,
           handled: this.handled === '已清算' ? true : false
         }
@@ -257,16 +258,27 @@
       },
       // clear清算
       clear() {
+        if (!this.multipleSelection.length) return this.$message('请选择要清算的课程！')
         this.$confirm('此操作将清算选中的记录, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
-        }).then(() => {
-          console.log('multipleSelection', this.multipleSelection)
+        }).then(async () => {
+          const incomeIds = []
+          this.multipleSelection.forEach(item => {
+            incomeIds.push(item.incomeId)
+          })
+          const params = {
+            handled: true,
+            incomeIds: incomeIds.join(',')
+          }
+          const {code, msg} = await incomeApi.handleIncome(params).catch(e => e)
+          if (code !== '200') return this.$message('清算失败，' + msg)
           this.$message({
             type: 'success',
             message: '清算成功!'
           })
+          this.queryIncomeList()
         }).catch(() => {
           this.$message({
             type: 'info',

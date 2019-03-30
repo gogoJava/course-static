@@ -8,9 +8,9 @@ const hostnameConfigMap = {
   'localhost': {
     online: false,
     // apiUrl: '//118.89.248.252:8089/basics/',
-    // apiUrl: '//ccjkjy.com/basics/',
+    apiUrl: '//ccjkjy.com/basics/',
     // apiUrl: '//lolcainiao.club/basics/',
-    apiUrl: '//wumingnv.vip:8080/basics/',
+    // apiUrl: '//wumingnv.vip:8080/basics/',
   },
 
 }

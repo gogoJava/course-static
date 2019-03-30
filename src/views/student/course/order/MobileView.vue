@@ -588,17 +588,17 @@ export default {
       this.tableData.total = total || 0;
       this.tableData.list = list || [];
       // 学生端只显示购买的
-      if (list && list.length && this.isStudent) {
-        this.tableData.list = list.filter(item => {
-          return item.orderStatus !== null
-        })
-      }
+      // if (list && list.length && this.isStudent) {
+      //   this.tableData.list = list.filter(item => {
+      //     return item.orderStatus !== null || (item.courseId === this.selectedCourseId)
+      //   })
+      // }
       if (list && list.length && this.selectedCourseId) {
         const index = list.findIndex(
           value => value.courseId === this.selectedCourseId
         );
         if (index !== -1) {
-          const item = this.tableData.list[index];
+          const item = list[index];
           this.seatLayout = item.seatLayout;
           this.courseTotal = item.courseTotal;
           this.courseCurrent = item.courseCurrent;

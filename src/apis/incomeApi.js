@@ -6,4 +6,7 @@ import qs from 'qs'
  */
 export const getIncomeList = (params) => request.post('/api/income/list', qs.stringify(params))
 
-
+/**
+ * 清算
+ */
+export const handleIncome = (params) => request.post('/api/income/handle', qs.stringify(params))
